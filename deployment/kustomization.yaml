@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: spydle
+
+resources:
+  - namespace.yaml
+  - redis/redis-deployment.yaml
+  - redis/redis-service.yaml
+  - redis/redis-networkpolicy.yaml
+  - matchmaker/matchmaker-deployment.yaml
+  - matchmaker/matchmaker-service.yaml
+  - matchmaker/matchmaker-hpa.yaml
+  - matchmaker/matchmaker-networkpolicy.yaml
+  - gameserver/gameserver-fleet.yaml
+  - gameserver/fleet-autoscaler.yaml
+  - gameserver/gameserver-networkpolicy.yaml
+  - ingress/ingress.yaml

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matchmaker
+  namespace: spydle
+  labels:
+    app: matchmaker
+spec:
+  replicas: 2  # Scalable via HPA
+  selector:
+    matchLabels:
+      app: matchmaker
+  template:
+    metadata:
+      labels:
+        app: matchmaker
+    spec:
+      containers:
+        - name: matchmaker
+          image: matchmaker # TODO replace me
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080  # HTTP port
+          env:
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
