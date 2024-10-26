@@ -32,6 +32,7 @@ public class GameController {
 
     @PostMapping("/join-game")
     public ResponseEntity<?> joinGame(@RequestParam String clientId, @RequestParam String gameServerName) {
+        // TODO how do clients know about gameserver names?
         try {
             GameServerInfo gameServerInfo = matchmakingService.joinGame(clientId, gameServerName);
             return ResponseEntity.ok(gameServerInfo);
