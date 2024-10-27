@@ -2,6 +2,7 @@ package dev.totallyspies.spydle.gameserver.service;
 
 import io.grpc.ManagedChannelBuilder;
 import net.infumia.agones4j.Agones;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,8 @@ import java.util.concurrent.ScheduledExecutorService;
 @Component
 public class AgonesHook {
 
+    private Agones agones;
+
     @Bean
     public Agones agones() {
         // TODO I have no clue any of this works
@@ -22,7 +25,7 @@ public class AgonesHook {
                 Executors.newSingleThreadExecutor();
         final ScheduledExecutorService healthCheckExecutor =
                 Executors.newSingleThreadScheduledExecutor();
-        final Agones agones = Agones.builder()
+        agones = Agones.builder()
                 .withAddress("localhost", 9357)
                 .withChannel(ManagedChannelBuilder
                         .forAddress("localhost", 9357)
@@ -51,7 +54,7 @@ public class AgonesHook {
     }
 
     @PreDestroy
-    public void onExit(Agones agones) {
+    public void onExit() {
         // TODO this should be somewhere else
         agones.shutdown();
     }
