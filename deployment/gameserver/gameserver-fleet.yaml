@@ -20,8 +20,8 @@ spec:
         spec:
           containers:
             - name: gameserver
-              image: gameserver  # TODO replace me
-              imagePullPolicy: Always
+              image: gameserver:latest
+              imagePullPolicy: IfNotPresent
               env:
                 - name: REDIS_HOST
                   value: redis

@@ -1,4 +1,4 @@
-apiVersion: "agones.dev/v1"
+apiVersion: "autoscaling.agones.dev/v1"
 kind: FleetAutoscaler
 metadata:
   name: spydle-fleet-autoscaler
