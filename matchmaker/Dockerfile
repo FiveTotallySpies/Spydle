@@ -12,4 +12,4 @@ EXPOSE 8080
 # Redis
 EXPOSE 6379
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/matchmaker.jar"]
