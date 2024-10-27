@@ -45,3 +45,11 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.bootJar {
+	archiveFileName.set("gameserver.jar")
+}
+
+tasks.jar {
+	enabled = false
+}
