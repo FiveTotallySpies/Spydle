@@ -42,7 +42,6 @@ public class MatchmakingService {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) throw new IllegalStateException("Client is already in a game.");
 
-        // TODO Adjust as necessary
         String namespace = "spydle";
 
         Map<String, Object> result = (Map<String, Object>) apiInstance.createNamespacedCustomObject(
@@ -88,6 +87,8 @@ public class MatchmakingService {
         // Save client session
         ClientSession session = new ClientSession(clientId, gameServerName);
         sessionRepository.saveSession(session);
+
+        // TODO: Get NodePort address for gameservers and grab port from redis
 
         // Retrieve GameServer info (This assumes you have a way to get the address and port)
         // For demonstration purposes, we'll mock this data
