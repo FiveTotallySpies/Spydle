@@ -37,7 +37,9 @@ dependencies {
 	implementation("net.infumia:agones4j:2.0.2")
 	implementation("io.grpc:grpc-stub:1.64.0")
 	implementation("io.grpc:grpc-protobuf:1.64.0")
+	implementation("io.grpc:grpc-okhttp:1.68.0")
 	implementation("org.apache.tomcat:annotations-api:6.0.53")
+	implementation("com.google.protobuf:protobuf-java:4.28.3")
 }
 
 tasks.withType<Test> {
