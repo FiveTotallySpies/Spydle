@@ -43,3 +43,11 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.bootJar {
+	archiveFileName.set("matchmaker.jar")
+}
+
+tasks.jar {
+	enabled = false
+}
