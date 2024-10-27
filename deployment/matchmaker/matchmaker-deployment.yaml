@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: matchmaker
-          image: matchmaker # TODO replace me
-          imagePullPolicy: Always
+          image: matchmaker:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080  # HTTP port
           env:
