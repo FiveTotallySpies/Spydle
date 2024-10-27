@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.util.ResourceUtils;
 
 /**
  * Responsible for handling logic for all of our service endpoints
@@ -32,8 +33,7 @@ public class MatchmakingService {
         io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
         apiInstance = new CustomObjectsApi(client);
 
-        Resource resource = new DefaultResourceLoader().getResource("classpath:allocation.yml");
-        allocation = (Map<String, Object>) Yaml.load(resource.getFile());
+        allocation = (Map<String, Object>) Yaml.load(ResourceUtils.getFile("classpath:allocation.yml"));
     }
 
     public GameServerInfo createGame(String clientId) throws ApiException {
