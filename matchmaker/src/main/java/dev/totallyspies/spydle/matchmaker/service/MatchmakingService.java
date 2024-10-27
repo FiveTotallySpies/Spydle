@@ -6,6 +6,7 @@ import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -26,15 +27,12 @@ public class MatchmakingService {
 
     private Map<String, Object> allocation;
 
-    @Autowired
-    private ResourceLoader resourceLoader;
-
     public MatchmakingService() throws Exception {
-        ApiClient client = Config.fromCluster();
+        ApiClient client = Config.defaultClient();
         io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
         apiInstance = new CustomObjectsApi(client);
 
-        Resource resource = resourceLoader.getResource("classpath:allocation.yml");
+        Resource resource = new DefaultResourceLoader().getResource("classpath:allocation.yml");
         allocation = (Map<String, Object>) Yaml.load(resource.getFile());
     }
 
