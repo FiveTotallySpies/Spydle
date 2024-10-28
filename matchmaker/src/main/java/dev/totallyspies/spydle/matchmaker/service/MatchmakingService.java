@@ -4,22 +4,12 @@ import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponse;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponseScale;
-import dev.totallyspies.spydle.matchmaker.k8s.crd.GameServerAllocation;
-import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.CustomObjectsApi;
-import io.kubernetes.client.util.Config;
-import io.kubernetes.client.util.ModelMapper;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.Yaml;
 
-import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
@@ -33,60 +23,20 @@ public class MatchmakingService {
     @Autowired
     private SessionRepository sessionRepository;
 
-    private CustomObjectsApi apiInstance;
-
-    private Map<String, Object> allocation;
-
-    public MatchmakingService(@Value("classpath:allocation.yaml") Resource allocationResource) throws Exception {
-        ApiClient client = Config.defaultClient();
-        logger.debug("Loaded K8s ApiClient with path {}", client.getBasePath());
-        io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
-        apiInstance = new CustomObjectsApi(client);
-
-        ModelMapper.addModelMap("allocation.agones.dev", "v1", "GameServerAllocation", "GameServerAllocations", false, GameServerAllocation.class);
-        logger.debug("Registered K8s CRD Model GameServerAllocation");
-        String allocationContent = IOUtils.toString(allocationResource.getInputStream(), Charset.defaultCharset());
-//        allocation = (Map<String, Object>) Yaml.load(allocationContent);
-        allocation = new Yaml().load(allocationContent);
-        logger.debug("Loaded allocation resource {}", allocationResource.getFilename());
-    }
+    @Autowired
+    private AgonesAllocatorService allocator;
 
     public GameServerInfo createGame(String clientId) throws ApiException {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) throw new IllegalStateException("Client is already in a game.");
 
-        String namespace = "spydle";
-
-        Map<String, Object> result = (Map<String, Object>) apiInstance.createNamespacedCustomObject(
-                "allocation.agones.dev",
-                "v1",
-                namespace,
-                "gameserverallocations",
-                allocation
-        ).execute();
-
-        // TODO Verify this is the correct message schema
-        Map<String, Object> status = (Map<String, Object>) result.get("status");
-        if (status == null || !"Allocated".equals(status.get("State"))) {
-            throw new IllegalStateException("No available GameServers.");
-        }
-
-        String gameServerName = (String) status.get("GameServerName");
-        String address = (String) status.get("Address");
-        Map<String, Object> ports = ((Map<String, Object>) ((java.util.List) status.get("Ports")).get(0));
-        int port = ((Number) ports.get("port")).intValue();
+        GameServerInfo allocated = allocator.awaitAllocation();
 
         // Save client session
-        ClientSession session = new ClientSession(clientId, gameServerName);
+        ClientSession session = new ClientSession(clientId, allocated.getGameServerName());
         sessionRepository.saveSession(session);
 
-        // Return GameServer info
-        GameServerInfo gameServerInfo = new GameServerInfo();
-        gameServerInfo.setAddress(address);
-        gameServerInfo.setPort(port);
-        gameServerInfo.setGameServerName(gameServerName);
-
-        return gameServerInfo;
+        return allocated;
     }
 
     public GameServerInfo joinGame(String clientId, String gameServerName) {
@@ -105,12 +55,11 @@ public class MatchmakingService {
 
         // Retrieve GameServer info (This assumes you have a way to get the address and port)
         // For demonstration purposes, we'll mock this data
-        GameServerInfo gameServerInfo = new GameServerInfo();
-        gameServerInfo.setAddress("game-server-address");
-        gameServerInfo.setPort(12345);
-        gameServerInfo.setGameServerName(gameServerName);
-
-        return gameServerInfo;
+        return GameServerInfo.builder()
+                .address("game-server-address")
+                .port(12345)
+                .gameServerName(gameServerName)
+                .build();
     }
 
     public void leaveGame(String clientId) {
