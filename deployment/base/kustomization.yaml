@@ -4,6 +4,10 @@ resources:
 - namespace.yaml
 - clusterrole.yaml
 - clusterrolebinding.yaml
+- ingress/nginx-chart.yaml
+- ingress/nginx-crds.yaml
+- agones/agones-namespace.yaml
+- agones/agones-chart.yaml
 - redis/redis-deployment.yaml
 - redis/redis-service.yaml
 - redis/redis-networkpolicy.yaml
@@ -14,8 +18,4 @@ resources:
 - gameserver/gameserver-fleet.yaml
 - gameserver/fleet-autoscaler.yaml
 - gameserver/gameserver-networkpolicy.yaml
-- ingress/nginx-chart.yaml
-- ingress/nginx-crds.yaml
 - ingress/ingress.yaml
-- agones/agones-namespace.yaml
-- agones/agones-chart.yaml
