@@ -34,7 +34,6 @@ public class AutoscaleController {
             logger.error("Failed to handle /autoscale", exception);
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
-
     }
 
 }

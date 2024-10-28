@@ -12,21 +12,21 @@ spec:
     - host: totallyspies.dev  # Replace with your domain
       http:
         paths: # Do not expose autoscale
-          - path: / #create-game #(.*)  # Matches /create-game and anything after
+          - path: /create-game
             pathType: Prefix
             backend:
               service:
                 name: matchmaker-service
                 port:
                   number: 80
-          - path: /join-game(.*)
+          - path: /join-game
             pathType: Prefix
             backend:
               service:
                 name: matchmaker-service
                 port:
                   number: 80
-          - path: /leave-game(.*)
+          - path: /leave-game
             pathType: Prefix
             backend:
               service:

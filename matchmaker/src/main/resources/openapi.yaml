@@ -5,6 +5,7 @@ info:
 paths:
   /autoscale:
     post:
+      operationId: autoscale
       summary: Autoscale target for Agones
       requestBody:
         required: true
@@ -15,6 +16,27 @@ paths:
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoscaleResponseModel'
+  /create-game:
+    post:
+      operationId: createGame
+      summary: Create (allocate) new agones gameserver to client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGameRequestModel'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateGameResponseModel'
 components:
   schemas:
     AutoscaleRequestModel:
@@ -59,3 +81,25 @@ components:
               properties:
                 replicas:
                   type: integer
+    CreateGameRequestModel:
+      type: object
+      required: [clientId]
+      properties:
+        clientId:
+          type: string
+    CreateGameResponseModel:
+      type: object
+      required: [gameServer]
+      properties:
+        gameServer:
+          $ref: '#/components/schemas/GameServerInfoModel'
+    GameServerInfoModel:
+      type: object
+      required: [address, port, gameServerName]
+      properties:
+        address:
+          type: string
+        port:
+          type: integer
+        gameServerName:
+          type: string
