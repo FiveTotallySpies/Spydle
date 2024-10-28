@@ -14,4 +14,4 @@ EXPOSE 7654
 # Redis
 EXPOSE 6379
 
-ENTRYPOINT ["java", "-jar", "/app/gameserver.jar"]
+ENTRYPOINT ["sh", "entry.sh"]

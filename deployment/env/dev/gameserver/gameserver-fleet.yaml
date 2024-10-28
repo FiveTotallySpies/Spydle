@@ -5,3 +5,12 @@ metadata:
   namespace: spydle
 spec:
   replicas: 1  # Initial idle GameServers
+  template:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: gameserver
+              env:
+                - name: ENV
+                  value: dev
