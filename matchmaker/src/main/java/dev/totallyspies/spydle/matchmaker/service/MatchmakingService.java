@@ -1,19 +1,21 @@
 package dev.totallyspies.spydle.matchmaker.service;
 
+import dev.totallyspies.spydle.matchmaker.k8s.crd.GameServerAllocation;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.util.Config;
-import io.kubernetes.client.util.Yaml;
+import io.kubernetes.client.util.ModelMapper;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.Yaml;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.util.ResourceUtils;
 
 /**
  * Responsible for handling logic for all of our service endpoints
@@ -28,12 +30,15 @@ public class MatchmakingService {
 
     private Map<String, Object> allocation;
 
-    public MatchmakingService() throws Exception {
+    public MatchmakingService(@Value("classpath:allocation.yml") Resource allocationResource) throws Exception {
         ApiClient client = Config.defaultClient();
         io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
         apiInstance = new CustomObjectsApi(client);
 
-        allocation = (Map<String, Object>) Yaml.load(ResourceUtils.getFile("classpath:allocation.yml"));
+        ModelMapper.addModelMap("allocation.agones.dev", "v1", "GameServerAllocation", "GameServerAllocations", false, GameServerAllocation.class);
+        String allocationContent = IOUtils.toString(allocationResource.getInputStream(), Charset.defaultCharset());
+//        allocation = (Map<String, Object>) Yaml.load(allocationContent);
+        allocation = new Yaml().load(allocationContent);
     }
 
     public GameServerInfo createGame(String clientId) throws ApiException {
@@ -107,6 +112,7 @@ public class MatchmakingService {
     }
 
     public Map<String, Object> autoscale(Map<String, Object> request) {
+        System.out.println(prettyPrint(request));
         Map<String, Object> status = (Map<String, Object>) request.get("status");
         int allocatedReplicas = (int) status.get("allocatedReplicas");
 
@@ -120,5 +126,21 @@ public class MatchmakingService {
         response.put("scale", scale);
 
         return response;
+    }
+
+    private static String prettyPrint(Map<String, Object> yaml) {
+        StringBuilder builder = new StringBuilder("{");
+        for (String key : yaml.keySet()) {
+            Object val = yaml.get(key);
+            builder.append(key).append(":");
+            if (val instanceof Map) {
+                builder.append(prettyPrint((Map<String, Object>) val));
+            } else {
+                builder.append(val);
+            }
+            builder.append(",");
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        return builder.append("}").toString();
     }
 }
