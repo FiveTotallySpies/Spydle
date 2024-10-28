@@ -73,14 +73,14 @@ components:
       properties:
         response:
           type: object
-          required: [scale]
+          required: [scale, replicas, uid]
           properties:
             scale:
-              type: object
-              required: [replicas]
-              properties:
-                replicas:
-                  type: integer
+              type: boolean
+            replicas:
+              type: integer
+            uid:
+              type: string
     CreateGameRequestModel:
       type: object
       required: [clientId]

@@ -11,6 +11,11 @@ spec:
         - name: default
           portPolicy: Dynamic  # Agones assigns a free port
           containerPort: 7654  # Netty server port
+          protocol: UDP
+      health:
+        initialDelaySeconds: 60
+        periodSeconds: 15
+        failureThreshold: 3
       sdkServer:
         logLevel: Info
       template:

@@ -18,21 +18,21 @@ spec:
               service:
                 name: matchmaker-service
                 port:
-                  number: 80
+                  number: 8080
           - path: /join-game
             pathType: Prefix
             backend:
               service:
                 name: matchmaker-service
                 port:
-                  number: 80
+                  number: 8080
           - path: /leave-game
             pathType: Prefix
             backend:
               service:
                 name: matchmaker-service
                 port:
-                  number: 80
+                  number: 8080
 #  tls:
 #    - hosts:
 #        - spydle.dev

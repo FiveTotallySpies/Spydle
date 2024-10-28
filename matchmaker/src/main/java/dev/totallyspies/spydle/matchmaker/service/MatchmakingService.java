@@ -3,7 +3,6 @@ package dev.totallyspies.spydle.matchmaker.service;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponse;
-import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponseScale;
 import io.kubernetes.client.openapi.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +77,10 @@ public class MatchmakingService {
         int desiredReplicas = allocatedReplicas + desiredIdleReplicas;
         logger.debug("Calculated desired replicas for autoscale target: {}", desiredReplicas);
 
-        AutoscaleResponseModelResponseScale scale = new AutoscaleResponseModelResponseScale().replicas(desiredReplicas);
-        AutoscaleResponseModelResponse response = new AutoscaleResponseModelResponse().scale(scale);
+        AutoscaleResponseModelResponse response = new AutoscaleResponseModelResponse()
+                .replicas(desiredReplicas)
+                .uid(request.getRequest().getUid())
+                .scale(true);
         return new AutoscaleResponseModel().response(response);
     }
 
