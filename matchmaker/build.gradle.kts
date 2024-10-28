@@ -2,7 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
-	id("org.openapi.generator") version "7.0.0"
+	id("org.openapi.generator") version "7.8.0"
 }
 
 group = "dev.totallyspies.spydle"
@@ -39,7 +39,18 @@ dependencies {
 	implementation("io.grpc:grpc-stub:1.64.0")
 	implementation("io.grpc:grpc-protobuf:1.64.0")
 	implementation("org.apache.tomcat:annotations-api:6.0.53")
+	// OpenAPI
 }
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.openapitools:openapi-generator-gradle-plugin:7.8.0")
+	}
+}
+
 
 openApiGenerate {
 	generatorName.set("java")
@@ -65,6 +76,7 @@ tasks.withType<Test> {
 tasks.named("compileJava") {
 	dependsOn("openApiGenerate")
 }
+
 tasks.bootJar {
 	archiveFileName.set("matchmaker.jar")
 }
