@@ -1,4 +1,7 @@
 apiVersion: "agones.dev/v1"
 kind: Fleet
+metadata:
+  name: spydle-fleet
+  namespace: spydle
 spec:
   replicas: 1  # Initial idle GameServers

@@ -1,4 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
 resources:
 - ../../base
-- matchmaker/matchmaker-deployment.yaml
-- gameserver/gameserver-fleet.yaml
+patches:
+- path: matchmaker/matchmaker-deployment.yaml
+- path: gameserver/gameserver-fleet.yaml
