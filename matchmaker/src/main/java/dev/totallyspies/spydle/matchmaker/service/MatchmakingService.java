@@ -1,5 +1,9 @@
 package dev.totallyspies.spydle.matchmaker.service;
 
+import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModel;
+import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModel;
+import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponse;
+import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponseScale;
 import dev.totallyspies.spydle.matchmaker.k8s.crd.GameServerAllocation;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
@@ -30,7 +34,7 @@ public class MatchmakingService {
 
     private Map<String, Object> allocation;
 
-    public MatchmakingService(@Value("classpath:allocation.yml") Resource allocationResource) throws Exception {
+    public MatchmakingService(@Value("classpath:allocation.yaml") Resource allocationResource) throws Exception {
         ApiClient client = Config.defaultClient();
         io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
         apiInstance = new CustomObjectsApi(client);
@@ -111,21 +115,17 @@ public class MatchmakingService {
         // TODO: Implement logic to notify the GameServer that the client is leaving
     }
 
-    public Map<String, Object> autoscale(Map<String, Object> request) {
-        System.out.println(prettyPrint(request));
-        Map<String, Object> status = (Map<String, Object>) request.get("status");
-        int allocatedReplicas = (int) status.get("allocatedReplicas");
+    public AutoscaleResponseModel autoscale(AutoscaleRequestModel request) {
+        int allocatedReplicas = request.getRequest().getStatus().getAllocatedReplicas();
 
         // TODO Load custom scaling logic from config
         int desiredIdleReplicas = Math.max(4, (int) (allocatedReplicas * 0.2));
         int desiredReplicas = allocatedReplicas + desiredIdleReplicas;
 
-        Map<String, Object> response = new HashMap<>();
-        Map<String, Integer> scale = new HashMap<>();
-        scale.put("replicas", desiredReplicas);
-        response.put("scale", scale);
 
-        return response;
+        AutoscaleResponseModelResponseScale scale = new AutoscaleResponseModelResponseScale().replicas(desiredReplicas);
+        AutoscaleResponseModelResponse response = new AutoscaleResponseModelResponse().scale(scale);
+        return new AutoscaleResponseModel().response(response);
     }
 
     private static String prettyPrint(Map<String, Object> yaml) {
