@@ -1,6 +1,11 @@
 package dev.totallyspies.spydle.gameserver.service;
 
+import agones.dev.sdk.Sdk;
+import agones.dev.sdk.beta.SDKGrpc;
+import allocation.Allocation;
+import allocation.AllocationServiceGrpc;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
 import net.infumia.agones4j.Agones;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -50,7 +55,6 @@ public class AgonesHook {
                     // This will be called when the game server is updated.
                     System.out.println("Game server updated: " + gameServer));
         }
-        agones.allocate();
         return agones;
     }
 
