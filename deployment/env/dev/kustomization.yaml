@@ -1,0 +1,4 @@
+resources:
+- ../../base
+- matchmaker/matchmaker-deployment.yaml
+- gameserver/gameserver-fleet.yaml

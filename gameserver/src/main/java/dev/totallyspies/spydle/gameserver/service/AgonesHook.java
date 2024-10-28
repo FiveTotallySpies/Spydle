@@ -50,6 +50,7 @@ public class AgonesHook {
                     // This will be called when the game server is updated.
                     System.out.println("Game server updated: " + gameServer));
         }
+        agones.allocate();
         return agones;
     }
 
