@@ -1,0 +1,4 @@
+apiVersion: "agones.dev/v1"
+kind: Fleet
+spec:
+  replicas: 1  # Initial idle GameServers
