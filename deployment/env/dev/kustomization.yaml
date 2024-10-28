@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
 - ../../base
 patches:
+- path: matchmaker/matchmaker-hpa.yaml
 - path: matchmaker/matchmaker-deployment.yaml
 - path: gameserver/gameserver-fleet.yaml

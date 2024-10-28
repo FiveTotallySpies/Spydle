@@ -5,3 +5,10 @@ metadata:
   namespace: spydle
 spec:
   replicas: 1  # Scalable via HPA
+  template:
+    spec:
+      containers:
+        - name: matchmaker
+          env:
+            - name: ENV
+              value: "dev"

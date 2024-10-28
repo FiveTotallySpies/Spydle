@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: spydle-access
+  name: gameserver-access
   namespace: spydle
 spec:
   podSelector:

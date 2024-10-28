@@ -11,6 +11,8 @@ import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.ModelMapper;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -18,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,6 +27,8 @@ import java.util.Map;
  */
 @Service
 public class MatchmakingService {
+
+    private final Logger logger = LoggerFactory.getLogger(MatchmakingService.class);
 
     @Autowired
     private SessionRepository sessionRepository;
@@ -36,13 +39,16 @@ public class MatchmakingService {
 
     public MatchmakingService(@Value("classpath:allocation.yaml") Resource allocationResource) throws Exception {
         ApiClient client = Config.defaultClient();
+        logger.debug("Loaded K8s ApiClient with path {}", client.getBasePath());
         io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
         apiInstance = new CustomObjectsApi(client);
 
         ModelMapper.addModelMap("allocation.agones.dev", "v1", "GameServerAllocation", "GameServerAllocations", false, GameServerAllocation.class);
+        logger.debug("Registered K8s CRD Model GameServerAllocation");
         String allocationContent = IOUtils.toString(allocationResource.getInputStream(), Charset.defaultCharset());
 //        allocation = (Map<String, Object>) Yaml.load(allocationContent);
         allocation = new Yaml().load(allocationContent);
+        logger.debug("Loaded allocation resource {}", allocationResource.getFilename());
     }
 
     public GameServerInfo createGame(String clientId) throws ApiException {
@@ -119,9 +125,9 @@ public class MatchmakingService {
         int allocatedReplicas = request.getRequest().getStatus().getAllocatedReplicas();
 
         // TODO Load custom scaling logic from config
-        int desiredIdleReplicas = Math.max(4, (int) (allocatedReplicas * 0.2));
+        int desiredIdleReplicas = Math.max(4, (int) (allocatedReplicas * 0.5));
         int desiredReplicas = allocatedReplicas + desiredIdleReplicas;
-
+        logger.debug("Calculated desired replicas for autoscale target: {}", desiredReplicas);
 
         AutoscaleResponseModelResponseScale scale = new AutoscaleResponseModelResponseScale().replicas(desiredReplicas);
         AutoscaleResponseModelResponse response = new AutoscaleResponseModelResponse().scale(scale);

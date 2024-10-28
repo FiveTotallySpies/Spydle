@@ -13,4 +13,5 @@ resources:
 - gameserver/gameserver-fleet.yaml
 - gameserver/fleet-autoscaler.yaml
 - gameserver/gameserver-networkpolicy.yaml
+- ingress/nginx-chart.yaml
 - ingress/ingress.yaml
