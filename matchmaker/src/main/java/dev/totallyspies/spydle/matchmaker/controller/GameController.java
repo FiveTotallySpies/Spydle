@@ -1,5 +1,7 @@
 package dev.totallyspies.spydle.matchmaker.controller;
 
+import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameRequestModel;
+import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameResponseModel;
 import dev.totallyspies.spydle.matchmaker.service.GameServerInfo;
 import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
 import org.slf4j.Logger;
@@ -7,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,12 +28,13 @@ public class GameController {
     private MatchmakingService matchmakingService;
 
     @PostMapping("/create-game")
-    public ResponseEntity<?> createGame(@RequestParam String clientId) {
+    public ResponseEntity<?> createGame(@RequestBody CreateGameRequestModel request) {
+        String clientId = request.getClientId();
         logger.info("Received request: /create-game, clientId: {}", clientId);
         try {
             GameServerInfo gameServerInfo = matchmakingService.createGame(clientId);
             logger.info("Successfully handled /create-game request: {}", gameServerInfo);
-            return ResponseEntity.ok(gameServerInfo);
+            return ResponseEntity.ok(new CreateGameResponseModel().gameServer(gameServerInfo.toModel()));
         } catch (Exception exception) {
             logger.error("Failed to handle /create-game", exception);
             return ResponseEntity.badRequest().body(exception.getMessage());
