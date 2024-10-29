@@ -1,17 +1,10 @@
 package dev.totallyspies.spydle.gameserver.service;
 
-import agones.dev.sdk.Sdk;
-import agones.dev.sdk.beta.SDKGrpc;
-import allocation.Allocation;
-import allocation.AllocationServiceGrpc;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.stub.StreamObserver;
 import net.infumia.agones4j.Agones;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,8 +17,6 @@ public class AgonesHook {
 
     @Bean
     public Agones agones() {
-        // TODO I have no clue any of this works
-        // TODO add game lifecycle classes
         final ExecutorService gameServerWatcherExecutor =
                 Executors.newSingleThreadExecutor();
         final ScheduledExecutorService healthCheckExecutor =
@@ -48,20 +39,14 @@ public class AgonesHook {
         } else {
             throw new IllegalStateException("Failed to begin agones health checking");
         }
-        agones.stopHealthChecking();
         if (agones.canWatchGameServer()) {
             agones.addGameServerWatcher(gameServer ->
                     // TODO Use a real logger
                     // This will be called when the game server is updated.
                     System.out.println("Game server updated: " + gameServer));
         }
+        agones.ready();
         return agones;
-    }
-
-    @PreDestroy
-    public void onExit() {
-        // TODO this should be somewhere else
-        agones.shutdown();
     }
 
 }

@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GameController {
 
+    // TODO use statuses
+
     private final Logger logger = LoggerFactory.getLogger(GameController.class);
 
     @Autowired

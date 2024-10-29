@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 /**
  * Responsible for handling logic for all of our service endpoints
  */
@@ -41,6 +39,7 @@ public class MatchmakingService {
     public GameServerInfo joinGame(String clientId, String gameServerName) {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) {
+            // TODO return existing info
             throw new IllegalStateException("Client is already in a game.");
         }
 
@@ -84,19 +83,4 @@ public class MatchmakingService {
         return new AutoscaleResponseModel().response(response);
     }
 
-    private static String prettyPrint(Map<String, Object> yaml) {
-        StringBuilder builder = new StringBuilder("{");
-        for (String key : yaml.keySet()) {
-            Object val = yaml.get(key);
-            builder.append(key).append(":");
-            if (val instanceof Map) {
-                builder.append(prettyPrint((Map<String, Object>) val));
-            } else {
-                builder.append(val);
-            }
-            builder.append(",");
-        }
-        builder.deleteCharAt(builder.length() - 1);
-        return builder.append("}").toString();
-    }
 }
