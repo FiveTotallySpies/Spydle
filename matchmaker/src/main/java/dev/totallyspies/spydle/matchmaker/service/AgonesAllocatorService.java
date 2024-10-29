@@ -27,39 +27,42 @@ public class AgonesAllocatorService {
 
     private Allocation.AllocationRequest request;
 
-//    @Autowired
-//    private ApiClient k8sClient;
-
     public AgonesAllocatorService(
             @Value("${agones.allocator.port}") int port,
             @Value("${agones.allocator.namespace}") String namespace,
             @Value("${agones.allocator.service-name}") String serviceName,
-            @Value("${agones.target-game}") String game
+            @Value("${agones.gameserver.fleet}") String gameFleet,
+            @Value("${agones.gameserver.namespace}") String gameNamespace
     ) throws ApiException {
         // Load clusterIP for agones allocator service
         CoreV1Api api = new CoreV1Api();
         V1Service service = api.readNamespacedService(serviceName, namespace).execute();
         String allocatorClusterIP = service.getSpec().getClusterIP();
-        logger.info("For agones allocator service {} in namespace {}, found target {}:{} for game {}",
+        logger.info("For agones allocator service {} in namespace {}, found target {}:{} for game fleet {} in namespace {}",
                 serviceName,
                 namespace,
                 allocatorClusterIP,
                 port,
-                game);
+                gameFleet,
+                gameNamespace);
 
         // Create GRPC stub
         allocationService = AllocationServiceGrpc.newStub(ManagedChannelBuilder
                 .forAddress(allocatorClusterIP, port)
-//                .usePlaintext()
+                .usePlaintext()
+                .enableRetry()
+                .maxInboundMessageSize(Integer.MAX_VALUE)
+                .keepAliveTime(10, TimeUnit.SECONDS)
                 .build());
         logger.info("Created allocation service GRPC stub");
 
         // Create base allocation request
         request = Allocation.AllocationRequest.newBuilder()
+                .setNamespace(gameNamespace)
                 .addGameServerSelectors(
                         Allocation.GameServerSelector.newBuilder()
-                                .putMatchLabels("game", game)
                                 .setGameServerState(Allocation.GameServerSelector.GameServerState.READY)
+                                .putMatchLabels("agones.dev/fleet", gameFleet)
                                 .build()
                 )
                 .setScheduling(Allocation.AllocationRequest.SchedulingStrategy.Distributed)
