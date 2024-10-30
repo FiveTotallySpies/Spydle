@@ -28,10 +28,13 @@ repositories {
 dependencies {
 	// SpringBoot
 	implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-tomcat")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
+	// Redis
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("redis.clients:jedis:5.1.2")
+	implementation("org.springframework.data:spring-data-redis")
 	// Kubernetes
 	implementation("io.kubernetes:client-java:21.0.2")
 	// Lombok

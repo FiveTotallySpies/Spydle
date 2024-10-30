@@ -27,8 +27,11 @@ repositories {
 dependencies {
 	// SpringBoot
 	implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	// Redis
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("redis.clients:jedis:5.1.2")
+	implementation("org.springframework.data:spring-data-redis")
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
