@@ -1,9 +1,8 @@
 package dev.totallyspies.spydle.matchmaker.controller;
 
 import dev.totallyspies.spydle.matchmaker.generated.model.*;
-import dev.totallyspies.spydle.matchmaker.service.GameServerInfo;
 import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
-import dev.totallyspies.spydle.matchmaker.service.SessionRepository;
+import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,6 @@ import java.util.UUID;
 @RestController
 public class GameController {
 
-    // TODO use statuses
-
     private final Logger logger = LoggerFactory.getLogger(GameController.class);
 
     @Autowired
@@ -42,9 +39,9 @@ public class GameController {
             return ResponseEntity.status(400).body("Bad clientId: should be UUID");
         }
         try {
-            GameServerInfo gameServerInfo = matchmakingService.createGame(clientId);
-            logger.info("Successfully handled /create-game request: {}", gameServerInfo);
-            return ResponseEntity.ok(new CreateGameResponseModel().gameServer(gameServerInfo.toModel()));
+            GameServerModel gameServer = matchmakingService.createGame(clientId);
+            logger.info("Successfully handled /create-game request: {}", gameServer);
+            return ResponseEntity.ok(new CreateGameResponseModel().gameServer(gameServer));
         } catch (Exception exception) {
             logger.error("Failed to handle /create-game", exception);
             return ResponseEntity.status(500).body(exception.getMessage());
@@ -60,9 +57,9 @@ public class GameController {
             return ResponseEntity.status(400).body("Bad clientId: should be UUID");
         }
         try {
-            GameServerInfo gameServerInfo = matchmakingService.joinGame(clientId, request.getGameServerName());
-            logger.info("Successfully handled /join-game request: {}", gameServerInfo);
-            return ResponseEntity.ok(new JoinGameResponseModel().gameServer(gameServerInfo.toModel()));
+            GameServerModel gameServer = matchmakingService.joinGame(clientId, request.getGameServerName());
+            logger.info("Successfully handled /join-game request: {}", gameServer);
+            return ResponseEntity.ok(new JoinGameResponseModel().gameServer(gameServer));
         } catch (Exception exception) {
             logger.error("Failed to handle /join-game", exception);
             return ResponseEntity.status(500).body(exception.getMessage());
@@ -86,4 +83,5 @@ public class GameController {
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }
+
 }

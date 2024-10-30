@@ -29,23 +29,23 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	// K8s
 	implementation("io.kubernetes:client-java:21.0.2")
-	implementation("io.grpc:grpc-stub:1.64.0")
-	implementation("io.grpc:grpc-protobuf:1.64.0")
-	implementation("org.apache.tomcat:annotations-api:6.0.53")
-	// Jank Agones SDK
+	// Agones GRPC wrapper
 	implementation("net.infumia:agones4j:2.0.2")
+	// GRPC and Protobuf for Agones
 	implementation("io.grpc:grpc-stub:1.64.0")
 	implementation("io.grpc:grpc-protobuf:1.64.0")
 	implementation("io.grpc:grpc-okhttp:1.68.0")
 	implementation("org.apache.tomcat:annotations-api:6.0.53")
 	implementation("com.google.protobuf:protobuf-java:4.28.3")
+
+	// Testing
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 buildscript {
