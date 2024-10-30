@@ -25,7 +25,8 @@ public class RedisRepositoryService {
     public boolean hasClientSession(UUID clientId) {
         Object rawSession = redisTemplate.opsForValue().get(SESSION_PREFIX + clientId);
         if (!(rawSession instanceof ClientSession session)) return false;
-        return agonesHook.getGameServerName().equals(session.getGameServerName());
+        String gameServerName = agonesHook.getCurrentGameServer().getGameServerName();
+        return gameServerName.equals(session.getGameServerName());
     }
 
     public void removeClientSession(UUID clientId) {
@@ -37,7 +38,8 @@ public class RedisRepositoryService {
     }
 
     public GameServerModel getGameServer() {
-        return (GameServerModel) redisTemplate.opsForValue().get(GAMESERVER_PREFIX + agonesHook.getGameServerName());
+        String gameServerName = agonesHook.getCurrentGameServer().getGameServerName();
+        return (GameServerModel) redisTemplate.opsForValue().get(GAMESERVER_PREFIX + gameServerName);
     }
 
     @Nullable

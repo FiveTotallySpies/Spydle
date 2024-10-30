@@ -3,19 +3,16 @@ package dev.totallyspies.spydle.gameserver.service;
 import agones.dev.sdk.Sdk;
 import dev.totallyspies.spydle.gameserver.generated.model.GameServerModel;
 import dev.totallyspies.spydle.gameserver.generated.model.GameServerStateModel;
-import dev.totallyspies.spydle.gameserver.redis.RedisRepositoryService;
 import io.grpc.ManagedChannelBuilder;
+import java.util.concurrent.ExecutionException;
 import lombok.Getter;
 import net.infumia.agones4j.Agones;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,21 +22,17 @@ public class AgonesHook {
 
     private final Logger logger = LoggerFactory.getLogger(AgonesHook.class);
 
+    @Getter
     private Agones agones;
 
-    @Value("${agones.host}")
-    private String agonesHost;
-    @Value("${agones.port}")
-    private int agonesPort;
-
     @Getter
-    private String gameServerName;
+    private GameServerModel currentGameServer;
 
-    @Autowired
-    private RedisRepositoryService redisRepositoryService;
-
-    @Bean
-    public Agones agones() throws ExecutionException, InterruptedException {
+    public AgonesHook(
+            @Value("${agones.host}") String agonesHost,
+            @Value("${agones.port}") int agonesPort
+    ) throws ExecutionException, InterruptedException {
+        // Construct agones SDK wrapper on GRPC
         final ExecutorService gameServerWatcherExecutor =
                 Executors.newSingleThreadExecutor();
         final ScheduledExecutorService healthCheckExecutor =
@@ -74,17 +67,15 @@ public class AgonesHook {
         Sdk.GameServer sdkGameServer = agones.getGameServerFuture().get(); // Blocking
 
         // Cache our info in redis
-        GameServerModel gameServerModel = new GameServerModel()
+        currentGameServer = new GameServerModel()
                 .address(sdkGameServer.getStatus().getAddress())
                 .port(sdkGameServer.getStatus().getPorts(0).getPort())
                 .gameServerName(sdkGameServer.getObjectMeta().getName())
                 .publicRoom(false) // TODO
                 .state(GameServerStateModel.WAITING);
-        redisRepositoryService.saveGameServer(gameServerModel);
 
-        gameServerName = agones.getGameServerFuture().get().getObjectMeta().getName();
+        // Mark us as ready
         agones.ready();
-        return agones;
     }
 
 }
