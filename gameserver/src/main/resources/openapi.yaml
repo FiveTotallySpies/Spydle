@@ -1,0 +1,27 @@
+openapi: 3.0.0
+info:
+  title: Matchmaker REST API
+  version: 0.0.1
+paths: {}
+components:
+  schemas:
+    GameServerModel:
+      type: object
+      required: [ address, port, gameServerName, roomId, publicRoom, state ]
+      x-implements: "java.io.Serializable"
+      properties:
+        address:
+          type: string
+        port:
+          type: integer
+        gameServerName:
+          type: string
+        roomId:
+          type: string
+        publicRoom:
+          type: boolean
+        state:
+          $ref: '#/components/schemas/GameServerStateModel'
+    GameServerStateModel:
+      type: string
+      enum: [ "WAITING", "PLAYING", "FINISHING" ]
