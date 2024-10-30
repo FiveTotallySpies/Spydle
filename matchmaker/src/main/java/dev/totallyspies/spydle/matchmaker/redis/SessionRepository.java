@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.matchmaker.service;
+package dev.totallyspies.spydle.matchmaker.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

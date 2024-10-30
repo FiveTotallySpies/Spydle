@@ -126,7 +126,7 @@ components:
       required: [gameServer]
       properties:
         gameServer:
-          $ref: '#/components/schemas/GameServerInfoModel'
+          $ref: '#/components/schemas/GameServerModel'
     JoinGameRequestModel:
       type: object
       required: [clientId]
@@ -140,7 +140,7 @@ components:
       required: [gameServer]
       properties:
         gameServer:
-          $ref: '#/components/schemas/GameServerInfoModel'
+          $ref: '#/components/schemas/GameServerModel'
     LeaveGameRequestModel:
       type: object
       required: [clientId]
@@ -153,9 +153,10 @@ components:
       properties:
         success:
           type: boolean
-    GameServerInfoModel:
+    GameServerModel:
       type: object
-      required: [address, port, gameServerName]
+      required: [address, port, gameServerName, roomId, publicRoom, state]
+      x-implements: "java.io.Serializable"
       properties:
         address:
           type: string
@@ -163,3 +164,12 @@ components:
           type: integer
         gameServerName:
           type: string
+        roomId:
+          type: string
+        publicRoom:
+          type: boolean
+        state:
+          $ref: '#/components/schemas/GameServerStateModel'
+    GameServerStateModel:
+      type: string
+      enum: ["WAITING", "PLAYING", "FINISHING"]
