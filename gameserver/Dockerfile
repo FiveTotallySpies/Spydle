@@ -12,7 +12,5 @@ COPY --from=build /app/entry.sh /app/
 EXPOSE 8080
 # Netty
 EXPOSE 7654
-# Redis
-EXPOSE 6379
 
 ENTRYPOINT ["sh", "entry.sh"]
