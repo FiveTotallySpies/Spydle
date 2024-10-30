@@ -6,6 +6,7 @@ import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModel
 import dev.totallyspies.spydle.matchmaker.generated.model.GameServerModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.GameServerStateModel;
 import dev.totallyspies.spydle.matchmaker.redis.ClientSession;
+import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
 import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,9 @@ public class MatchmakingService {
     private SessionRepository sessionRepository;
 
     @Autowired
+    private GameServerRepository gameServerRepository;
+
+    @Autowired
     private AgonesAllocatorService allocator;
 
     public GameServerModel createGame(UUID clientId) {
@@ -42,6 +46,8 @@ public class MatchmakingService {
     }
 
     public GameServerModel joinGame(UUID clientId, String gameServerName) {
+        // TODO should take in room ID not gameServerName
+
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) {
             // TODO return existing info
@@ -52,14 +58,9 @@ public class MatchmakingService {
         ClientSession session = new ClientSession(clientId, gameServerName);
         sessionRepository.saveSession(session);
 
-        // TODO retrive from redis
-        return new GameServerModel()
-                .address("game-server-address")
-                .port(12345)
-                .gameServerName(gameServerName)
-                .roomId("asdf")
-                .publicRoom(false)
-                .state(GameServerStateModel.WAITING);
+        GameServerModel model = gameServerRepository.getGameServer(gameServerName);
+        assert model != null;
+        return model;
     }
 
     public void leaveGame(UUID clientId) {
