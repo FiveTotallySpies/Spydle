@@ -5,28 +5,73 @@ option java_outer_classname = "GameMessages";
 
 message ServerBoundMessage {
   oneof payload {
-    ServerBoundPlayerJoin player_join = 1;
-    ServerBoundPlayerGuessWord guess_word = 2;
+    ServerBoundJoinGame join_game = 1;
+    ServerBoundStartGame start_game = 2;
+    ServerBoundLeaveGame leave_game = 3;
+    ServerBoundPlayerGuess player_guess = 4;
   }
 }
 
-message ClientBoundMessage {
-  oneof payload {
-    ClientBoundRevealWord reveal_word = 1;
-  }
-}
-
-message ServerBoundPlayerJoin {
+// ServerBound messages
+message ServerBoundJoinGame {
   string player_id = 1;
   string player_name = 2;
 }
 
-message ServerBoundPlayerGuessWord {
+message ServerBoundStartGame {
   string player_id = 1;
-  string guessed_word = 2;
 }
 
-message ClientBoundRevealWord {
-  string word = 1;
-  string definition = 2;
+message ServerBoundLeaveGame {
+  string player_id = 1;
+}
+
+message ServerBoundPlayerGuess {
+  string player_id = 1;
+  string guessed_string = 2;
+}
+
+// ClientBound messages
+message ClientBoundMessage {
+  oneof payload {
+    ClientBoundGameStart game_start = 1;
+    ClientBoundGameEnd game_end = 2;
+    ClientBoundUpdatePlayerList update_player_list = 3;
+    ClientBoundTimerTick timer_tick = 4;
+    ClientBoundGuessCorrect guess_correct = 5;
+    ClientBoundNewTurn new_turn = 6;
+  }
+}
+
+message ClientBoundGameStart {
+  repeated Player players = 1;
+  int32 total_game_time = 2;
+}
+
+message ClientBoundGameEnd {
+  string winner = 1;
+}
+
+message ClientBoundUpdatePlayerList {
+  repeated Player players = 1;
+}
+
+message ClientBoundTimerTick {
+  int32 time_left = 1;
+}
+
+message ClientBoundGuessCorrect {
+  bool is_correct = 1;
+}
+
+message ClientBoundNewTurn {
+  string assigned_string = 1;
+  string current_player_name = 2;
+}
+
+// Player information for tracking in the game
+message Player {
+  string player_id = 1;
+  string player_name = 2;
+  int32 score = 3;
 }
