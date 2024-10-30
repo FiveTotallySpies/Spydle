@@ -3,6 +3,10 @@ package dev.totallyspies.spydle.matchmaker.service;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponse;
+import dev.totallyspies.spydle.matchmaker.generated.model.GameServerModel;
+import dev.totallyspies.spydle.matchmaker.generated.model.GameServerStateModel;
+import dev.totallyspies.spydle.matchmaker.redis.ClientSession;
+import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +28,11 @@ public class MatchmakingService {
     @Autowired
     private AgonesAllocatorService allocator;
 
-    public GameServerInfo createGame(UUID clientId) {
+    public GameServerModel createGame(UUID clientId) {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) throw new IllegalStateException("Client is already in a game.");
 
-        GameServerInfo allocated = allocator.awaitAllocation();
+        GameServerModel allocated = allocator.awaitAllocation();
 
         // Save client session
         ClientSession session = new ClientSession(clientId, allocated.getGameServerName());
@@ -37,28 +41,25 @@ public class MatchmakingService {
         return allocated;
     }
 
-    public GameServerInfo joinGame(UUID clientId, String gameServerName) {
+    public GameServerModel joinGame(UUID clientId, String gameServerName) {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) {
             // TODO return existing info
             throw new IllegalStateException("Client is already in a game.");
         }
 
-        // TODO: Validate that the gameServerName is valid and has capacity
-
         // Save client session
         ClientSession session = new ClientSession(clientId, gameServerName);
         sessionRepository.saveSession(session);
 
-        // TODO: Get NodePort address for gameservers and grab port from redis
-
-        // Retrieve GameServer info (This assumes you have a way to get the address and port)
-        // For demonstration purposes, we'll mock this data
-        return GameServerInfo.builder()
+        // TODO retrive from redis
+        return new GameServerModel()
                 .address("game-server-address")
                 .port(12345)
                 .gameServerName(gameServerName)
-                .build();
+                .roomId("asdf")
+                .publicRoom(false)
+                .state(GameServerStateModel.WAITING);
     }
 
     public void leaveGame(UUID clientId) {

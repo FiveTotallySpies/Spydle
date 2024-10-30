@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.matchmaker.config;
+package dev.totallyspies.spydle.gameserver.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

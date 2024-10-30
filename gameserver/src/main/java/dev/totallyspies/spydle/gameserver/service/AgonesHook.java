@@ -1,10 +1,15 @@
 package dev.totallyspies.spydle.gameserver.service;
 
+import agones.dev.sdk.Sdk;
+import dev.totallyspies.spydle.gameserver.generated.model.GameServerModel;
+import dev.totallyspies.spydle.gameserver.generated.model.GameServerStateModel;
+import dev.totallyspies.spydle.gameserver.redis.RedisRepositoryService;
 import io.grpc.ManagedChannelBuilder;
 import lombok.Getter;
 import net.infumia.agones4j.Agones;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -29,6 +34,9 @@ public class AgonesHook {
 
     @Getter
     private String gameServerName;
+
+    @Autowired
+    private RedisRepositoryService redisRepositoryService;
 
     @Bean
     public Agones agones() throws ExecutionException, InterruptedException {
@@ -63,6 +71,17 @@ public class AgonesHook {
         } else {
             logger.warn("Failed to add game server watcher: Not allowed");
         }
+        Sdk.GameServer sdkGameServer = agones.getGameServerFuture().get(); // Blocking
+
+        // Cache our info in redis
+        GameServerModel gameServerModel = new GameServerModel()
+                .address(sdkGameServer.getStatus().getAddress())
+                .port(sdkGameServer.getStatus().getPorts(0).getPort())
+                .gameServerName(sdkGameServer.getObjectMeta().getName())
+                .publicRoom(false) // TODO
+                .state(GameServerStateModel.WAITING);
+        redisRepositoryService.saveGameServer(gameServerModel);
+
         gameServerName = agones.getGameServerFuture().get().getObjectMeta().getName();
         agones.ready();
         return agones;
