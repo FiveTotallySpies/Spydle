@@ -108,6 +108,7 @@ public class AgonesAllocatorService {
         String gameServerName = response.getGameServerName();
 
         if (!gameServerRepository.gameServerExists(gameServerName)) {
+            // TODO un-allocate/destroy instance?
             throw new RuntimeException("Game server does not exist in repository: " + gameServerName);
         }
         GameServerModel gameServer = gameServerRepository.getGameServer(gameServerName);
