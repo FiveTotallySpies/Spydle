@@ -37,6 +37,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateGameResponseModel'
+  /join-game:
+    post:
+      operationId: joinGame
+      summary: Join an existing allocated gameserver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinGameRequestModel'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinGameResponseModel'
+  /leave-game:
+    post:
+      operationId: leaveGame
+      summary: Leave a game you are currently connected to
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaveGameRequestModel'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveGameResponseModel'
 components:
   schemas:
     AutoscaleRequestModel:
@@ -93,6 +127,32 @@ components:
       properties:
         gameServer:
           $ref: '#/components/schemas/GameServerInfoModel'
+    JoinGameRequestModel:
+      type: object
+      required: [clientId]
+      properties:
+        clientId:
+          type: string
+        gameServerName:
+          type: string
+    JoinGameResponseModel:
+      type: object
+      required: [gameServer]
+      properties:
+        gameServer:
+          $ref: '#/components/schemas/GameServerInfoModel'
+    LeaveGameRequestModel:
+      type: object
+      required: [clientId]
+      properties:
+        clientId:
+          type: string
+    LeaveGameResponseModel:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
     GameServerInfoModel:
       type: object
       required: [address, port, gameServerName]

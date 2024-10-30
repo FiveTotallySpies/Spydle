@@ -3,11 +3,12 @@ package dev.totallyspies.spydle.matchmaker.service;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponse;
-import io.kubernetes.client.openapi.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
  * Responsible for handling logic for all of our service endpoints
@@ -23,7 +24,7 @@ public class MatchmakingService {
     @Autowired
     private AgonesAllocatorService allocator;
 
-    public GameServerInfo createGame(String clientId) throws ApiException {
+    public GameServerInfo createGame(UUID clientId) {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) throw new IllegalStateException("Client is already in a game.");
 
@@ -36,7 +37,7 @@ public class MatchmakingService {
         return allocated;
     }
 
-    public GameServerInfo joinGame(String clientId, String gameServerName) {
+    public GameServerInfo joinGame(UUID clientId, String gameServerName) {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) {
             // TODO return existing info
@@ -60,7 +61,7 @@ public class MatchmakingService {
                 .build();
     }
 
-    public void leaveGame(String clientId) {
+    public void leaveGame(UUID clientId) {
         // Delete client session
         sessionRepository.deleteSession(clientId);
 
