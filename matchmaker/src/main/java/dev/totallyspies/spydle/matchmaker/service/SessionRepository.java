@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Nullable;
+import java.util.UUID;
+
 @Repository
 public class SessionRepository {
 
@@ -16,15 +19,26 @@ public class SessionRepository {
         redisTemplate.opsForValue().set(PREFIX + session.getClientId(), session);
     }
 
-    public ClientSession getSession(String clientId) {
+    public ClientSession getSession(UUID clientId) {
         return (ClientSession) redisTemplate.opsForValue().get(PREFIX + clientId);
     }
 
-    public void deleteSession(String clientId) {
+    public void deleteSession(UUID clientId) {
         redisTemplate.delete(PREFIX + clientId);
     }
 
-    public boolean sessionExists(String clientId) {
+    public boolean sessionExists(UUID clientId) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(PREFIX + clientId));
     }
+
+    @Nullable
+    public UUID parseClientId(Object clientIdObject) {
+        if (clientIdObject == null) return null;
+        try {
+            return UUID.fromString(clientIdObject.toString());
+        } catch (IllegalArgumentException exception) {
+            return null;
+        }
+    }
+
 }
