@@ -15,4 +15,5 @@ public class HealthController {
     public String readiness() {
         return "OK";
     }
+
 }

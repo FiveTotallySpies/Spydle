@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option java_package = "dev.totallyspies.spydle.gameserver.proto";
+option java_outer_classname = "GameMessages";
+
+message ServerBoundMessage {
+  oneof payload {
+    ServerBoundPlayerJoin player_join = 1;
+    ServerBoundPlayerGuessWord guess_word = 2;
+  }
+}
+
+message ClientBoundMessage {
+  oneof payload {
+    ClientBoundRevealWord reveal_word = 1;
+  }
+}
+
+message ServerBoundPlayerJoin {
+  string player_id = 1;
+  string player_name = 2;
+}
+
+message ServerBoundPlayerGuessWord {
+  string player_id = 1;
+  string guessed_word = 2;
+}
+
+message ClientBoundRevealWord {
+  string word = 1;
+  string definition = 2;
+}
