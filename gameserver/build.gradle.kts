@@ -3,6 +3,7 @@ plugins {
 	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
 	id("com.google.protobuf") version "0.9.4"
+	id("org.openapi.generator") version "7.8.0"
 }
 
 group = "dev.totallyspies.spydle"
@@ -26,12 +27,16 @@ repositories {
 
 dependencies {
 	// SpringBoot
-	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-tomcat")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
+	// Redis
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("redis.clients:jedis:5.1.2")
+	implementation("org.springframework.data:spring-data-redis")
+	// Kubernetes
+	implementation("io.kubernetes:client-java:21.0.2")
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
@@ -43,7 +48,12 @@ dependencies {
 	implementation("io.grpc:grpc-okhttp:1.68.0")
 	implementation("org.apache.tomcat:annotations-api:6.0.53")
 	implementation("com.google.protobuf:protobuf-java:4.28.3")
+
+	// Testing
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
+
 
 protobuf {
 	protoc {
@@ -51,10 +61,29 @@ protobuf {
 	}
 }
 
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.openapitools:openapi-generator-gradle-plugin:7.8.0")
+	}
+}
+
+openApiGenerate {
+	generatorName.set("java")
+	inputSpec.set("$rootDir/src/main/resources/openapi.yaml")
+	outputDir.set("${layout.buildDirectory.get()}/generated")
+	modelPackage.set("dev.totallyspies.spydle.gameserver.generated.model")
+	apiPackage.set("dev.totallyspies.spydle.gameserver.generated.api")
+	invokerPackage.set("dev.totallyspies.spydle.gameserver.generated.invoker")
+}
+
 sourceSets {
 	main {
 		java {
 			srcDir("${layout.buildDirectory.get()}/generated/source/proto/main/java")
+			srcDir("${layout.buildDirectory.get()}/generated/src/main/java")
 		}
 	}
 }
@@ -64,6 +93,7 @@ tasks.withType<Test> {
 }
 
 tasks.named("compileJava") {
+	dependsOn("openApiGenerate")
 	dependsOn("generateProto")
 }
 

@@ -2,6 +2,8 @@ package dev.totallyspies.spydle.matchmaker.service;
 
 import allocation.Allocation;
 import allocation.AllocationServiceGrpc;
+import dev.totallyspies.spydle.matchmaker.generated.model.GameServerModel;
+import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import io.kubernetes.client.openapi.ApiException;
@@ -9,6 +11,7 @@ import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,9 @@ public class AgonesAllocatorService {
     private AllocationServiceGrpc.AllocationServiceStub allocationService;
 
     private Allocation.AllocationRequest request;
+
+    @Autowired
+    private GameServerRepository gameServerRepository;
 
     public AgonesAllocatorService(
             @Value("${agones.allocator.port}") int port,
@@ -51,7 +57,6 @@ public class AgonesAllocatorService {
                 .forAddress(allocatorClusterIP, port)
                 .usePlaintext()
                 .enableRetry()
-                .maxInboundMessageSize(Integer.MAX_VALUE)
                 .keepAliveTime(10, TimeUnit.SECONDS)
                 .build());
         logger.info("Created allocation service GRPC stub");
@@ -69,7 +74,7 @@ public class AgonesAllocatorService {
                 .build();
     }
 
-    public GameServerInfo awaitAllocation() {
+    public GameServerModel awaitAllocation() {
         CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Allocation.AllocationResponse> firstResponse = new AtomicReference<>(null);
         allocationService.allocate(request, new StreamObserver<>() {
@@ -90,23 +95,30 @@ public class AgonesAllocatorService {
         });
         try {
             boolean success = latch.await(5, TimeUnit.SECONDS);
-            if (!success) {
-                throw new RuntimeException("Gameserver allocation timed out");
-            }
-            Allocation.AllocationResponse response = firstResponse.get();
-            if (response == null) {
-                throw new RuntimeException("Failed to get gameserver allocation");
-            }
-            GameServerInfo gameServer = GameServerInfo.builder()
-                    .address(response.getAddress())
-                    .gameServerName(response.getGameServerName())
-                    .port(response.getPorts(0).getPort())
-                    .build();
-            logger.info("Found requested allocation: {}", gameServer);
-            return gameServer;
+            if (!success) throw new RuntimeException("Gameserver allocation timed out");
         } catch (InterruptedException exception) {
             throw new RuntimeException("Requesting gameserver allocation was interrupted");
         }
+
+        Allocation.AllocationResponse response = firstResponse.get();
+        if (response == null) {
+            throw new RuntimeException("Failed to get gameserver allocation");
+        }
+
+        String gameServerName = response.getGameServerName();
+
+        if (!gameServerRepository.gameServerExists(gameServerName)) {
+            // TODO un-allocate/destroy instance?
+            throw new RuntimeException("Game server does not exist in repository: " + gameServerName);
+        }
+        GameServerModel gameServer = gameServerRepository.getGameServer(gameServerName);
+
+        // Validate that repository contains correct information on gameserver
+        assert gameServer.getAddress().equals(response.getAddress());
+        assert gameServer.getPort() == response.getPorts(0).getPort();
+
+        logger.info("Found requested allocation: {}", gameServer);
+        return gameServer;
     }
 
 }

@@ -10,7 +10,5 @@ COPY --from=build /app/build/libs/*.jar /app/
 COPY --from=build /app/entry.sh /app/
 # Spring app
 EXPOSE 8080
-# Redis
-EXPOSE 6379
 
 ENTRYPOINT ["sh", "entry.sh"]
