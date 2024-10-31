@@ -1,8 +1,8 @@
 package dev.totallyspies.spydle.gameserver.socket;
 
-import dev.totallyspies.spydle.gameserver.proto.GameMessages;
 import dev.totallyspies.spydle.gameserver.redis.RedisRepositoryService;
-import dev.totallyspies.spydle.gameserver.socket.event.ServerBoundEvent;
+import dev.totallyspies.spydle.gameserver.socket.event.ServerBoundMessageEvent;
+import dev.totallyspies.spydle.shared.proto.GameMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     private ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    private Map<GameMessages.ServerBoundMessage.PayloadCase, Class<? extends ServerBoundEvent>> eventRegistry;
+    private Map<GameMessages.ServerBoundMessage.PayloadCase, Class<? extends ServerBoundMessageEvent>> eventRegistry;
 
     @Autowired
     private RedisRepositoryService redisRepositoryService;
@@ -57,7 +57,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         byte[] payload = message.getPayload().array();
         GameMessages.ServerBoundMessage serverBoundMessage = GameMessages.ServerBoundMessage.parseFrom(payload);
         try {
-            ServerBoundEvent event = (ServerBoundEvent) eventRegistry.get(serverBoundMessage.getPayloadCase())
+            ServerBoundMessageEvent event = (ServerBoundMessageEvent) eventRegistry.get(serverBoundMessage.getPayloadCase())
                     .getDeclaredConstructors()[0]
                     .newInstance(this, session, serverBoundMessage, clientId);
             logger.debug("Firing event {} after receiving from client {}", event.getClass().getName(), clientId);

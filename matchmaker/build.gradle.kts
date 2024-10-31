@@ -2,11 +2,11 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
-	id("org.openapi.generator") version "7.8.0"
+	id("org.openapi.generator") version "7.9.0"
 }
 
 group = "dev.totallyspies.spydle"
-version = "0.0.1-SNAPSHOT"
+version = "1.0"
 
 java {
 	toolchain {
@@ -25,6 +25,8 @@ repositories {
 }
 
 dependencies {
+	// Shared
+	implementation(project(":shared"))
 	// SpringBoot
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -56,18 +58,23 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath("org.openapitools:openapi-generator-gradle-plugin:7.8.0")
+		classpath("org.openapitools:openapi-generator-gradle-plugin:7.9.0")
 	}
 }
 
 
 openApiGenerate {
+	skipValidateSpec = true
 	generatorName.set("java")
-	inputSpec.set("$rootDir/src/main/resources/openapi.yaml")
+	inputSpec.set("${layout.projectDirectory}/src/main/resources/openapi.yaml")
 	outputDir.set("${layout.buildDirectory.get()}/generated")
 	modelPackage.set("dev.totallyspies.spydle.matchmaker.generated.model")
 	apiPackage.set("dev.totallyspies.spydle.matchmaker.generated.api")
 	invokerPackage.set("dev.totallyspies.spydle.matchmaker.generated.invoker")
+
+	schemaMappings.put("GameServer", "dev.totallyspies.spydle.shared.model.GameServer")
+	schemaMappings.put("ClientSession", "dev.totallyspies.spydle.shared.model.ClientSession")
+
 }
 
 sourceSets {

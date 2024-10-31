@@ -1,8 +1,7 @@
 package dev.totallyspies.spydle.gameserver.agones;
 
 import agones.dev.sdk.Sdk;
-import dev.totallyspies.spydle.gameserver.generated.model.GameServerModel;
-import dev.totallyspies.spydle.gameserver.generated.model.GameServerStateModel;
+import dev.totallyspies.spydle.shared.model.GameServer;
 import io.grpc.ManagedChannelBuilder;
 import java.util.concurrent.ExecutionException;
 import lombok.Getter;
@@ -24,7 +23,7 @@ public class AgonesHook {
     private final Logger logger = LoggerFactory.getLogger(AgonesHook.class);
 
     @Getter
-    private GameServerModel currentGameServer;
+    private GameServer currentGameServer;
 
     @Bean
     public Agones agones(
@@ -66,12 +65,13 @@ public class AgonesHook {
         Sdk.GameServer sdkGameServer = agones.getGameServerFuture().get(); // Blocking
 
         // Store currentGameServer so we can cache in redis
-        currentGameServer = new GameServerModel()
+        currentGameServer = GameServer.builder()
                 .address(sdkGameServer.getStatus().getAddress())
                 .port(sdkGameServer.getStatus().getPorts(0).getPort())
-                .gameServerName(sdkGameServer.getObjectMeta().getName())
+                .name(sdkGameServer.getObjectMeta().getName())
                 .publicRoom(false) // TODO
-                .state(GameServerStateModel.WAITING);
+                .state(GameServer.State.WAITING)
+                .build();
 
         // Mark us as ready
         agones.ready();
