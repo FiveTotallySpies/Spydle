@@ -14,21 +14,17 @@ message ServerBoundMessage {
 
 // ServerBound messages
 message ServerBoundJoinGame {
-  string player_id = 1;
-  string player_name = 2;
+  string player_name = 1;
 }
 
 message ServerBoundStartGame {
-  string player_id = 1;
 }
 
 message ServerBoundLeaveGame {
-  string player_id = 1;
 }
 
 message ServerBoundPlayerGuess {
-  string player_id = 1;
-  string guessed_string = 2;
+  string guessed_word = 1;
 }
 
 // ClientBound messages
@@ -38,18 +34,18 @@ message ClientBoundMessage {
     ClientBoundGameEnd game_end = 2;
     ClientBoundUpdatePlayerList update_player_list = 3;
     ClientBoundTimerTick timer_tick = 4;
-    ClientBoundGuessCorrect guess_correct = 5;
+    ClientBoundGuessResult guess_result = 5;
     ClientBoundNewTurn new_turn = 6;
   }
 }
 
 message ClientBoundGameStart {
   repeated Player players = 1;
-  int32 total_game_time = 2;
+  int32 total_game_time_seconds = 2;
 }
 
 message ClientBoundGameEnd {
-  string winner = 1;
+  Player winner = 1;
 }
 
 message ClientBoundUpdatePlayerList {
@@ -57,11 +53,11 @@ message ClientBoundUpdatePlayerList {
 }
 
 message ClientBoundTimerTick {
-  int32 time_left = 1;
+  int32 time_left_seconds = 1;
 }
 
-message ClientBoundGuessCorrect {
-  bool is_correct = 1;
+message ClientBoundGuessResult {
+  bool result = 1;
 }
 
 message ClientBoundNewTurn {
@@ -71,7 +67,6 @@ message ClientBoundNewTurn {
 
 // Player information for tracking in the game
 message Player {
-  string player_id = 1;
-  string player_name = 2;
-  int32 score = 3;
+  string player_name = 1;
+  int32 score = 2;
 }
