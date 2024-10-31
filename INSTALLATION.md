@@ -24,9 +24,8 @@ If you are on Windows, WSL2 is recommended (and practically required).
 		- By default, `docker build` will store this in the default registry.
 			- You MUST run the command `eval $(minikube docker-env)` BEFORE you run any docker build commands for this project.
 			- This stores the docker registry credentials for the minikube registry in your terminal's environment variables.
-	- Now run `cd matchmaker` and `docker build -t matchmaker:latest .`
+	- Now run `docker build -f matchmaker.Dockerfile -t matchmaker:latest .` and `docker build -f gameserver.Dockerfile -t gameserver:latest .`
 		- This may take a while the first time you execute it but will be faster later once the components are cached
-	- Run `cd gameserver` and `docker build -t gameserver:latest .`
 - Now, to apply all of the K8s resources in `deployment/`, run `cd deployment` and `kubectl apply --server-side -k env/dev --force-conflicts`
 	- After doing this, you can now observe the deployments created using `k9s`.
 ### Stopping Your Cluster
