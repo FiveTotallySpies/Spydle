@@ -1,17 +1,22 @@
 package dev.totallyspies.spydle.gameserver.redis;
 
 import dev.totallyspies.spydle.gameserver.generated.model.GameServerModel;
-import dev.totallyspies.spydle.gameserver.service.AgonesHook;
+import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class RedisRepositoryService {
+
+    private final Logger logger = LoggerFactory.getLogger(RedisRepositoryService.class);
 
     private static final String SESSION_PREFIX = "session:";
     private static final String GAMESERVER_PREFIX = "gameserver:";
@@ -21,6 +26,13 @@ public class RedisRepositoryService {
 
     @Autowired
     private AgonesHook agonesHook;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void onAgonesReady() {
+        GameServerModel currentGameServer = agonesHook.getCurrentGameServer();
+        saveGameServer(currentGameServer);
+        logger.info("Wrote current game server to redis: {}", currentGameServer);
+    }
 
     public boolean hasClientSession(UUID clientId) {
         Object rawSession = redisTemplate.opsForValue().get(SESSION_PREFIX + clientId);

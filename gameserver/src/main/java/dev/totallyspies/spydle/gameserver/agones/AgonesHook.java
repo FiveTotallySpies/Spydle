@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.service;
+package dev.totallyspies.spydle.gameserver.agones;
 
 import agones.dev.sdk.Sdk;
 import dev.totallyspies.spydle.gameserver.generated.model.GameServerModel;
@@ -9,7 +9,10 @@ import lombok.Getter;
 import net.infumia.agones4j.Agones;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -23,12 +26,13 @@ public class AgonesHook {
     private final Logger logger = LoggerFactory.getLogger(AgonesHook.class);
 
     @Getter
-    private Agones agones;
-
-    @Getter
     private GameServerModel currentGameServer;
 
-    public AgonesHook(
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
+    @Bean
+    public Agones agones(
             @Value("${agones.host}") String agonesHost,
             @Value("${agones.port}") int agonesPort
     ) throws ExecutionException, InterruptedException {
@@ -37,7 +41,7 @@ public class AgonesHook {
                 Executors.newSingleThreadExecutor();
         final ScheduledExecutorService healthCheckExecutor =
                 Executors.newSingleThreadScheduledExecutor();
-        agones = Agones.builder()
+        Agones agones = Agones.builder()
                 .withAddress(agonesHost, agonesPort)
                 .withChannel(ManagedChannelBuilder
                         .forAddress(agonesHost, agonesPort)
@@ -66,7 +70,7 @@ public class AgonesHook {
         }
         Sdk.GameServer sdkGameServer = agones.getGameServerFuture().get(); // Blocking
 
-        // Cache our info in redis
+        // Store currentGameServer so we can cache in redis
         currentGameServer = new GameServerModel()
                 .address(sdkGameServer.getStatus().getAddress())
                 .port(sdkGameServer.getStatus().getPorts(0).getPort())
@@ -76,6 +80,8 @@ public class AgonesHook {
 
         // Mark us as ready
         agones.ready();
+
+        return agones;
     }
 
 }
