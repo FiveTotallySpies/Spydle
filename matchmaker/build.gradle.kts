@@ -64,7 +64,6 @@ buildscript {
 
 
 openApiGenerate {
-	skipValidateSpec = true
 	generatorName.set("java")
 	inputSpec.set("${layout.projectDirectory}/src/main/resources/openapi.yaml")
 	outputDir.set("${layout.buildDirectory.get()}/generated")

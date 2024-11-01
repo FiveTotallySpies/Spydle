@@ -69,6 +69,7 @@ public class AgonesHook {
                 .address(sdkGameServer.getStatus().getAddress())
                 .port(sdkGameServer.getStatus().getPorts(0).getPort())
                 .name(sdkGameServer.getObjectMeta().getName())
+                .roomId("12345") // TODO
                 .publicRoom(false) // TODO
                 .state(GameServer.State.WAITING)
                 .build();

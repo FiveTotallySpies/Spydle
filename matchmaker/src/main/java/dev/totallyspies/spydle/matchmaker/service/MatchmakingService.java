@@ -1,8 +1,5 @@
 package dev.totallyspies.spydle.matchmaker.service;
 
-import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModel;
-import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModel;
-import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponse;
 import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
 import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
 import dev.totallyspies.spydle.shared.model.ClientSession;
@@ -19,8 +16,6 @@ import java.util.UUID;
  */
 @Service
 public class MatchmakingService {
-
-    private final Logger logger = LoggerFactory.getLogger(MatchmakingService.class);
 
     @Autowired
     private SessionRepository sessionRepository;
@@ -70,19 +65,6 @@ public class MatchmakingService {
         // TODO: Implement logic to notify the GameServer that the client is leaving
     }
 
-    public AutoscaleResponseModel autoscale(AutoscaleRequestModel request) {
-        int allocatedReplicas = request.getRequest().getStatus().getAllocatedReplicas();
 
-        // TODO Load custom scaling logic from config
-        int desiredIdleReplicas = Math.max(4, (int) (allocatedReplicas * 0.5));
-        int desiredReplicas = allocatedReplicas + desiredIdleReplicas;
-        logger.debug("Calculated desired replicas for autoscale target: {}", desiredReplicas);
-
-        AutoscaleResponseModelResponse response = new AutoscaleResponseModelResponse()
-                .replicas(desiredReplicas)
-                .uid(request.getRequest().getUid())
-                .scale(true);
-        return new AutoscaleResponseModel().response(response);
-    }
 
 }

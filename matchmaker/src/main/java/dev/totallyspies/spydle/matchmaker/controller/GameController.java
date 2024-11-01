@@ -81,7 +81,7 @@ public class GameController {
             return ResponseEntity.ok(new LeaveGameResponseModel().success(true));
         } catch (Exception exception) {
             logger.error("Failed to handle /leave-game", exception);
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.status(500).body(exception.getMessage());
         }
     }
 
