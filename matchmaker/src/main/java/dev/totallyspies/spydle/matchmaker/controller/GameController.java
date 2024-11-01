@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.matchmaker.controller;
 import dev.totallyspies.spydle.matchmaker.generated.model.*;
 import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
 import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
+import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class GameController {
             return ResponseEntity.status(400).body("Bad clientId: should be UUID");
         }
         try {
-            GameServerModel gameServer = matchmakingService.createGame(clientId);
+            GameServer gameServer = matchmakingService.createGame(clientId);
             logger.info("Successfully handled /create-game request: {}", gameServer);
             return ResponseEntity.ok(new CreateGameResponseModel().gameServer(gameServer));
         } catch (Exception exception) {
@@ -57,7 +58,7 @@ public class GameController {
             return ResponseEntity.status(400).body("Bad clientId: should be UUID");
         }
         try {
-            GameServerModel gameServer = matchmakingService.joinGame(clientId, request.getGameServerName());
+            GameServer gameServer = matchmakingService.joinGame(clientId, request.getGameServerName());
             logger.info("Successfully handled /join-game request: {}", gameServer);
             return ResponseEntity.ok(new JoinGameResponseModel().gameServer(gameServer));
         } catch (Exception exception) {

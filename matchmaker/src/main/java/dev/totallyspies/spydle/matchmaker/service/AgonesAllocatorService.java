@@ -2,8 +2,8 @@ package dev.totallyspies.spydle.matchmaker.service;
 
 import allocation.Allocation;
 import allocation.AllocationServiceGrpc;
-import dev.totallyspies.spydle.matchmaker.generated.model.GameServerModel;
 import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
+import dev.totallyspies.spydle.shared.model.GameServer;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import io.kubernetes.client.openapi.ApiException;
@@ -74,7 +74,7 @@ public class AgonesAllocatorService {
                 .build();
     }
 
-    public GameServerModel awaitAllocation() {
+    public GameServer awaitAllocation() {
         CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Allocation.AllocationResponse> firstResponse = new AtomicReference<>(null);
         allocationService.allocate(request, new StreamObserver<>() {
@@ -111,7 +111,7 @@ public class AgonesAllocatorService {
             // TODO un-allocate/destroy instance?
             throw new RuntimeException("Game server does not exist in repository: " + gameServerName);
         }
-        GameServerModel gameServer = gameServerRepository.getGameServer(gameServerName);
+        GameServer gameServer = gameServerRepository.getGameServer(gameServerName);
 
         // Validate that repository contains correct information on gameserver
         assert gameServer.getAddress().equals(response.getAddress());

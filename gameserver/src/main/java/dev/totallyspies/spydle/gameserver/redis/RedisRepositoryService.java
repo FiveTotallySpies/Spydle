@@ -1,7 +1,8 @@
 package dev.totallyspies.spydle.gameserver.redis;
 
-import dev.totallyspies.spydle.gameserver.generated.model.GameServerModel;
 import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
+import dev.totallyspies.spydle.shared.model.ClientSession;
+import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class RedisRepositoryService {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onAgonesReady() {
-        GameServerModel currentGameServer = agonesHook.getCurrentGameServer();
+        GameServer currentGameServer = agonesHook.getCurrentGameServer();
         saveGameServer(currentGameServer);
         logger.info("Wrote current game server to redis: {}", currentGameServer);
     }
@@ -37,7 +38,7 @@ public class RedisRepositoryService {
     public boolean hasClientSession(UUID clientId) {
         Object rawSession = redisTemplate.opsForValue().get(SESSION_PREFIX + clientId);
         if (!(rawSession instanceof ClientSession session)) return false;
-        String gameServerName = agonesHook.getCurrentGameServer().getGameServerName();
+        String gameServerName = agonesHook.getCurrentGameServer().getName();
         return gameServerName.equals(session.getGameServerName());
     }
 
@@ -45,13 +46,13 @@ public class RedisRepositoryService {
         redisTemplate.delete(SESSION_PREFIX + clientId.toString());
     }
 
-    public void saveGameServer(GameServerModel gameserver) {
-        redisTemplate.opsForValue().set(GAMESERVER_PREFIX + gameserver.getGameServerName(), gameserver);
+    public void saveGameServer(GameServer gameserver) {
+        redisTemplate.opsForValue().set(GAMESERVER_PREFIX + gameserver.getName(), gameserver);
     }
 
-    public GameServerModel getGameServer() {
-        String gameServerName = agonesHook.getCurrentGameServer().getGameServerName();
-        return (GameServerModel) redisTemplate.opsForValue().get(GAMESERVER_PREFIX + gameServerName);
+    public GameServer getGameServer() {
+        String gameServerName = agonesHook.getCurrentGameServer().getName();
+        return (GameServer) redisTemplate.opsForValue().get(GAMESERVER_PREFIX + gameServerName);
     }
 
     @Nullable

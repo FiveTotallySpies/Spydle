@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Matchmaker REST API
-  version: 0.0.1
+  version: "1.0"
 paths:
   /autoscale:
     post:
@@ -126,7 +126,7 @@ components:
       required: [gameServer]
       properties:
         gameServer:
-          $ref: '#/components/schemas/GameServerModel'
+          $ref: '#/components/schemas/GameServer'
     JoinGameRequestModel:
       type: object
       required: [clientId]
@@ -140,7 +140,9 @@ components:
       required: [gameServer]
       properties:
         gameServer:
-          $ref: '#/components/schemas/GameServerModel'
+          $ref: '#/components/schemas/GameServer'
+    GameServer:
+      type: object
     LeaveGameRequestModel:
       type: object
       required: [clientId]
@@ -153,23 +155,3 @@ components:
       properties:
         success:
           type: boolean
-    GameServerModel:
-      type: object
-      required: [address, port, gameServerName, roomId, publicRoom, state]
-      x-implements: "java.io.Serializable"
-      properties:
-        address:
-          type: string
-        port:
-          type: integer
-        gameServerName:
-          type: string
-        roomId:
-          type: string
-        publicRoom:
-          type: boolean
-        state:
-          $ref: '#/components/schemas/GameServerStateModel'
-    GameServerStateModel:
-      type: string
-      enum: ["WAITING", "PLAYING", "FINISHING"]

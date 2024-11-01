@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option java_package = "dev.totallyspies.spydle.gameserver.proto";
+option java_package = "dev.totallyspies.spydle.shared.proto";
 option java_outer_classname = "GameMessages";
 
 message ServerBoundMessage {
@@ -8,7 +8,7 @@ message ServerBoundMessage {
     ServerBoundJoinGame join_game = 1;
     ServerBoundStartGame start_game = 2;
     ServerBoundLeaveGame leave_game = 3;
-    ServerBoundPlayerGuess player_guess = 4;
+    ServerBoundGuess guess = 4;
   }
 }
 
@@ -23,7 +23,7 @@ message ServerBoundStartGame {
 message ServerBoundLeaveGame {
 }
 
-message ServerBoundPlayerGuess {
+message ServerBoundGuess {
   string guessed_word = 1;
 }
 
