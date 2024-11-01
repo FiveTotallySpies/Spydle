@@ -1,7 +1,6 @@
-package dev.totallyspies.spydle.gameserver.socket;
+package dev.totallyspies.spydle.gameserver.message;
 
 import dev.totallyspies.spydle.gameserver.redis.RedisRepositoryService;
-import dev.totallyspies.spydle.gameserver.socket.event.ServerBoundMessageHandler;
 import dev.totallyspies.spydle.shared.proto.GameMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

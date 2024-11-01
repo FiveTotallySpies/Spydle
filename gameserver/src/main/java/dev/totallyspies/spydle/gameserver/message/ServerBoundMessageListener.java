@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.socket.event;
+package dev.totallyspies.spydle.gameserver.message;
 
 import dev.totallyspies.spydle.shared.proto.GameMessages;
 import java.lang.annotation.ElementType;
