@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.gameserver.redis;
 
 import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
+import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
