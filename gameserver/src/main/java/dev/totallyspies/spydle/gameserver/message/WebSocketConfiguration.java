@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.socket;
+package dev.totallyspies.spydle.gameserver.message;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
