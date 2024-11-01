@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +27,32 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(ServerBoundMessageHandler.class);
 
-    @Autowired
-    private Map<GameMessages.ServerBoundMessage.PayloadCase, Method> payloadGetters;
-
     // TODO add priorities?
     private final Map<Class<?>, List<BiConsumer<Object, UUID>>> executors = new HashMap<>();
+    private final Map<GameMessages.ServerBoundMessage.PayloadCase, Method> payloadGetters = new HashMap<>();
+
+    public ServerBoundMessageHandler() {
+        Map<String, Method> methodNames = new HashMap<>();
+        for (Method method : GameMessages.ServerBoundMessage.class.getDeclaredMethods()) {
+            String name = method.getName().toLowerCase();
+            if (!name.startsWith("get")) continue;
+            name = name.substring(3);
+            methodNames.put(name, method);
+        }
+
+        for (GameMessages.ServerBoundMessage.PayloadCase payloadCase : GameMessages.ServerBoundMessage.PayloadCase.values()) {
+            if (payloadCase == GameMessages.ServerBoundMessage.PayloadCase.PAYLOAD_NOT_SET) continue;
+            String name = payloadCase.name().replaceAll("_", "").toLowerCase();
+            Method getMethod = methodNames.get(name);
+            if (getMethod == null) {
+                logger.warn("Warning: Failed to find message class mapping for payloadCase {}, found options {}. " +
+                        "Does the proto follow the right naming scheme?",
+                        payloadCase.name(), String.join(", ", methodNames.keySet()));
+                continue;
+            }
+            payloadGetters.put(payloadCase, getMethod);
+        }
+    }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, @NotNull String beanName) throws BeansException {
@@ -38,9 +61,15 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
                 ServerBoundMessageListener annotation = method.getAnnotation(ServerBoundMessageListener.class);
                 try {
                     registerListener(annotation.value(), method);
-                    logger.debug("Registered ServerBoundMessageListener for payload {} on method {}#{}", annotation.value().name(), method.getClass().getCanonicalName(), method.getName());
+                    logger.debug("Registered ServerBoundMessageListener for payload {} on method {}#{}",
+                            annotation.value().name(),
+                            method.getDeclaringClass().getCanonicalName(),
+                            method.getName());
                 } catch (Exception exception) {
-                    logger.error("Failed to register ServerBoundMessageListener on method {}#{}", method.getClass().getCanonicalName(), method.getName(), exception);
+                    logger.error("Failed to register ServerBoundMessageListener on method {}#{}",
+                            method.getDeclaringClass().getCanonicalName(),
+                            method.getName(),
+                            exception);
                 }
             }
         }
@@ -67,7 +96,7 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
             case 2:
                 Parameter parameter1 = method.getParameters()[0];
                 Parameter parameter2 = method.getParameters()[1];
-                if (parameter2.getType() == UUID.class && messageType.isInstance(parameter1.getType())) {
+                if (parameter2.getType() == UUID.class && messageType.equals(parameter1.getType())) {
                     registerExecutor(messageType, (message, client) -> {
                         try {
                             method.invoke(message, client);
@@ -115,30 +144,6 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
             throw new RuntimeException(exception);
         }
         logger.debug("Fired message with PayloadCase {} from client {}", message.getPayloadCase(), client);
-    }
-
-    @Bean
-    public Map<GameMessages.ServerBoundMessage.PayloadCase, Method> payloadGetters() {
-        Map<String, Method> methodNames = new HashMap<>();
-        for (Method method : GameMessages.ServerBoundMessage.class.getDeclaredMethods()) {
-            String name = method.getName().toLowerCase();
-            if (!name.startsWith("get")) continue;
-            name = name.substring(3);
-            methodNames.put(name, method);
-        }
-
-        Map<GameMessages.ServerBoundMessage.PayloadCase, Method> payloadGetters = new HashMap<>();
-        for (GameMessages.ServerBoundMessage.PayloadCase payloadCase : GameMessages.ServerBoundMessage.PayloadCase.values()) {
-            String name = payloadCase.name().replaceAll("_", "");
-            Method getMethod = methodNames.get(name);
-            if (getMethod == null) {
-                logger.warn("Warning: Failed to find message class mapping for payloadCase {}. Does the proto follow the right naming scheme?", payloadCase.name());
-                continue;
-            }
-            payloadGetters.put(payloadCase, getMethod);
-        }
-
-        return payloadGetters;
     }
 
 }
