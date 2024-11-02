@@ -1,0 +1,11 @@
+syntax = "proto3";
+option java_package = "dev.totallyspies.spydle.proto";
+
+message ServerBoundMessage {
+  string token = 1;
+  oneof payload {
+    NewGame new_game = 2;
+  }
+}
+
+message NewGame {}
