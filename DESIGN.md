@@ -1,3 +1,4 @@
+
 # Part 0: Overview
 This design document will outline both the thought process behind, and the details of our system we will create for our game.
 ## Goals
@@ -26,6 +27,9 @@ We are going to take a big step away from the goals and the key principals to co
 ### Tool: Docker
 When building applications that may involve several different semi-independent components (such as one where we have multiple GameServers for each active game), <b>docker containers</b> is the first place we might look to abstract out certain functionalities.
 - <b>Containers</b> allow us to run an app in an isolated, typically linux, environment. This is similar to a Virtual Machine that is completely (mostly) detached from the Host OS layer, but more geared towards extremely minimal Linux environments that have just the barebones essentials for running our application. This way we can keep it fast, and create many containers on a single Host OS.
+	- The benefits of running an application within a container are twofold:
+		- We can precisely define what libraries and other files are necessary to download before running it.
+		- The application's OS is separated from our host and has no chance of impacting what occurs below it.
 - <b>Docker Images</b> are like templates for creating containers: They specify what container OS we might run (such as ubuntu linux!), and what libraries we may need to download into our container if we want to use it to run our application.
 	- Docker images (templates) can be created with <b>Dockerfiles</b> that are a precise set of instructions for creating a docker image from our codebase.
 ### Tool: Kubernetes
@@ -34,7 +38,7 @@ When building applications that may involve several different semi-independent c
 - Kubernetes steps in with a different approach:
 	- We have a single <b>Kubernetes Cluster</b> that is a place where all of our different application components run
 	- Inside the cluster we define a <b>Resource</b> for everything we <b>deploy</b> (run) inside the cluster.
-		- These resources are not themselves necessarily docker containers (although they can be). These include things like Services, Deployments, Network Policies, Load Balancers, Ingress Controllers, and much more. [This article](https://spacelift.io/blog/kubernetes-workload) can give you a basic idea of what resources might look like, but understanding all of the options comes [with experience](https://kubernetes.io/docs/tutorials/kubernetes-basics/).
+		- These resources are not themselves necessarily docker containers (although they can be). These include things like Pods, Services, Deployments, Network Policies, Load Balancers, Ingress Controllers, and much more. [This article](https://spacelift.io/blog/kubernetes-workload) can give you a basic idea of what resources might look like, but understanding all of the options comes [with experience](https://kubernetes.io/docs/tutorials/kubernetes-basics/).
 	- These resources are configured by a <b>Manifest</b>, which is basically an extremely long set of requirements for which resources we want and how we want to configure them.
 	- Our applications will exist as resources (specifically, Pods) inside our cluster. We will be able to configure how they communicate to eachother using other resources we deploy in our cluster.
 - The benefits that Kubernetes provides here is the ability to define the specifications of each component of our system in isolation, then <i>separately</i> define how they communicate and integrate with each other.
@@ -53,27 +57,52 @@ Next in line is <b>Agones</b>: A layer of abstraction on top of Kubernetes that 
 - A <b>Fleet</b> is a resource that itself contains a set of GameServers, and can be scaled up or down (i.e. modify the number of GameServers it contains).
 - The <b>Agones Allocator Service</b> is an app that lives in our cluster that we can communicate directly with. At any point in time, we can <i>request</i> from the allocator to give us the details of a GameServer resource that is currently in READY state (no players connected), and the mark it as ALLOCATED so that we can start letting players connect to it.
 ### Tool: SpringBoot
-- On a much more technical level: SpringBoot is both a framework and a very large set of libraries that help writing Java code for server applications.
-- Libraries it offers can be for things like:
-	- Hosting HTTP servers (like handling requests to a server, such as 	`/create-game`)
-	- Managing WebSockets where our server applications may communicate with clients directly.
-		- For more details, look up what WebSockets are and how they might be different from an HTTP server.
-	- Connecting easily to external databases
-- Which are all things we will need to be doing for our server applications. Awesome!
-- Spring can be confusing in the beginning because it is <b>annotation-based</b>: Any time I want the spring framework to treat a class or a method differently, I write an `@Annotation` above it. Spring will then notice these annotation and behave accordingly.
-- Also, JVM objects that Spring is allowed to manage directly are called <b>Beans</b>. The rules for these are simple:
-	- Beans can be created from a single object.
-	- Beans are singletons: there only exists one instance at all times of a bean
-	- Beans are loaded into the Spring framework on application startup: And once it is done, we can never add new beans.
-- The idea behind spring beans may seem arbitrary or unnecessary, but is actually incredibly helpful when considering [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection).
-	- How this is the case is once again not immediately obvious, but will be as you use Spring more and more.
-- Here is a [decent article](https://medium.com/@yashpatel007/spring-boot-for-dummies-part-1-1-f0bf717c862e) for understanding the basic tenets of the SpringBoot framework.
+On a much more technical level: SpringBoot is both a framework and a very large set of libraries that help writing Java code for server applications.
+Libraries it offers can be for things like:
+- Hosting HTTP servers (like handling requests to a server, such as 	`/create-game`)
+- Managing WebSockets where our server applications may communicate with clients directly.
+	- For more details, look up what WebSockets are and how they might be different from an HTTP server.
+- Connecting easily to external databases
+
+Which are all things we will need to be doing for our server applications. Awesome!
+
+Spring can be confusing in the beginning because it is <b>annotation-based</b>: Any time I want the spring framework to treat a class or a method differently, I write an `@Annotation` above it. Spring will then notice these annotation and behave accordingly.
+Also, JVM objects that Spring is allowed to manage directly are called <b>Beans</b>. The rules for these are simple:
+- Beans can be created from a single object.
+- Beans are singletons: there only exists one instance at all times of a bean
+- Beans are loaded into the Spring framework on application startup: And once it is done, we can never add new beans.
+
+The idea behind spring beans may seem arbitrary or unnecessary, but is actually incredibly helpful when considering [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection). How this is the case is once again not immediately obvious, but will be as you use Spring more and more.
+
+Here is a [decent article](https://medium.com/@yashpatel007/spring-boot-for-dummies-part-1-1-f0bf717c862e) for understanding the basic tenets of the SpringBoot framework.
 
 <i>Small aside: I, like many other people, am not the largest fans of the SpringBoot framework because it erases the Java language's largest benefit: its verbosity. When I write a class in Java, I can see directly how it acts, and links to how it interacts with other classes. When Spring hides all these layers of functionality behind @Annotations that we put on our classes and methods, we lose the ability to clearly see what functionality is linked together.</i>
 ### Tool: Redis
-UNFINISHED
+When designing a system on Kubernetes that can scale, it is often helpful to write <b>stateless</b> applications.
+- A stateless program is one that doesn't store any important information about previous user requests.
+- This implies that if we were to have a set of docker containers all running the same <i>stateless</i> application, it shouldn't matter which one we send a request to because the responses will all be the same: the application does not store any associated "state".
+
+In Kubernetes, stateless applications are to our benefit because they allow us to run multiple instances of the same program, and then distribute requests across them for maximum performance.
+A common method of separating such storing of any state is through a <b>shared database</b>, where all instances of our program access the same data in a common external database.
+
+<b>Redis</b> is a <b>key-value</b> database that by default stores things <b>in-memory</b> for extremely low latency. Think of it as a giant HashMap that we store in a separate Kubernetes resource, that we do not scale (we only have one database).
 ### Tool: Protobuf
-UNFINISHED
+When defining how different applications communicate with each other, they need to have a shared language that they both understand. The simplest example of this <b>JSON</b>: Applications can serialize or deserialize any data into/from JSON by embedding it in the curly braces, colons and brackets that represent object hierarchy.
+
+But say we wanted to define a specific type of JSON structure for our client and server to send to each other. Maybe the JSON object sent should have certain fields (like "messageType" or "clientId") that need to be fulfilled with certain values. Maybe some of the fields are optional as well.
+
+Enter <b>protobuf</b>: A tool designed to allow us to define structured data formats that both clients and servers can rely on. This tool can work on top of any programming language to specify structured data schemas and enforce them rigorously. Instead of simply passing arbitrary JSON, protobuf lets you define a **schema** that explicitly dictates which fields are required, which are optional, and what data types each field should have.
+
+An example schema could be:
+```proto
+message ExampleSchema { 
+  string clientId = 1; 
+  string messageType = 2; 
+  optional string payload = 3; 
+}
+```
+Which the client and server can use to concretely define what messages they send to each other should look like.
+
 ### (Smaller) Tool: OpenAPI/Swagger
 UNFINISHED
 ## Additional Terminology
@@ -152,6 +181,8 @@ A full explanation of the logic behind the GameServer application may be provide
 ## Matchmaker
 This projects goal is to answer the question: <b>If a client wants to play our game (and start a new room), how does it know which GameServer in our backend to connect to?</b>
 
+UNFINISHED
+## Redis
 UNFINISHED
 ## Frontend
 UNFINISHED
