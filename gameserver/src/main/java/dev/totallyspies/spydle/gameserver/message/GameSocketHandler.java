@@ -1,7 +1,8 @@
 package dev.totallyspies.spydle.gameserver.message;
 
 import dev.totallyspies.spydle.gameserver.redis.RedisRepositoryService;
-import dev.totallyspies.spydle.shared.proto.GameMessages;
+import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
+import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +50,13 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
         // Deserialize packet using protobuf
         byte[] payload = message.getPayload().array();
-        GameMessages.ServerBoundMessage serverBoundMessage = GameMessages.ServerBoundMessage.parseFrom(payload);
+        SbMessage serverBoundMessage = SbMessage.parseFrom(payload);
 
         // Execute
         messageHandler.execute(serverBoundMessage, clientId);
     }
 
-    public void sendClientBoundMessage(UUID clientId, GameMessages.ClientBoundMessage message) throws IOException {
+    public void sendClientBoundMessage(UUID clientId, CbMessage message) throws IOException {
         WebSocketSession session = sessions.get(clientId);
         if (session == null) {
             throw new IllegalArgumentException("Cannot send message to invalid client " + clientId.toString());

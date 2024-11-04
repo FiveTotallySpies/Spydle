@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.gameserver.message;
 
-import dev.totallyspies.spydle.shared.proto.GameMessages;
+import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -11,15 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,19 +26,19 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
 
     // TODO add priorities?
     private final Map<Class<?>, List<BiConsumer<Object, UUID>>> executors = new HashMap<>();
-    private final Map<GameMessages.ServerBoundMessage.PayloadCase, Method> payloadGetters = new HashMap<>();
+    private final Map<SbMessage.PayloadCase, Method> payloadGetters = new HashMap<>();
 
     public ServerBoundMessageHandler() {
         Map<String, Method> methodNames = new HashMap<>();
-        for (Method method : GameMessages.ServerBoundMessage.class.getDeclaredMethods()) {
+        for (Method method : SbMessage.class.getDeclaredMethods()) {
             String name = method.getName().toLowerCase();
             if (!name.startsWith("get")) continue;
             name = name.substring(3);
             methodNames.put(name, method);
         }
 
-        for (GameMessages.ServerBoundMessage.PayloadCase payloadCase : GameMessages.ServerBoundMessage.PayloadCase.values()) {
-            if (payloadCase == GameMessages.ServerBoundMessage.PayloadCase.PAYLOAD_NOT_SET) continue;
+        for (SbMessage.PayloadCase payloadCase : SbMessage.PayloadCase.values()) {
+            if (payloadCase == SbMessage.PayloadCase.PAYLOAD_NOT_SET) continue;
             String name = payloadCase.name().replaceAll("_", "").toLowerCase();
             Method getMethod = methodNames.get(name);
             if (getMethod == null) {
@@ -57,8 +54,8 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, @NotNull String beanName) throws BeansException {
         for (Method method : bean.getClass().getMethods()) {
-            if (method.isAnnotationPresent(ServerBoundMessageListener.class)) {
-                ServerBoundMessageListener annotation = method.getAnnotation(ServerBoundMessageListener.class);
+            if (method.isAnnotationPresent(SbMessageListener.class)) {
+                SbMessageListener annotation = method.getAnnotation(SbMessageListener.class);
                 try {
                     registerListener(annotation.value(), method);
                     logger.debug("Registered ServerBoundMessageListener for payload {} on method {}#{}",
@@ -76,7 +73,7 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
         return bean;
     }
 
-    private void registerListener(GameMessages.ServerBoundMessage.PayloadCase payloadCase, Method method) {
+    private void registerListener(SbMessage.PayloadCase payloadCase, Method method) {
         Method messageGetter = payloadGetters.get(payloadCase);
         if (messageGetter == null) throw new IllegalArgumentException("Unknown message type " + payloadCase.name());
         Class<?> messageType = messageGetter.getReturnType();
@@ -131,7 +128,7 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
         return executors.get(messageType);
     }
 
-    public void execute(GameMessages.ServerBoundMessage message, UUID client) {
+    public void execute(SbMessage message, UUID client) {
         Method methodGetter = payloadGetters.get(message.getPayloadCase());
         if (methodGetter == null) {
             logger.warn("Failing to execute unknown ServerBoundMessage {} with PayloadCase {}", message.getClass().getName(), message.getPayloadCase().name());

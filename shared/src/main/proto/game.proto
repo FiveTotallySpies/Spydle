@@ -1,66 +1,66 @@
 syntax = "proto3";
 
-option java_package = "dev.totallyspies.spydle.shared.proto";
-option java_outer_classname = "GameMessages";
+option java_package = "dev.totallyspies.spydle.shared.proto.messages";
+option java_multiple_files = true;
 
-message ServerBoundMessage {
+message SbMessage {
   oneof payload {
-    ServerBoundJoinGame join_game = 1;
-    ServerBoundStartGame start_game = 2;
-    ServerBoundLeaveGame leave_game = 3;
-    ServerBoundGuess guess = 4;
+    SbJoinGame join_game = 1;
+    SbStartGame start_game = 2;
+    SbLeaveGame leave_game = 3;
+    SbGuess guess = 4;
   }
 }
 
-// ServerBound messages
-message ServerBoundJoinGame {
+// Server-bound messages
+message SbJoinGame {
   string player_name = 1;
 }
 
-message ServerBoundStartGame {
+message SbStartGame {
 }
 
-message ServerBoundLeaveGame {
+message SbLeaveGame {
 }
 
-message ServerBoundGuess {
+message SbGuess {
   string guessed_word = 1;
 }
 
-// ClientBound messages
-message ClientBoundMessage {
+// Client-bound messages
+message CbMessage {
   oneof payload {
-    ClientBoundGameStart game_start = 1;
-    ClientBoundGameEnd game_end = 2;
-    ClientBoundUpdatePlayerList update_player_list = 3;
-    ClientBoundTimerTick timer_tick = 4;
-    ClientBoundGuessResult guess_result = 5;
-    ClientBoundNewTurn new_turn = 6;
+    CbGameStart game_start = 1;
+    CbGameEnd game_end = 2;
+    CbUpdatePlayerList update_player_list = 3;
+    CbTimerTick timer_tick = 4;
+    CbGuessResult guess_result = 5;
+    CbNewTurn new_turn = 6;
   }
 }
 
-message ClientBoundGameStart {
+message CbGameStart {
   repeated Player players = 1;
   int32 total_game_time_seconds = 2;
 }
 
-message ClientBoundGameEnd {
+message CbGameEnd {
   Player winner = 1;
 }
 
-message ClientBoundUpdatePlayerList {
+message CbUpdatePlayerList {
   repeated Player players = 1;
 }
 
-message ClientBoundTimerTick {
+message CbTimerTick {
   int32 time_left_seconds = 1;
 }
 
-message ClientBoundGuessResult {
+message CbGuessResult {
   bool result = 1;
 }
 
-message ClientBoundNewTurn {
+message CbNewTurn {
   string assigned_string = 1;
   string current_player_name = 2;
 }
