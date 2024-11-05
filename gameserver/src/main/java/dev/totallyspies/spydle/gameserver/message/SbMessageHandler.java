@@ -29,6 +29,9 @@ public class SbMessageHandler implements BeanPostProcessor {
     private final Map<Class<?>, List<BiConsumer<Object, UUID>>> executors = new HashMap<>();
     // Map between PayloadCase (like PayloadCase.START_GAME) and getter method from SbMessage (like SbMessage#getStartGame)
     private final Map<SbMessage.PayloadCase, Method> payloadGetters = new HashMap<>();
+    // Map between: Class of type Sb<MESSAGE_TYPE> and PayloadCase
+    private final Map<Class<?>, SbMessage.PayloadCase> messageToPayload = new HashMap<>();
+
 
     public SbMessageHandler() {
         // Using reflection, gets all method names for each of the payload case types
@@ -52,6 +55,7 @@ public class SbMessageHandler implements BeanPostProcessor {
                         payloadCase.name(), String.join(", ", methodNames.keySet()));
                 continue;
             }
+            messageToPayload.put(getMethod.getReturnType(), payloadCase);
             payloadGetters.put(payloadCase, getMethod);
         }
     }
@@ -64,9 +68,9 @@ public class SbMessageHandler implements BeanPostProcessor {
                 // Find SbMessageListener annotation
                 SbMessageListener annotation = method.getAnnotation(SbMessageListener.class);
                 try {
-                    registerListener(annotation.value(), method);
-                    logger.debug("Registered SbMessageListener for payload {} on method {}#{}",
-                            annotation.value().name(),
+                    registerListener(method);
+                    logger.debug("Registered SbMessageListener for message {} on method {}#{}",
+                            method.getParameters()[0].getType().getCanonicalName(),
                             method.getDeclaringClass().getCanonicalName(),
                             method.getName());
                 } catch (Exception exception) {
@@ -80,13 +84,16 @@ public class SbMessageHandler implements BeanPostProcessor {
         return bean;
     }
 
-    private void registerListener(SbMessage.PayloadCase payloadCase, Method method) {
-        Method messageGetter = payloadGetters.get(payloadCase);
-        if (messageGetter == null) throw new IllegalArgumentException("Unknown message type " + payloadCase.name());
-        Class<?> messageType = messageGetter.getReturnType();
+    private void registerListener(Method method) {
         if (method.getParameterCount() == 2
-                && messageType.equals(method.getParameters()[0].getType())
                 && method.getParameters()[1].getType() == UUID.class) {
+            Class<?> messageType = method.getParameters()[0].getType();
+            SbMessage.PayloadCase payloadCase = messageToPayload.get(messageType);
+            if (payloadCase == null) throw new IllegalArgumentException("Unknown message type " + messageType.getCanonicalName());
+
+            Method messageGetter = payloadGetters.get(payloadCase);
+            if (messageGetter == null) throw new IllegalArgumentException("Unknown message payload " + payloadCase.name());
+
             registerExecutor(messageType, (message, client) -> {
                 try {
                     method.invoke(message, client);
