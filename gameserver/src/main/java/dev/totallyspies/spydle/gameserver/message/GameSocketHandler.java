@@ -1,12 +1,11 @@
-package dev.totallyspies.spydle.gameserver.socket;
+package dev.totallyspies.spydle.gameserver.message;
 
 import dev.totallyspies.spydle.gameserver.redis.RedisRepositoryService;
-import dev.totallyspies.spydle.gameserver.socket.event.ServerBoundMessageEvent;
-import dev.totallyspies.spydle.shared.proto.GameMessages;
+import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
+import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
@@ -14,7 +13,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,13 +25,10 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     private final Logger logger = LoggerFactory.getLogger(GameSocketHandler.class);
 
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
-
-    @Autowired
-    private Map<GameMessages.ServerBoundMessage.PayloadCase, Class<? extends ServerBoundMessageEvent>> eventRegistry;
-
-    @Autowired
     private RedisRepositoryService redisRepositoryService;
+
+    @Autowired
+    private ServerBoundMessageHandler messageHandler;
 
     private Map<UUID, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -55,23 +50,13 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
         // Deserialize packet using protobuf
         byte[] payload = message.getPayload().array();
-        GameMessages.ServerBoundMessage serverBoundMessage = GameMessages.ServerBoundMessage.parseFrom(payload);
-        try {
-            ServerBoundMessageEvent event = (ServerBoundMessageEvent) eventRegistry.get(serverBoundMessage.getPayloadCase())
-                    .getDeclaredConstructors()[0]
-                    .newInstance(this, session, serverBoundMessage, clientId);
-            logger.debug("Firing event {} after receiving from client {}", event.getClass().getName(), clientId);
-            try {
-                eventPublisher.publishEvent(event);
-            } catch (Exception exception) {
-                logger.error("Failed to handle event of type {}", serverBoundMessage.getPayloadCase().name(), exception);
-            }
-        } catch (InvocationTargetException | NullPointerException | InstantiationException | IllegalAccessException exception) {
-            logger.error("Failed to invoke event for payload case {}", serverBoundMessage.getPayloadCase().name(), exception);
-        }
+        SbMessage serverBoundMessage = SbMessage.parseFrom(payload);
+
+        // Execute
+        messageHandler.execute(serverBoundMessage, clientId);
     }
 
-    public void sendClientBoundMessage(UUID clientId, GameMessages.ClientBoundMessage message) throws IOException {
+    public void sendClientBoundMessage(UUID clientId, CbMessage message) throws IOException {
         WebSocketSession session = sessions.get(clientId);
         if (session == null) {
             throw new IllegalArgumentException("Cannot send message to invalid client " + clientId.toString());
