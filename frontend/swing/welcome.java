@@ -78,7 +78,6 @@ public class welcome extends JFrame {
             }
         });
 
-        // Adding components to container
         container.add(Box.createVerticalStrut(10));
         container.add(createRoomPanel);
         container.add(Box.createVerticalStrut(10));
