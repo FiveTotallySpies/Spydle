@@ -1,7 +1,7 @@
+package dev.totallyspies.spydle.frontend.GamePanel;
+
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 // Arrow Panel (Used to indicate the current player, centered initially)
 class ArrowPanel extends JPanel {

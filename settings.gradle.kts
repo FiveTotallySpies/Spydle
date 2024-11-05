@@ -1,2 +1,2 @@
 rootProject.name = "spydle"
-include("matchmaker", "gameserver", "shared")
+include("matchmaker", "gameserver", "shared", "frontend")

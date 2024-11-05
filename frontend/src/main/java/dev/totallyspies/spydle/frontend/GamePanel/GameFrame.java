@@ -1,7 +1,6 @@
+package dev.totallyspies.spydle.frontend.GamePanel;
+
 import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 // Main Game Frame
 public class GameFrame extends JFrame {

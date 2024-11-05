@@ -1,9 +1,11 @@
+package dev.totallyspies.spydle.frontend.WelcomeScreen;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class welcomestyled extends JFrame {
+public class WelcomeStyled extends JFrame {
 
-    public welcomestyled() {
+    public WelcomeStyled() {
         setTitle("Welcome - Join or Create Room");
         setSize(500, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -104,6 +106,6 @@ public class welcomestyled extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(welcomestyled::new);
+        SwingUtilities.invokeLater(WelcomeStyled::new);
     }
 }

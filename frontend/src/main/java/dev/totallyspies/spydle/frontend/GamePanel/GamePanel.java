@@ -1,3 +1,5 @@
+package dev.totallyspies.spydle.frontend.GamePanel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
