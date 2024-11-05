@@ -48,7 +48,7 @@ dependencies {
 	implementation("io.grpc:grpc-okhttp:1.68.0")
 	implementation("org.apache.tomcat:annotations-api:6.0.53")
 	implementation("com.google.protobuf:protobuf-java:4.28.3")
-
+	
 	// Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -57,6 +57,7 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
 
 tasks.bootJar {
 	archiveFileName.set("gameserver.jar")
