@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.gameserver.message;
 import dev.totallyspies.spydle.gameserver.redis.RedisRepositoryService;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,11 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     @Autowired
     private SbMessageHandler messageHandler;
 
-    private Map<UUID, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private final Map<UUID, WebSocketSession> sessions = new ConcurrentHashMap<>();
+
+    public Collection<UUID> getSessions() {
+        return sessions.keySet();
+    }
 
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws IOException {
