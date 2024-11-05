@@ -70,7 +70,7 @@ public class SbMessageHandler implements BeanPostProcessor {
                 try {
                     registerListener(method);
                     logger.debug("Registered SbMessageListener for message {} on method {}#{}",
-                            method.getParameters()[0].getType().getCanonicalName(),
+                            method.getParameters()[0].getType().getName(),
                             method.getDeclaringClass().getCanonicalName(),
                             method.getName());
                 } catch (Exception exception) {
