@@ -1,4 +1,5 @@
 #!/bin/bash
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 helm repo add agones https://agones.dev/chart/stable
 helm repo update
 kubectl create namespace agones-system
