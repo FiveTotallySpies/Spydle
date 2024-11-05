@@ -15,6 +15,7 @@ If you are on Windows, WSL2 is recommended (and practically required).
 - Run the installation script `deployment/install-k3s.sh`
 	- WARNING: This immediately starts the K3s cluster in the background! To stop the cluster later, scroll down in these instructions.
 	- Also note that by default K3s does not operate with any resource limits and will consume as needed.
+- Now we should also install Agones within the cluster by running the `deployment/agones-helm.sh` script.
 
 ### Applying Our Kustomization
 - To apply our set of K8s resources (defined in a kustomization stack), run `kubectl apply --server-side -k env/dev --force-conflicts`.
