@@ -15,6 +15,10 @@ If you are on Windows, WSL2 is recommended (and practically required).
 - Run the installation script `deployment/install-k3s.sh`
 	- WARNING: This immediately starts the K3s cluster in the background! To stop the cluster later, scroll down in these instructions.
 	- Also note that by default K3s does not operate with any resource limits and will consume as needed.
+- Point the kubectl KUBECONFIG variable to our k3s server using `export KUBECONFIG=/etc/rancher/k3s/k3s.yaml`
+	- Without this envvar, `kubectl` won't work, and will fail to connect to k3s to find any resources.
+	- You would need to run this in every new terminal, but it is recommended you add this to your bashrc file using `echo 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml' >> ~/.bashrc`.
+
 - Now we should also install Agones within the cluster by running the `deployment/agones-helm.sh` script.
 
 ### Applying Our Kustomization
