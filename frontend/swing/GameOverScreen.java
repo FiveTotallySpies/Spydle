@@ -34,16 +34,24 @@ public class GameOverScreen extends JFrame {
         JButton returnButton = new JButton("Return to Welcome Page");
         styleButton(returnButton);
 
-        // Action for Return button I replaced under here with the main spydle app
+//        // Action for Return button I replaced under here with the main spydle app
+//        returnButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                // Action to return to the welcome screen or exit for now
+//                JOptionPane.showMessageDialog(container, "Returning to Welcome Page...");
+//                dispose(); // Close the current window
+//            }
+//        });
+
         returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Action to return to the welcome screen or exit for now
-                JOptionPane.showMessageDialog(container, "Returning to Welcome Page...");
-                dispose(); // Close the current window
+                // Open the welcome window and close the GameOverScreen
+                new welcome(); // Open the main Spydle application
+                dispose(); // Close the Game Over screen
             }
         });
-
 
         // Add components to container
         container.add(titleLabel);
