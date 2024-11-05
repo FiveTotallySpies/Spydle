@@ -6,14 +6,13 @@ resources:
 - clusterrolebinding.yaml
 - ingress/nginx-chart.yaml
 - ingress/nginx-crds.yaml
-- agones/agones-namespace.yaml
-#- agones/agones-chart.yaml
 - redis/redis-deployment.yaml
 - redis/redis-service.yaml
 - redis/redis-networkpolicy.yaml
 - matchmaker/matchmaker-deployment.yaml
 - matchmaker/matchmaker-service.yaml
 - matchmaker/matchmaker-hpa.yaml
+# For some reason, K3s does not like this network policy
 #- matchmaker/matchmaker-networkpolicy.yaml
 - gameserver/gameserver-fleet.yaml
 - gameserver/fleet-autoscaler.yaml
