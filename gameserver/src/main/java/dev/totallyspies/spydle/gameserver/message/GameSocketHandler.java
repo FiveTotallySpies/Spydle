@@ -28,7 +28,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     private RedisRepositoryService redisRepositoryService;
 
     @Autowired
-    private ServerBoundMessageHandler messageHandler;
+    private SbMessageHandler messageHandler;
 
     private Map<UUID, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -50,20 +50,24 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
         // Deserialize packet using protobuf
         byte[] payload = message.getPayload().array();
-        SbMessage serverBoundMessage = SbMessage.parseFrom(payload);
+        SbMessage sbMessage = SbMessage.parseFrom(payload);
 
         // Execute
-        messageHandler.execute(serverBoundMessage, clientId);
+        messageHandler.execute(sbMessage, clientId);
     }
 
-    public void sendClientBoundMessage(UUID clientId, CbMessage message) throws IOException {
-        WebSocketSession session = sessions.get(clientId);
-        if (session == null) {
-            throw new IllegalArgumentException("Cannot send message to invalid client " + clientId.toString());
+    public void sendCbMessage(UUID clientId, CbMessage message) {
+        try {
+            WebSocketSession session = sessions.get(clientId);
+            if (session == null) {
+                throw new IllegalArgumentException("Cannot send message to invalid client " + clientId.toString());
+            }
+            byte[] messageBytes = message.toByteArray();
+            session.sendMessage(new BinaryMessage(messageBytes));
+            logger.debug("Sending client {} message of type {}", clientId.toString(), message.getPayloadCase().name());
+        } catch (IOException exception) {
+            throw new RuntimeException("Failed to send client " + clientId.toString() + " packet of type " + message.getPayloadCase().name(), exception);
         }
-        byte[] messageBytes = message.toByteArray();
-        session.sendMessage(new BinaryMessage(messageBytes));
-        logger.debug("Sending client {} message of type {}", clientId.toString(), message.getPayloadCase().name());
     }
 
     @Override
@@ -88,4 +92,5 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         sessions.remove(clientId);
         logger.info("Closed connection with client {} for reason {}", clientId, status);
     }
+
 }

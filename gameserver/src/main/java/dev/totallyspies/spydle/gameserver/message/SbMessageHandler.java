@@ -3,7 +3,6 @@ package dev.totallyspies.spydle.gameserver.message;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,30 +19,36 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ServerBoundMessageHandler implements BeanPostProcessor {
+public class SbMessageHandler implements BeanPostProcessor {
 
-    private final Logger logger = LoggerFactory.getLogger(ServerBoundMessageHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SbMessageHandler.class);
 
     // TODO add priorities?
+    // Maps between: Class of type Sb<MESSAGE_TYPE> (like SbStartGame) and a list of executors for it
+    // Executor consumes: Message itself (SbStartGame), and client ID
     private final Map<Class<?>, List<BiConsumer<Object, UUID>>> executors = new HashMap<>();
+    // Map between PayloadCase (like PayloadCase.START_GAME) and getter method from SbMessage (like SbMessage#getStartGame)
     private final Map<SbMessage.PayloadCase, Method> payloadGetters = new HashMap<>();
 
-    public ServerBoundMessageHandler() {
+    public SbMessageHandler() {
+        // Using reflection, gets all method names for each of the payload case types
         Map<String, Method> methodNames = new HashMap<>();
         for (Method method : SbMessage.class.getDeclaredMethods()) {
+            // Name like "joingame"
             String name = method.getName().toLowerCase();
             if (!name.startsWith("get")) continue;
             name = name.substring(3);
             methodNames.put(name, method);
         }
 
+        // Maps between a payload case and method for getting that message type from SbMessage
         for (SbMessage.PayloadCase payloadCase : SbMessage.PayloadCase.values()) {
             if (payloadCase == SbMessage.PayloadCase.PAYLOAD_NOT_SET) continue;
             String name = payloadCase.name().replaceAll("_", "").toLowerCase();
             Method getMethod = methodNames.get(name);
             if (getMethod == null) {
                 logger.warn("Warning: Failed to find message class mapping for payloadCase {}, found options {}. " +
-                        "Does the proto follow the right naming scheme?",
+                                "Does the proto follow the right naming scheme?",
                         payloadCase.name(), String.join(", ", methodNames.keySet()));
                 continue;
             }
@@ -51,19 +56,21 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
         }
     }
 
+    // Loop through all beans that have been initialized
     @Override
     public Object postProcessAfterInitialization(Object bean, @NotNull String beanName) throws BeansException {
         for (Method method : bean.getClass().getMethods()) {
             if (method.isAnnotationPresent(SbMessageListener.class)) {
+                // Find SbMessageListener annotation
                 SbMessageListener annotation = method.getAnnotation(SbMessageListener.class);
                 try {
                     registerListener(annotation.value(), method);
-                    logger.debug("Registered ServerBoundMessageListener for payload {} on method {}#{}",
+                    logger.debug("Registered SbMessageListener for payload {} on method {}#{}",
                             annotation.value().name(),
                             method.getDeclaringClass().getCanonicalName(),
                             method.getName());
                 } catch (Exception exception) {
-                    logger.error("Failed to register ServerBoundMessageListener on method {}#{}",
+                    logger.error("Failed to register SbMessageListener on method {}#{}",
                             method.getDeclaringClass().getCanonicalName(),
                             method.getName(),
                             exception);
@@ -77,44 +84,19 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
         Method messageGetter = payloadGetters.get(payloadCase);
         if (messageGetter == null) throw new IllegalArgumentException("Unknown message type " + payloadCase.name());
         Class<?> messageType = messageGetter.getReturnType();
-        switch (method.getParameterCount()) {
-            case 1:
-                Parameter parameter = method.getParameters()[0];
-                if (messageType.isInstance(parameter.getType())) {
-                    registerExecutor(messageType, (message, client) -> {
-                        try {
-                            method.invoke(message);
-                        } catch (IllegalAccessException | InvocationTargetException exception) {
-                            throw new RuntimeException(exception);
-                        }
-                    });
-                    return;
+        if (method.getParameterCount() == 2
+                && messageType.equals(method.getParameters()[0].getType())
+                && method.getParameters()[1].getType() == UUID.class) {
+            registerExecutor(messageType, (message, client) -> {
+                try {
+                    method.invoke(message, client);
+                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    throw new RuntimeException(exception);
                 }
-            case 2:
-                Parameter parameter1 = method.getParameters()[0];
-                Parameter parameter2 = method.getParameters()[1];
-                if (parameter2.getType() == UUID.class && messageType.equals(parameter1.getType())) {
-                    registerExecutor(messageType, (message, client) -> {
-                        try {
-                            method.invoke(message, client);
-                        } catch (IllegalAccessException | InvocationTargetException exception) {
-                            throw new RuntimeException(exception);
-                        }
-                    });
-                    return;
-                } else if (parameter1.getType() == UUID.class && messageType.isInstance(parameter2.getType())) {
-                    registerExecutor(messageType, (message, client) -> {
-                        try {
-                            method.invoke(client, message);
-                        } catch (IllegalAccessException | InvocationTargetException exception) {
-                            throw new RuntimeException(exception);
-                        }
-                    });
-                    return;
-                }
-            default:
-                throw new IllegalArgumentException("Message Listener must contain ServerBoundMessage payload (and possible client UUID)!");
+            });
+            return;
         }
+        throw new IllegalArgumentException("Message Listener must contain just SbMessage payload client UUID)!");
     }
 
     private void registerExecutor(Class<?> messageType, BiConsumer<Object, UUID> executor) {
@@ -125,13 +107,16 @@ public class ServerBoundMessageHandler implements BeanPostProcessor {
     }
 
     private Collection<BiConsumer<Object, UUID>> getExecutors(Class<?> messageType) {
+        if (!executors.containsKey(messageType)) {
+            throw new IllegalArgumentException("Unknown message type " + messageType.getCanonicalName());
+        }
         return executors.get(messageType);
     }
 
     public void execute(SbMessage message, UUID client) {
         Method methodGetter = payloadGetters.get(message.getPayloadCase());
         if (methodGetter == null) {
-            logger.warn("Failing to execute unknown ServerBoundMessage {} with PayloadCase {}", message.getClass().getName(), message.getPayloadCase().name());
+            logger.warn("Failing to execute unknown SbMessage {} with PayloadCase {}", message.getClass().getName(), message.getPayloadCase().name());
             return;
         }
         try {
