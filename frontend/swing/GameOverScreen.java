@@ -48,7 +48,7 @@ public class GameOverScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Open the welcome window and close the GameOverScreen
-                new welcome(); // Open the main Spydle application
+                new welcomestyled(); // Open the main Spydle application
                 dispose(); // Close the Game Over screen
             }
         });
