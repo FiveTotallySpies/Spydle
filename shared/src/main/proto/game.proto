@@ -5,7 +5,7 @@ option java_multiple_files = true;
 
 message SbMessage {
   oneof payload {
-    SbJoinGame join_game = 1;
+    SbSelectName join_game = 1;
     SbStartGame start_game = 2;
     SbLeaveGame leave_game = 3;
     SbGuess guess = 4;
@@ -13,7 +13,7 @@ message SbMessage {
 }
 
 // Server-bound messages
-message SbJoinGame {
+message SbSelectName {
   string player_name = 1;
 }
 

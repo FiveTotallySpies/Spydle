@@ -1,5 +1,6 @@
 package dev.totallyspies.spydle.gameserver.message;
 
+import dev.totallyspies.spydle.gameserver.game.GameLogic;
 import dev.totallyspies.spydle.gameserver.redis.RedisRepositoryService;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
@@ -30,6 +31,9 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
     @Autowired
     private SbMessageHandler messageHandler;
+
+    @Autowired
+    private GameLogic gameLogic;
 
     private final Map<UUID, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -83,6 +87,12 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
             session.close(CloseStatus.NOT_ACCEPTABLE);
             return;
         }
+
+        if (!gameLogic.canAcceptPlayer()) {
+            session.close(CloseStatus.NOT_ACCEPTABLE);
+            return;
+        }
+
         sessions.put(clientId, session);
         logger.info("Initiated connection with client {}", clientId);
     }
@@ -94,7 +104,10 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         if (clientId != null && redisRepositoryService.hasClientSession(clientId)) {
             redisRepositoryService.removeClientSession(clientId);
         }
+
         sessions.remove(clientId);
+
+        gameLogic.playerLeft(clientId);
         logger.info("Closed connection with client {} for reason {}", clientId, status);
     }
 
