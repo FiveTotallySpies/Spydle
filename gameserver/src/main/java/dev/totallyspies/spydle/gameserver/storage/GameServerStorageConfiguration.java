@@ -17,14 +17,14 @@ public class GameServerStorageConfiguration {
 
     @Bean
     @Primary // Fallback option
-    @ConditionalOnProperty(prefix = "storage", name = "type", havingValue = "redis")
+    @ConditionalOnProperty(name = "storage.type", havingValue = "redis")
     public GameServerStorage redisStorage(RedisTemplate<String, Object> redisTemplate) {
         logger.info("Found storage.type=redis, loading RedisStorage");
         return new RedisStorage(redisTemplate);
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "storage", name = "type", havingValue = "redis")
+    @ConditionalOnProperty(name = "storage.type", havingValue = "local")
     public GameServerStorage localStorage() {
         logger.info("Found storage.type=local, loading LocalStorage");
         return new LocalStorage();
