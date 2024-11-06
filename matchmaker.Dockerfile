@@ -8,7 +8,5 @@ FROM amazoncorretto:17 as run
 WORKDIR /app
 COPY --from=build /app/matchmaker/build/libs/*.jar /app/
 COPY --from=build /app/matchmaker/entry.sh /app/
-# Spring app
-EXPOSE 8080
 
 ENTRYPOINT ["sh", "entry.sh"]

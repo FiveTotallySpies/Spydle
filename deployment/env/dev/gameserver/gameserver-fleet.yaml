@@ -14,19 +14,6 @@ spec:
         spec:
           containers:
             - name: gameserver
-              image: gameserver:latest
-              imagePullPolicy: IfNotPresent
               env:
                 - name: ENV
                   value: dev
-                - name: REDIS_HOST
-                  value: redis
-                - name: REDIS_PORT
-                  value: "6379"
-              resources:
-                requests:
-                  memory: "256Mi"
-                  cpu: "200m"
-                limits:
-                  memory: "512Mi"
-                  cpu: "500m"
