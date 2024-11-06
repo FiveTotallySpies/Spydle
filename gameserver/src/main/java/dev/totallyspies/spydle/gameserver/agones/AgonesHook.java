@@ -4,7 +4,6 @@ import agones.dev.sdk.Sdk;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import io.grpc.ManagedChannelBuilder;
 import java.util.concurrent.ExecutionException;
-import lombok.Getter;
 import net.infumia.agones4j.Agones;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,23 +21,33 @@ public class AgonesHook {
 
     private final Logger logger = LoggerFactory.getLogger(AgonesHook.class);
 
-    @Getter
-    private GameServer currentGameServer;
-
     @Bean
-    public Agones agones(
-            @Value("${agones.host}") String agonesHost,
-            @Value("${agones.port}") int agonesPort
+    public GameServer currentGameServer(
+            @Value("${agones.enabled}") boolean enabled,
+            @Value("${agones.host-port}") int agonesPort,
+            @Value("${server.port}") int containerPort
     ) throws ExecutionException, InterruptedException {
+        if (!enabled) {
+            logger.info("Agones Hook has been disabled in application properties, skipping Agones hook...");
+            return GameServer.builder()
+                    .address("localhost")
+                    .port(containerPort)
+                    .name("gameserver-local")
+                    .roomId("12345") // TODO
+                    .publicRoom(false) // TODO
+                    .state(GameServer.State.WAITING)
+                    .build();
+        }
+
         // Construct agones SDK wrapper on GRPC
         final ExecutorService gameServerWatcherExecutor =
                 Executors.newSingleThreadExecutor();
         final ScheduledExecutorService healthCheckExecutor =
                 Executors.newSingleThreadScheduledExecutor();
         Agones agones = Agones.builder()
-                .withAddress(agonesHost, agonesPort)
+                .withAddress("localhost", agonesPort)
                 .withChannel(ManagedChannelBuilder
-                        .forAddress(agonesHost, agonesPort)
+                        .forAddress("localhost", agonesPort)
                         .usePlaintext()
                         .build())
                 .withGameServerWatcherExecutor(gameServerWatcherExecutor)
@@ -48,7 +57,7 @@ public class AgonesHook {
                 )
                 .withHealthCheckExecutor(healthCheckExecutor)
                 .build();
-        logger.info("Instantiated Agones connection on {}:{}", agonesHost, agonesPort);
+        logger.info("Instantiated Agones hook on localhost:{}", agonesPort);
         if (agones.canHealthCheck()) {
             agones.startHealthChecking();
             logger.info("Began Agones health checking");
@@ -65,10 +74,11 @@ public class AgonesHook {
         Sdk.GameServer sdkGameServer = agones.getGameServerFuture().get(); // Blocking
 
         // Store currentGameServer so we can cache in redis
-        currentGameServer = GameServer.builder()
+        GameServer currentGameServer = GameServer.builder()
                 .address(sdkGameServer.getStatus().getAddress())
                 .port(sdkGameServer.getStatus().getPorts(0).getPort())
                 .name(sdkGameServer.getObjectMeta().getName())
+                .roomId("12345") // TODO
                 .publicRoom(false) // TODO
                 .state(GameServer.State.WAITING)
                 .build();
@@ -76,7 +86,7 @@ public class AgonesHook {
         // Mark us as ready
         agones.ready();
 
-        return agones;
+        return currentGameServer;
     }
 
 }
