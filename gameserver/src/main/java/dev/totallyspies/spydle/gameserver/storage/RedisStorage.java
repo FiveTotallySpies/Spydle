@@ -1,6 +1,5 @@
-package dev.totallyspies.spydle.gameserver.storage.redis;
+package dev.totallyspies.spydle.gameserver.storage;
 
-import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.LoggerFactory;
