@@ -1,5 +1,7 @@
 plugins {
     java
+    id("org.springframework.boot") version "3.3.5"
+    id("io.spring.dependency-management") version "1.1.6"
 }
 
 group = "dev.totallyspies.spydle"
@@ -11,6 +13,12 @@ java {
     }
 }
 
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -18,6 +26,17 @@ repositories {
 dependencies {
     // Shared
     implementation(project(":shared"))
+    // SpringBoot
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    // Protobuf
+    implementation("com.google.protobuf:protobuf-java:4.28.3")
+
+    // Testing
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,10 +145,10 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
     }
 
     private Collection<BiConsumer<Object, UUID>> getExecutors(Class<?> messageType) {
-        if (!executors.containsKey(messageType)) {
-            throw new IllegalArgumentException("Unknown message type " + messageType.getCanonicalName());
+        if (executors.containsKey(messageType)) {
+            return executors.get(messageType);
         }
-        return executors.get(messageType);
+        return Collections.EMPTY_SET;
     }
 
     public void execute(MessageType message, UUID client) {

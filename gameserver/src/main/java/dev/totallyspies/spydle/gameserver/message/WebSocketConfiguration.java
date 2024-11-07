@@ -1,5 +1,6 @@
 package dev.totallyspies.spydle.gameserver.message;
 
+import dev.totallyspies.spydle.shared.SharedConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,6 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfiguration implements WebSocketConfigurer {
 
-    private static final String ENDPOINT = "/game";
-
     private final Logger logger = LoggerFactory.getLogger(WebSocketConfiguration.class);
 
     @Autowired
@@ -21,7 +20,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(gameSocketHandler, ENDPOINT)
+        registry.addHandler(gameSocketHandler, SharedConstants.GAME_SOCKET_ENDPOINT)
                 .setAllowedOrigins("*");
         logger.info("Registered web socket handler");
     }

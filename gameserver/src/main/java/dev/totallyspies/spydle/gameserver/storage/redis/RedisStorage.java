@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.gameserver.storage.redis;
 
 import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
+import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,8 +13,8 @@ import java.util.UUID;
  */
 public class RedisStorage implements GameServerStorage {
 
-    private static final  String GAME_SERVER_PREFIX = "gameserver:";
-    private static final String SESSION_PREFIX = "session:";
+    private static final  String GAME_SERVER_PREFIX = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX;
+    private static final String SESSION_PREFIX = SharedConstants.STORAGE_REDIS_SESSION_PREFIX;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
