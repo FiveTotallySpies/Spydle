@@ -3,22 +3,31 @@ package dev.totallyspies.spydle.gameserver.storage.redis;
 import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 /**
  * Wrapper for an external redis storage database that is likely shared between this gameserver and other gameservers.
  */
+@Service
+@Primary
+@ConditionalOnProperty(name = "storage.type", havingValue = "redis")
 public class RedisStorage implements GameServerStorage {
 
     private static final  String GAME_SERVER_PREFIX = "gameserver:";
     private static final String SESSION_PREFIX = "session:";
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
-    public RedisStorage(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public RedisStorage() {
+        LoggerFactory.getLogger(RedisStorage.class).info("Found storage.type=redis, loading RedisStorage");
     }
 
     @Override

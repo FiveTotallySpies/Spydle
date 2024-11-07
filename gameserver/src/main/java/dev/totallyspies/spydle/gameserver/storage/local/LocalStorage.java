@@ -7,16 +7,26 @@ import dev.totallyspies.spydle.shared.model.GameServer;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 
 /**
  * A local in-memory storage implementation for our gameserver to store data in.
  * This storage is exclusive to a singular gameserver instance.
  * This should only be used for local testing.
  */
+@Service
+@ConditionalOnProperty(name = "storage.type", havingValue = "local")
 public class LocalStorage implements GameServerStorage {
 
     private final Map<String, GameServer> gameServerStorage = new ConcurrentHashMap<>();
     private final Map<UUID, ClientSession> sessionStorage = new ConcurrentHashMap<>();
+
+    public LocalStorage() {
+        LoggerFactory.getLogger(LocalStorage.class).info("Found storage.type=local, loading LocalStorage");
+    }
 
     @Override
     public void storeGameServer(GameServer gameServer) {
