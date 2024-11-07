@@ -23,12 +23,6 @@ public class StorageService {
     @Autowired
     private GameServer currentGameServer;
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void onApplicationReady() {
-        storage.storeGameServer(currentGameServer);
-        logger.info("Wrote current game server to storage: {}", currentGameServer);
-    }
-
     public boolean hasClientSession(UUID clientId) {
         Object rawSession = storage.getClientSession(clientId);
         if (!(rawSession instanceof ClientSession session)) return false;
