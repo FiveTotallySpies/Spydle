@@ -33,7 +33,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     private StorageService storageService;
 
     @Autowired
-    private SbMessageHandler messageHandler;
+    private SbMessageListenerProcessor annotationProcessor;
 
     private final Map<UUID, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -62,7 +62,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         SbMessage sbMessage = SbMessage.parseFrom(payload);
 
         // Execute
-        messageHandler.execute(sbMessage, clientId);
+        annotationProcessor.getHandler().execute(sbMessage, clientId);
     }
 
     public void sendCbMessage(UUID clientId, CbMessage message) {

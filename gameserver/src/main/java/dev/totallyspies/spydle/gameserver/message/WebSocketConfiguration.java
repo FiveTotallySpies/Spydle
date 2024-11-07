@@ -12,6 +12,8 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfiguration implements WebSocketConfigurer {
 
+    private static final String ENDPOINT = "/game";
+
     private final Logger logger = LoggerFactory.getLogger(WebSocketConfiguration.class);
 
     @Autowired
@@ -19,7 +21,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(gameSocketHandler, "/game")
+        registry.addHandler(gameSocketHandler, ENDPOINT)
                 .setAllowedOrigins("*");
         logger.info("Registered web socket handler");
     }
