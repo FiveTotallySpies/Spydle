@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.storage.redis;
+package dev.totallyspies.spydle.gameserver.storage;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

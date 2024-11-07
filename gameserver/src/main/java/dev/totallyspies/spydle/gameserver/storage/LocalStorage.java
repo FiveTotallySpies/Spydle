@@ -1,6 +1,5 @@
-package dev.totallyspies.spydle.gameserver.storage.local;
+package dev.totallyspies.spydle.gameserver.storage;
 
-import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 
@@ -9,7 +8,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 /**
