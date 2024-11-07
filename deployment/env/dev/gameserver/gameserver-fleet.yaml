@@ -14,6 +14,16 @@ spec:
         spec:
           containers:
             - name: gameserver
+              image: gameserver:latest
+              imagePullPolicy: IfNotPresent
               env:
                 - name: ENV
                   value: dev
+                - name: REDIS_HOST
+                  value: redis
+                - name: REDIS_PORT
+                  value: "6379"
+                - name: GAME_HOST_PORT
+                  value: "7654"
+                - name: AGONES_HOST_PORT
+                  value: "9357"
