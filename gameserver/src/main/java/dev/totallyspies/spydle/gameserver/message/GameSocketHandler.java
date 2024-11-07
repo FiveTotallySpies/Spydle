@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.gameserver.message;
 
-import dev.totallyspies.spydle.gameserver.redis.RedisRepositoryService;
+import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
+import dev.totallyspies.spydle.gameserver.storage.StorageService;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import java.util.Collection;
@@ -26,7 +27,10 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     private final Logger logger = LoggerFactory.getLogger(GameSocketHandler.class);
 
     @Autowired
-    private RedisRepositoryService redisRepositoryService;
+    private GameServerStorage storage;
+
+    @Autowired
+    private StorageService storageService;
 
     @Autowired
     private SbMessageHandler messageHandler;
@@ -39,7 +43,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws IOException {
-        UUID clientId = redisRepositoryService.parseClientId(session.getAttributes().get(CLIENT_ID_ATTRIBUTE));
+        UUID clientId = storageService.parseClientId(session.getAttributes().get(CLIENT_ID_ATTRIBUTE));
         // Validate session has clientId
         if (clientId == null) {
             logger.warn("Received packet on session {} without {}", session.getId(), CLIENT_ID_ATTRIBUTE);
@@ -47,7 +51,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         }
 
         // Validate that session is allowed to communicate with this gameserver
-        if (!redisRepositoryService.hasClientSession(clientId)) {
+        if (!storageService.hasClientSession(clientId)) {
             session.close(CloseStatus.NOT_ACCEPTABLE);
             logger.warn("Received packet from unconfirmed session {}", session.getId());
             return;
@@ -78,8 +82,8 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // Validate that the client has been assigned to us
-        UUID clientId = redisRepositoryService.parseClientId(session.getAttributes().get(CLIENT_ID_ATTRIBUTE));
-        if (clientId == null || !redisRepositoryService.hasClientSession(clientId)) {
+        UUID clientId = storageService.parseClientId(session.getAttributes().get(CLIENT_ID_ATTRIBUTE));
+        if (clientId == null || !storageService.hasClientSession(clientId)) {
             session.close(CloseStatus.NOT_ACCEPTABLE);
             return;
         }
@@ -90,9 +94,9 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         // Validate that the client had a connection with us before deleting the session
-        UUID clientId = redisRepositoryService.parseClientId(session.getAttributes().get(CLIENT_ID_ATTRIBUTE));
-        if (clientId != null && redisRepositoryService.hasClientSession(clientId)) {
-            redisRepositoryService.removeClientSession(clientId);
+        UUID clientId = storageService.parseClientId(session.getAttributes().get(CLIENT_ID_ATTRIBUTE));
+        if (clientId != null && storageService.hasClientSession(clientId)) {
+            storage.deleteClientSession(clientId);
         }
         sessions.remove(clientId);
         logger.info("Closed connection with client {} for reason {}", clientId, status);
