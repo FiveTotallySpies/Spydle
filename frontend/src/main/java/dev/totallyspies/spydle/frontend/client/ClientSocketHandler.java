@@ -25,13 +25,14 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     private final Logger logger = LoggerFactory.getLogger(ClientSocketHandler.class);
 
     @Getter
-    private final UUID clientId = UUID.randomUUID();
+    private final UUID clientId;
 
     private WebSocketSession session;
     private final WebSocketClient client = new StandardWebSocketClient();
     private final CbMessageListenerProcessor annotationProcessor;
 
-    public ClientSocketHandler(String address, int port, CbMessageListenerProcessor annotationProcessor) {
+    public ClientSocketHandler(String address, int port, CbMessageListenerProcessor annotationProcessor, UUID clientId) {
+        this.clientId = clientId;
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
         headers.add(SharedConstants.CLIENT_ID_HTTP_HEADER, clientId.toString());
         this.annotationProcessor = annotationProcessor;
