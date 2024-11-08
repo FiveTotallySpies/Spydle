@@ -5,9 +5,14 @@ import dev.totallyspies.spydle.frontend.client.message.CbMessageListenerProcesso
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHttpHeaders;
@@ -20,22 +25,30 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
 
+@Component
 public class ClientSocketHandler extends BinaryWebSocketHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ClientSocketHandler.class);
 
-    @Getter
-    private final UUID clientId;
-
-    private WebSocketSession session;
     private final WebSocketClient client = new StandardWebSocketClient();
-    private final CbMessageListenerProcessor annotationProcessor;
 
-    public ClientSocketHandler(String address, int port, CbMessageListenerProcessor annotationProcessor, UUID clientId) {
+    @Getter
+    @Nullable
+    private UUID clientId;
+    private WebSocketSession session;
+
+    @Autowired
+    private CbMessageListenerProcessor annotationProcessor;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
+    public void open(String address, int port, UUID clientId) {
+        if (isOpen()) {
+            throw new IllegalStateException("Cannot open client socket when it is already open!");
+        }
         this.clientId = clientId;
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
         headers.add(SharedConstants.CLIENT_ID_HTTP_HEADER, clientId.toString());
-        this.annotationProcessor = annotationProcessor;
         try {
             URI uri = new URI("ws://" + address + ":" + port + SharedConstants.GAME_SOCKET_ENDPOINT);
             session = client.execute(this, headers, uri).get();
@@ -63,7 +76,9 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         this.session = null;
+        this.clientId = null;
         logger.info("Closed connection to websocket, status: {}", status);
+        eventPublisher.publishEvent(new CloseEvent(this, clientId, status));
     }
 
     public void sendSbMessage(SbMessage message) {
@@ -87,6 +102,20 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         } catch (IOException exception) {
             throw new RuntimeException("Failed to close socket handler", exception);
         }
+    }
+
+    @Getter
+    public static class CloseEvent extends ApplicationEvent {
+
+        private final UUID clientId;
+        private final CloseStatus status;
+
+        public CloseEvent(Object source, UUID clientId, CloseStatus status) {
+            super(source);
+            this.clientId = clientId;
+            this.status = status;
+        }
+
     }
 
 }
