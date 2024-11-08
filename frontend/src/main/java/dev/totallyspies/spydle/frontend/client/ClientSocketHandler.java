@@ -60,6 +60,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         logger.info("Established connection to websocket");
     }
 
+    @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         this.session = null;
         logger.info("Closed connection to websocket, status: {}", status);
