@@ -11,9 +11,9 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 @Configuration
 @EnableWebSocket
-public class WebSocketConfiguration implements WebSocketConfigurer {
+public class GameSocketConfiguration implements WebSocketConfigurer {
 
-    private final Logger logger = LoggerFactory.getLogger(WebSocketConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(GameSocketConfiguration.class);
 
     @Autowired
     private GameSocketHandler gameSocketHandler;
