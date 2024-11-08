@@ -34,8 +34,9 @@ public class AutoscaleController {
                     .uid(request.getRequest().getUid())
                     .replicas(desired)
                     .scale(true);
+            AutoscaleResponseModel responseWrapped = new AutoscaleResponseModel().response(response);
             logger.info("Successfully handled /autoscale request, response: {}", response.toJson());
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(responseWrapped);
         } catch (Exception exception) {
             logger.error("Failed to handle /autoscale", exception);
             return ResponseEntity.status(500).body(exception.getMessage());
