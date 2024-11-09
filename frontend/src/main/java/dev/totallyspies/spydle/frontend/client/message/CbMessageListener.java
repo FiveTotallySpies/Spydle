@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.message;
+package dev.totallyspies.spydle.frontend.client.message;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SbMessageListener {
+public @interface CbMessageListener {
 
 }
