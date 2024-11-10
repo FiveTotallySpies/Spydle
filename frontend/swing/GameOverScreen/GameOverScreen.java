@@ -18,10 +18,39 @@ public class GameOverScreen extends JFrame {
         container.setBackground(new Color(195, 217, 255)); // Light blue background
 
         // Title label
-        JLabel titleLabel = new JLabel("Hopefully you enjoyed the play!");
+        JLabel titleLabel = new JLabel("Congratulations to the Best Players!");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setForeground(Color.DARK_GRAY);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Player rankings with emojis
+        JPanel rankingsPanel = new JPanel();
+        rankingsPanel.setLayout(new BoxLayout(rankingsPanel, BoxLayout.Y_AXIS));
+        rankingsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rankingsPanel.setBackground(new Color(195, 217, 255)); // Same light blue background as the container
+
+        // First place (Darkened Gold)
+        JLabel firstPlace = new JLabel("1st: 🥇 Player 1 - 100 points");
+        firstPlace.setFont(new Font("Arial", Font.PLAIN, 18));
+        firstPlace.setForeground(new Color(212, 175, 55)); // Darker gold color (#D4AF37)
+        firstPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Second place (Brightened Silver)
+        JLabel secondPlace = new JLabel("2nd: 🥈 Player 2 - 80 points");
+        secondPlace.setFont(new Font("Arial", Font.PLAIN, 18));
+        secondPlace.setForeground(new Color(169, 169, 169));
+        secondPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Third place (Bronze)
+        JLabel thirdPlace = new JLabel("3rd: 🥉 Player 3 - 60 points");
+        thirdPlace.setFont(new Font("Arial", Font.PLAIN, 18));
+        thirdPlace.setForeground(new Color(205, 136, 64)); // Bronze color (#CD8740)
+        thirdPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Add the labels to the rankings panel
+        rankingsPanel.add(firstPlace);
+        rankingsPanel.add(secondPlace);
+        rankingsPanel.add(thirdPlace);
 
         // Thank you message
         JLabel thankYouLabel = new JLabel("Thank you for playing Spydle!");
@@ -33,16 +62,6 @@ public class GameOverScreen extends JFrame {
         // Return to Welcome Page Button
         JButton returnButton = new JButton("Return to Welcome Page");
         styleButton(returnButton);
-
-//        // Action for Return button I replaced under here with the main spydle app
-//        returnButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                // Action to return to the welcome screen or exit for now
-//                JOptionPane.showMessageDialog(container, "Returning to Welcome Page...");
-//                dispose(); // Close the current window
-//            }
-//        });
 
         returnButton.addActionListener(new ActionListener() {
             @Override
@@ -56,6 +75,8 @@ public class GameOverScreen extends JFrame {
         // Add components to container
         container.add(titleLabel);
         container.add(Box.createVerticalStrut(10));
+        container.add(rankingsPanel);  // Add the rankings panel
+        container.add(Box.createVerticalStrut(20));
         container.add(thankYouLabel);
         container.add(Box.createVerticalStrut(20));
         container.add(returnButton);
