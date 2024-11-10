@@ -1,9 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class AllRoomsPage extends JFrame {
+public class AllRoomScreen extends JFrame {
 
-    public AllRoomsPage() {
+    public AllRoomScreen() {
         setTitle("All Rooms");
         setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,7 +41,7 @@ public class AllRoomsPage extends JFrame {
         styleButton(backButton);
         backButton.addActionListener(e -> {
             this.dispose(); // Close current window
-            new welcomestyled(); // Open the welcome page again
+            new welcomestyled(); // Open the welcome page again (ensure the class is correctly named)
         });
 
         // Adding components to container
@@ -81,6 +81,6 @@ public class AllRoomsPage extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(AllRoomsPage::new);
+        SwingUtilities.invokeLater(AllRoomScreen::new);
     }
 }

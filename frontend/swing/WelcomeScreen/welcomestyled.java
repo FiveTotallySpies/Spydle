@@ -23,7 +23,6 @@ public class welcomestyled extends JFrame {
         titleLabel.setForeground(new Color(139, 0 ,0));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-
         // Subtitle styling
         JLabel joinLabel = new JLabel("Join an existing room");
         joinLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -73,7 +72,7 @@ public class welcomestyled extends JFrame {
         viewAllRoomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openRoomsPage(); // Open the rooms page (AllRoomsPage)
+                openRoomsPage(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
             }
         });
 
@@ -142,10 +141,12 @@ public class welcomestyled extends JFrame {
         });
     }
 
-    // Method to open the AllRoomsPage
+    // Method to open the AllRoomsScreen.AllRoomsPage
     private void openRoomsPage() {
-        new AllRoomsPage(); // Open the AllRoomsPage
-        this.dispose(); // Close the current window (optional)
+        // Close the current window (optional)
+        this.dispose();
+        // Open the AllRoomScreen window
+        new AllRoomScreen(); // Ensure AllRoomScreen is correctly imported
     }
 
     public static void main(String[] args) {
