@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class welcomestyled extends JFrame {
 
@@ -22,6 +23,7 @@ public class welcomestyled extends JFrame {
         titleLabel.setForeground(new Color(139, 0 ,0));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+
         // Subtitle styling
         JLabel joinLabel = new JLabel("Join an existing room");
         joinLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -35,13 +37,15 @@ public class welcomestyled extends JFrame {
         createRoomPanel.setBackground(new Color(195, 217, 255)); // same as container
         createRoomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
-        JTextField nicknameField = new JTextField(15);
-        nicknameField.setToolTipText("Enter your nickname");
-        nicknameField.setMaximumSize(new Dimension(400, 30));
+        JTextField nicknameField = createPlaceholderTextField("Enter your nickname");
+        JTextField roomNameField = createPlaceholderTextField("Enter room name");
+
         JButton createRoomButton = new JButton("Create Room");
         styleButton(createRoomButton);
 
         createRoomPanel.add(nicknameField);
+        createRoomPanel.add(Box.createVerticalStrut(10));
+        createRoomPanel.add(roomNameField);
         createRoomPanel.add(Box.createVerticalStrut(10));
         createRoomPanel.add(createRoomButton);
 
@@ -51,12 +55,8 @@ public class welcomestyled extends JFrame {
         joinRoomPanel.setBackground(new Color(195, 217, 255));
         joinRoomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-        JTextField joinNicknameField = new JTextField(15);
-        joinNicknameField.setToolTipText("Enter your nickname");
-        joinNicknameField.setMaximumSize(new Dimension(400, 30));
-        JTextField roomCodeField = new JTextField(15);
-        roomCodeField.setToolTipText("Room code");
-        roomCodeField.setMaximumSize(new Dimension(400, 30));
+        JTextField joinNicknameField = createPlaceholderTextField("Enter your nickname");
+        JTextField roomCodeField = createPlaceholderTextField("Enter existing room name");
 
         JButton joinRoomButton = new JButton("Join Room");
         styleButton(joinRoomButton);
@@ -67,15 +67,54 @@ public class welcomestyled extends JFrame {
         joinRoomPanel.add(Box.createVerticalStrut(10));
         joinRoomPanel.add(joinRoomButton);
 
+        // View All Rooms button
+        JButton viewAllRoomsButton = new JButton("View All Rooms");
+        styleButton(viewAllRoomsButton);
+        viewAllRoomsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openRoomsPage(); // Open the rooms page (AllRoomsPage)
+            }
+        });
+
         // Adding components to container
         container.add(titleLabel);
         container.add(Box.createVerticalStrut(20));
         container.add(createRoomPanel);
         container.add(joinLabel);
         container.add(joinRoomPanel);
+        container.add(Box.createVerticalStrut(20));
+        container.add(viewAllRoomsButton); // Add the button to the panel
 
         add(container);
         setVisible(true);
+    }
+
+    private JTextField createPlaceholderTextField(String placeholder) {
+        JTextField textField = new JTextField(15);
+        textField.setText(placeholder);  // Set the placeholder text
+        textField.setForeground(new Color(169, 169, 169));  // Grey color for placeholder
+        textField.setMaximumSize(new Dimension(400, 30));
+
+        // FocusListener to implement placeholder text behavior
+        textField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (textField.getText().equals(placeholder)) {
+                    textField.setText("");
+                    textField.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (textField.getText().isEmpty()) {
+                    textField.setText(placeholder);
+                    textField.setForeground(new Color(169, 169, 169)); // Grey color
+                }
+            }
+        });
+        return textField;
     }
 
     private void styleButton(JButton button) {
@@ -101,6 +140,12 @@ public class welcomestyled extends JFrame {
                 button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             }
         });
+    }
+
+    // Method to open the AllRoomsPage
+    private void openRoomsPage() {
+        new AllRoomsPage(); // Open the AllRoomsPage
+        this.dispose(); // Close the current window (optional)
     }
 
     public static void main(String[] args) {
