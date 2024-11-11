@@ -1,7 +1,11 @@
+package frontend.swing.GameOverScreen;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import frontend.swing.WelcomeScreen.WelcomeStyled;
 
 public class GameOverScreen extends JFrame {
 
@@ -67,7 +71,7 @@ public class GameOverScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Open the welcome window and close the GameOverScreen
-                new welcomestyled(); // Open the main Spydle application
+                new WelcomeStyled(); // Open the main Spydle application
                 dispose(); // Close the Game Over screen
             }
         });
