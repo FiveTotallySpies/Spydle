@@ -7,7 +7,7 @@ public class GameOverScreen extends JFrame {
 
     public GameOverScreen() {
         setTitle("Game Over");
-        setSize(400, 300);
+        setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 

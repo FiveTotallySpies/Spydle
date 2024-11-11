@@ -5,7 +5,7 @@ public class AllRoomScreen extends JFrame {
 
     public AllRoomScreen() {
         setTitle("All Rooms");
-        setSize(500, 400);
+        setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 

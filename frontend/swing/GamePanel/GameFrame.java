@@ -24,10 +24,10 @@ public class GameFrame extends JFrame {
         JButton backButton = new JButton("Back to Welcome");
         backButton.setFont(new Font("Arial", Font.BOLD, 14));
         backButton.setBackground(new Color(138, 43, 226)); // blueviolet
-        backButton.setForeground(new Color(0, 0, 0)); // Set text color to black
+        backButton.setForeground(Color.white);
         backButton.setFocusPainted(false);
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        backButton.setPreferredSize(new Dimension(150, 40));
+        backButton.setPreferredSize(new Dimension(200, 40));
 
         // Add ActionListener to handle back button click
         backButton.addActionListener(e -> {
