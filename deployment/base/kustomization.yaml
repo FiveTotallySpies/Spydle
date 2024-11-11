@@ -16,5 +16,5 @@ resources:
 #- matchmaker/matchmaker-networkpolicy.yaml
 - gameserver/gameserver-fleet.yaml
 - gameserver/fleet-autoscaler.yaml
-#- gameserver/gameserver-networkpolicy.yaml
+- gameserver/gameserver-networkpolicy.yaml
 - ingress/ingress.yaml
