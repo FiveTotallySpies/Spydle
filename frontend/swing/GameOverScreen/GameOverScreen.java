@@ -1,11 +1,11 @@
-package frontend.swing.GameOverScreen;
+//package frontend.swing.GameOverScreen;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import frontend.swing.WelcomeScreen.WelcomeStyled;
+//import frontend.swing.WelcomeScreen.WelcomeStyled;
 
 public class GameOverScreen extends JFrame {
 

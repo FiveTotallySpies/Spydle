@@ -1,3 +1,5 @@
+package AllRoomScreen;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -41,7 +43,7 @@ public class AllRoomScreen extends JFrame {
         styleButton(backButton);
         backButton.addActionListener(e -> {
             this.dispose(); // Close current window
-            new welcomestyled(); // Open the welcome page again (ensure the class is correctly named)
+            new WelcomeStyled(); // Open the welcome page again (ensure the class is correctly named)
         });
 
         // Adding components to container

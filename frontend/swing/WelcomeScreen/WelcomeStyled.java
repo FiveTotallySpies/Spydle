@@ -1,4 +1,4 @@
-package frontend.swing.WelcomeScreen;
+//package frontend.swing.WelcomeScreen;
 
 import javax.swing.*;
 import java.awt.*;
