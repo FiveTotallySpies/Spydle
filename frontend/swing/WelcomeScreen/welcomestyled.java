@@ -6,7 +6,7 @@ public class welcomestyled extends JFrame {
 
     public welcomestyled() {
         setTitle("Welcome - Join or Create Room");
-        setSize(500, 500);
+        setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
