@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -21,6 +22,9 @@ import org.springframework.context.annotation.Primary;
 public class CurrentGameServerConfiguration {
 
     private final Logger logger = LoggerFactory.getLogger(CurrentGameServerConfiguration.class);
+
+    @Autowired
+    private ApplicationContext context;
 
     @Autowired
     private GameServerStorage storage;
@@ -45,8 +49,13 @@ public class CurrentGameServerConfiguration {
                 .name(gameServerName)
                 .roomCode(roomCode)
                 .publicRoom(false)
-                .state(GameServer.State.WAITING)
+                .state(GameServer.State.READY)
                 .build());
+    }
+
+    public void updateInStorage() {
+        GameServer currentGameServer = context.getBean(GameServer.class);
+        writeCurrentGameServer(currentGameServer);
     }
 
     private GameServer writeCurrentGameServer(GameServer currentGameServer) {

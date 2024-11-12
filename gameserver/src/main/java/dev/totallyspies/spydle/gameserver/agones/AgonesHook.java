@@ -76,7 +76,7 @@ public class AgonesHook {
                 .name(gameServerName)
                 .roomCode(roomCode)
                 .publicRoom(true) // TODO make false by default
-                .state(GameServer.State.WAITING)
+                .state(GameServer.State.READY)
                 .build();
 
         // Mark us as ready
