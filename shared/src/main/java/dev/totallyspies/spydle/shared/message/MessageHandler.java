@@ -127,7 +127,7 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
 
             registerExecutor(messageType, (message, client) -> {
                 try {
-                    method.invoke(message, client);
+                    method.invoke(bean, message, client);
                 } catch (Exception exception) {
                     throw new RuntimeException(exception);
                 }
