@@ -106,7 +106,7 @@ public class AgonesAllocatorService {
         }
 
         String gameServerName = response.getGameServerName();
-        String roomCode = gameServerName.substring(gameServerName.length() - 1).toUpperCase();
+        String roomCode = gameServerName.substring(gameServerName.length() - 5).toUpperCase();
 
         if (!gameServerRepository.gameServerExists(roomCode)) {
             // TODO un-allocate/destroy instance?

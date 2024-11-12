@@ -50,7 +50,9 @@ public class MatchmakingService {
     public List<String> listGames() {
         return gameServerRepository.getGameServers()
                 .stream()
-                .filter(GameServer::isPublicRoom)
+                .filter(gameServer ->
+                        gameServer.isPublicRoom()
+                        && gameServer.getState() == GameServer.State.WAITING)
                 .map(GameServer::getRoomCode)
                 .toList();
     }
