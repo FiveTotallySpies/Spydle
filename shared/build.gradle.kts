@@ -28,8 +28,12 @@ dependencies {
     // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+    // Protobuf
     implementation("com.google.protobuf:protobuf-java:4.28.3")
     implementation("com.google.code.gson:gson:2.11.0")
+    // Assume other modules package a slf4j backend implementation
+    compileOnly("org.slf4j:slf4j-api:2.0.16")
+
 }
 
 buildscript {
