@@ -24,37 +24,32 @@ public class CurrentGameServerConfiguration {
     @Autowired
     private GameServerStorage storage;
 
-    private GameServer currentGameServer;
-
     @Bean
     @Primary
     @ConditionalOnProperty(name = "agones.enabled", havingValue = "true")
     public GameServer currentAgonesGameServer(AgonesHook agonesHook) {
         logger.info("Agones enabled, loading agones current game server info...");
-        currentGameServer = agonesHook.getCurrentGameServer();
-        writeCurrentGameServer();
-        return currentGameServer;
+        return writeCurrentGameServer(agonesHook.getCurrentGameServer());
     }
 
     @Bean
     @ConditionalOnProperty(name = "agones.enabled", havingValue = "false")
     public GameServer currentLocalGameServer(@Value("${server.port}") int containerPort) {
         logger.info("Agones disabled, loading local current game server info...");
-        currentGameServer = GameServer.builder()
+        return writeCurrentGameServer(GameServer.builder()
                 .address("localhost")
                 .port(containerPort)
                 .name("gameserver-local")
                 .roomId("12345") // TODO
                 .publicRoom(false) // TODO
                 .state(GameServer.State.WAITING)
-                .build();
-        writeCurrentGameServer();
-        return currentGameServer;
+                .build());
     }
 
-    private void writeCurrentGameServer() {
+    private GameServer writeCurrentGameServer(GameServer currentGameServer) {
         storage.storeGameServer(currentGameServer);
         logger.info("Wrote current game server to storage: {}", currentGameServer);
+        return currentGameServer;
     }
 
 }

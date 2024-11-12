@@ -7,7 +7,6 @@ import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import java.util.Collection;
 
-import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,13 +120,6 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
             return null;
         }
         return headerValues.get(0);
-    }
-
-    @PreDestroy
-    public void onShutdown() {
-        for (UUID clientId : getSessions()) {
-            storage.deleteClientSession(clientId);
-        }
     }
 
 }
