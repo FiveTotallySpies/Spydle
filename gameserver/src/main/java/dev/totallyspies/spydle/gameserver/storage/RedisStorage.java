@@ -1,5 +1,6 @@
 package dev.totallyspies.spydle.gameserver.storage;
 
+import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.LoggerFactory;
@@ -19,8 +20,8 @@ import org.springframework.stereotype.Service;
 @ConditionalOnProperty(name = "storage.type", havingValue = "redis")
 public class RedisStorage implements GameServerStorage {
 
-    private static final  String GAME_SERVER_PREFIX = "gameserver:";
-    private static final String SESSION_PREFIX = "session:";
+    private static final  String GAME_SERVER_PREFIX = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX;
+    private static final String SESSION_PREFIX = SharedConstants.STORAGE_REDIS_SESSION_PREFIX;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;

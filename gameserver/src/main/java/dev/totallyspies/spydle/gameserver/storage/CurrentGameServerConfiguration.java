@@ -34,14 +34,14 @@ public class CurrentGameServerConfiguration {
     @Primary
     @ConditionalOnProperty(name = "agones.enabled", havingValue = "true")
     public GameServer currentAgonesGameServer(AgonesHook agonesHook) {
-        logger.info("Agones has been enabled in application properties, loading agones current game server info...");
+        logger.info("Agones enabled, loading agones current game server info...");
         return agonesHook.getCurrentGameServer();
     }
 
     @Bean
     @ConditionalOnProperty(name = "agones.enabled", havingValue = "false")
     public GameServer currentLocalGameServer(@Value("${server.port}") int containerPort) {
-        logger.info("Agones has been disabled in application properties, loading local current game server info...");
+        logger.info("Agones disabled, loading local current game server info...");
         return GameServer.builder()
                 .address("localhost")
                 .port(containerPort)
