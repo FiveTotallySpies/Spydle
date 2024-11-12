@@ -4,26 +4,30 @@ import dev.totallyspies.spydle.shared.proto.messages.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class GameLogic {
     private final Map<UUID, Player> joinedPlayers;
     private final AtomicBoolean gameInProgress;
+    private final Timer timer;
+
+    private static final int TIMER_INTERVAL_MILLIS = 1000;
+    private static final AtomicInteger TOTAL_GAME_TIME_SECONDS = new AtomicInteger(30);
 
     public GameLogic() {
         this.joinedPlayers = new ConcurrentHashMap<UUID, Player>();
         this.gameInProgress = new AtomicBoolean(false);
+        this.timer = new Timer();
     }
 
     public void playerLeft(UUID clientId) {
         this.joinedPlayers.remove(clientId);
-    }
-
-    public boolean canAcceptPlayer() {
-        return true; // TODO: return a response based on the number of players connected
     }
 
     public void onPlayerNameSelect(SbSelectName event, UUID client) {
@@ -36,6 +40,10 @@ public class GameLogic {
 
         var player = Player.newBuilder().setPlayerName(playerName).setScore(0).build();
         this.joinedPlayers.put(client, player);
+    }
+
+    public boolean isGameInProgress() {
+
     }
 
     public CbGameStart onGameStart(UUID client) {
