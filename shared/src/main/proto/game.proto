@@ -5,7 +5,7 @@ option java_multiple_files = true;
 
 message SbMessage {
   oneof payload {
-    SbSelectName join_game = 1;
+    SbSelectName select_name = 1;
     SbStartGame start_game = 2;
     SbLeaveGame leave_game = 3;
     SbGuess guess = 4;

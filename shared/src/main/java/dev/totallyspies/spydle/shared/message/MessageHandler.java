@@ -127,8 +127,9 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
 
             registerExecutor(messageType, (message, client) -> {
                 try {
+                    logger.info("DEBUG: " + message.getClass().getName()+" method "+method.getName());
                     method.invoke(message, client);
-                } catch (IllegalAccessException | InvocationTargetException exception) {
+                } catch (Exception exception) {
                     throw new RuntimeException(exception);
                 }
             });
