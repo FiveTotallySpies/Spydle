@@ -1,7 +1,8 @@
 package dev.totallyspies.spydle.gameserver.message;
 
+import dev.totallyspies.spydle.gameserver.session.ClientSessionValidator;
 import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
-import dev.totallyspies.spydle.gameserver.storage.StorageService;
+import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import java.util.Collection;
@@ -16,7 +17,9 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class GameSocketHandler extends BinaryWebSocketHandler {
 
-    private static final String CLIENT_ID_ATTRIBUTE = "clientId";
+    private static final String HEADER = SharedConstants.CLIENT_ID_HTTP_HEADER;
 
     private final Logger logger = LoggerFactory.getLogger(GameSocketHandler.class);
 
@@ -32,10 +35,10 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     private GameServerStorage storage;
 
     @Autowired
-    private StorageService storageService;
+    private ClientSessionValidator sessionValidator;
 
     @Autowired
-    private SbMessageHandler messageHandler;
+    private SbMessageListenerProcessor annotationProcessor;
 
     private final Map<UUID, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -45,17 +48,18 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws IOException {
-        UUID clientId = storageService.parseClientId(session.getAttributes().get(CLIENT_ID_ATTRIBUTE));
+        String rawClientId = getClientId(session);
+        UUID clientId = sessionValidator.parseClientId(rawClientId);
         // Validate session has clientId
         if (clientId == null) {
-            logger.warn("Received packet on session {} without {}", session.getId(), CLIENT_ID_ATTRIBUTE);
+            logger.warn("Received packet on session {} without header {}", rawClientId, HEADER);
             return;
         }
 
         // Validate that session is allowed to communicate with this gameserver
-        if (!storageService.hasClientSession(clientId)) {
+        if (!sessionValidator.validateClientSession(clientId)) {
             session.close(CloseStatus.NOT_ACCEPTABLE);
-            logger.warn("Received packet from unconfirmed session {}", session.getId());
+            logger.warn("Received packet from unconfirmed session {}", rawClientId);
             return;
         }
 
@@ -64,8 +68,9 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         SbMessage sbMessage = SbMessage.parseFrom(payload);
 
         // Execute
-        messageHandler.execute(sbMessage, clientId);
+        annotationProcessor.getHandler().execute(sbMessage, clientId);
     }
+
 
     public void sendCbMessage(UUID clientId, CbMessage message) {
         try {
@@ -84,9 +89,11 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // Validate that the client has been assigned to us
-        UUID clientId = storageService.parseClientId(session.getAttributes().get(CLIENT_ID_ATTRIBUTE));
-        if (clientId == null || !storageService.hasClientSession(clientId)) {
+        String rawClientId = getClientId(session);
+        UUID clientId = sessionValidator.parseClientId(rawClientId);
+        if (clientId == null || !sessionValidator.validateClientSession(clientId)) {
             session.close(CloseStatus.NOT_ACCEPTABLE);
+            logger.warn("Client attempted to open unconfirmed session {}, closing...", rawClientId);
             return;
         }
         sessions.put(clientId, session);
@@ -94,14 +101,26 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         // Validate that the client had a connection with us before deleting the session
-        UUID clientId = storageService.parseClientId(session.getAttributes().get(CLIENT_ID_ATTRIBUTE));
-        if (clientId != null && storageService.hasClientSession(clientId)) {
+        String rawClientId = getClientId(session);
+        UUID clientId = sessionValidator.parseClientId(rawClientId);
+        if (clientId != null && sessionValidator.validateClientSession(clientId)) {
             storage.deleteClientSession(clientId);
         }
-        sessions.remove(clientId);
-        logger.info("Closed connection with client {} for reason {}", clientId, status);
+        if (clientId != null) {
+            sessions.remove(clientId);
+        }
+        logger.info("Closed connection with client {} for reason {}", rawClientId, status);
+    }
+
+    @Nullable
+    private static String getClientId(WebSocketSession session) {
+        List<String> headerValues = session.getHandshakeHeaders().get(HEADER);
+        if (headerValues == null || headerValues.isEmpty()) {
+            return null;
+        }
+        return headerValues.get(0);
     }
 
     @PreDestroy
