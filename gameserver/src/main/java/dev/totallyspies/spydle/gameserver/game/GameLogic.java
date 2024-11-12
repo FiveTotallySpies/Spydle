@@ -43,7 +43,7 @@ public class GameLogic {
     }
 
     public boolean isGameInProgress() {
-
+        return this.gameInProgress.get();
     }
 
     public CbGameStart onGameStart(UUID client) {
