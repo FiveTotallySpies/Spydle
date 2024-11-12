@@ -36,7 +36,7 @@ public class GameShutdownHook implements ApplicationListener<ApplicationReadyEve
     public void onApplicationEvent(ApplicationReadyEvent event) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Executing custom shutdown hook, clearing redis data");
-            storage.deleteGameServer(currentGameServer.getName());
+            storage.deleteGameServer(currentGameServer);
             for (UUID clientId : handler.getSessions()) {
                 storage.deleteClientSession(clientId);
             }

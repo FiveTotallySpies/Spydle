@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.matchmaker.controller;
 
 import dev.totallyspies.spydle.matchmaker.generated.model.*;
+import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
 import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
 import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
 import dev.totallyspies.spydle.shared.model.GameServer;
@@ -29,6 +30,9 @@ public class GameController {
     private MatchmakingService matchmakingService;
 
     @Autowired
+    private GameServerRepository gameServerRepository;
+
+    @Autowired
     private SessionRepository sessionRepository;
 
     @PostMapping("/create-game")
@@ -37,7 +41,7 @@ public class GameController {
         logger.info("Received request: /create-game, clientId: {}", request.getClientId());
         if (clientId == null) {
             logger.info("Request for /create-game has bad clientId: {}", request.getClientId());
-            return ResponseEntity.status(400).body("Bad clientId: should be UUID");
+            return ResponseEntity.status(400).body(new ClientErrorResponse().message("Bad clientId: should be UUID"));
         }
         try {
             GameServer gameServer = matchmakingService.createGame(clientId);
@@ -52,35 +56,30 @@ public class GameController {
     @PostMapping("/join-game")
     public ResponseEntity<?> joinGame(@RequestBody JoinGameRequestModel request) {
         UUID clientId = sessionRepository.parseClientId(request.getClientId());
-        logger.info("Received request: /join-game, clientId: {}, gameServerName: {}", request.getClientId(), request.getGameServerName());
+        logger.info("Received request: /join-game, clientId: {}, gameServerName: {}", request.getClientId(), request.getRoomCode());
         if (clientId == null) {
             logger.info("Request for /join-game has bad clientId: {}", request.getClientId());
-            return ResponseEntity.status(400).body("Bad clientId: should be UUID");
+            return ResponseEntity.status(400).body(new ClientErrorResponse().message("Bad clientId: should be UUID"));
         }
         try {
-            GameServer gameServer = matchmakingService.joinGame(clientId, request.getGameServerName());
+            if (!gameServerRepository.gameServerExists(request.getRoomCode())) {
+                logger.info("Request for /join-game requests room that doesn't exist: {}", request.getRoomCode());
+                return ResponseEntity.status(404).body(
+                        new ClientErrorResponse().message("Could not find game server: " + request.getRoomCode()));
+            }
+            if (sessionRepository.sessionExists(clientId)) {
+                logger.info("Request for /join-game is try to join room {} when they are already in {}",
+                        request.getRoomCode(),
+                        sessionRepository.getSession(clientId).getGameServer().getRoomCode());
+                return ResponseEntity.status(403).body(
+                        new ClientErrorResponse().message("Cannot join room: you are already in one"));
+            }
+            GameServer gameServer = gameServerRepository.getGameServer(request.getRoomCode());
+            matchmakingService.joinGame(clientId, gameServer);
             logger.info("Successfully handled /join-game request: {}", gameServer);
             return ResponseEntity.ok(new JoinGameResponseModel().gameServer(gameServer));
         } catch (Exception exception) {
             logger.error("Failed to handle /join-game", exception);
-            return ResponseEntity.status(500).body(exception.getMessage());
-        }
-    }
-
-    @PostMapping("/leave-game")
-    public ResponseEntity<?> leaveGame(@RequestBody LeaveGameRequestModel request) {
-        UUID clientId = sessionRepository.parseClientId(request.getClientId());
-        logger.info("Received request: /join-game, clientId: {}", request.getClientId());
-        if (clientId == null) {
-            logger.info("Request for /leave-game has bad clientId: {}", request.getClientId());
-            return ResponseEntity.status(400).body("Bad clientId: should be UUID");
-        }
-        try {
-            matchmakingService.leaveGame(clientId);
-            logger.info("Successfully handled /leave-game request");
-            return ResponseEntity.ok(new LeaveGameResponseModel().success(true));
-        } catch (Exception exception) {
-            logger.error("Failed to handle /leave-game", exception);
             return ResponseEntity.status(500).body(exception.getMessage());
         }
     }

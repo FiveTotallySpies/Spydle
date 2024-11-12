@@ -14,7 +14,7 @@ import lombok.Data;
 public class ClientSession implements Serializable {
 
     private UUID clientId;
-    private String gameServerName;
+    private GameServer gameServer;
 
     public static void validateJsonElement(JsonElement clientSession) {
         JsonValidator.validateJsonElement(clientSession, ClientSession.class);

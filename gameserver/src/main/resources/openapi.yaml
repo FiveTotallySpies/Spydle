@@ -7,7 +7,7 @@ components:
   schemas:
     GameServerModel:
       type: object
-      required: [ address, port, gameServerName, roomId, publicRoom, state ]
+      required: [ address, port, gameServerName, roomCode, publicRoom, state ]
       x-implements: "java.io.Serializable"
       properties:
         address:
@@ -16,7 +16,7 @@ components:
           type: integer
         gameServerName:
           type: string
-        roomId:
+        roomCode:
           type: string
         publicRoom:
           type: boolean

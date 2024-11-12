@@ -37,6 +37,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateGameResponseModel'
+        '400':
+          description: Bad client ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientErrorResponse'
   /join-game:
     post:
       operationId: joinGame
@@ -54,25 +60,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JoinGameResponseModel'
-  /leave-game:
-    post:
-      operationId: leaveGame
-      summary: Leave a game you are currently connected to
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LeaveGameRequestModel'
-      responses:
-        '200':
-          description: Success
+        '400':
+          description: Bad client ID
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LeaveGameResponseModel'
+                $ref: '#/components/schemas/ClientErrorResponse'
+        '404':
+          description: Room not found or not public
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientErrorResponse'
+        '403':
+          description: Client is already in a game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientErrorResponse'
 components:
   schemas:
+    ClientErrorResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
     AutoscaleRequestModel:
       type: object
       required: [request]
@@ -133,7 +146,7 @@ components:
       properties:
         clientId:
           type: string
-        gameServerName:
+        roomCode:
           type: string
     JoinGameResponseModel:
       type: object

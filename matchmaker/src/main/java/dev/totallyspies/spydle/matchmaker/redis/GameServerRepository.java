@@ -14,12 +14,12 @@ public class GameServerRepository {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public GameServer getGameServer(String gameServerName) {
-        return (GameServer) redisTemplate.opsForValue().get(PREFIX + gameServerName);
+    public GameServer getGameServer(String roomCode) {
+        return (GameServer) redisTemplate.opsForValue().get(PREFIX + roomCode);
     }
 
-    public boolean gameServerExists(String gameServerName) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(PREFIX + gameServerName));
+    public boolean gameServerExists(String roomCode) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(PREFIX + roomCode));
     }
 
 }

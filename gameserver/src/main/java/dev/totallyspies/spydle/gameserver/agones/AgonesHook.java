@@ -65,13 +65,16 @@ public class AgonesHook {
 
         Sdk.GameServer sdkGameServer = agones.getGameServerFuture().get(); // Blocking
 
+        String gameServerName = sdkGameServer.getObjectMeta().getName();
+        String roomCode = gameServerName.substring(gameServerName.length() - 5).toUpperCase();
+
         // Store currentGameServer so we can cache in redis
         currentGameServer = GameServer.builder()
                 .address(sdkGameServer.getStatus().getAddress())
                 .port(sdkGameServer.getStatus().getPorts(0).getPort())
-                .name(sdkGameServer.getObjectMeta().getName())
-                .roomId("12345") // TODO
-                .publicRoom(false) // TODO
+                .name(gameServerName)
+                .roomCode(roomCode)
+                .publicRoom(false)
                 .state(GameServer.State.WAITING)
                 .build();
 

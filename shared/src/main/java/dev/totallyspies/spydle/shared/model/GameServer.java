@@ -15,7 +15,7 @@ public class GameServer implements Serializable {
     private String address;
     private int port;
     private String name;
-    private String roomId;
+    private String roomCode;
     private boolean publicRoom;
     private State state;
 

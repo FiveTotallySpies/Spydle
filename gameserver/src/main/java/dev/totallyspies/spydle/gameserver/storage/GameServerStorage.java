@@ -14,14 +14,22 @@ public interface GameServerStorage {
 
     void storeGameServer(GameServer gameServer);
 
-    GameServer getGameServer(String name);
+    GameServer getGameServer(String roomCode);
 
-    void deleteGameServer(String name);
+    void deleteGameServer(String roomCode);
+
+    default void deleteGameServer(GameServer gameServer) {
+        deleteGameServer(gameServer.getRoomCode());
+    }
 
     void storeClientSession(ClientSession session);
 
     ClientSession getClientSession(UUID clientId);
 
     void deleteClientSession(UUID clientId);
+
+    default void deleteClientSession(ClientSession session) {
+        deleteClientSession(session.getClientId());
+    }
 
 }
