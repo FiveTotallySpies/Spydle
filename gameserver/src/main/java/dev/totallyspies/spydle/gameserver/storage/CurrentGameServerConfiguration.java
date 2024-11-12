@@ -2,7 +2,6 @@ package dev.totallyspies.spydle.gameserver.storage;
 
 import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
 import dev.totallyspies.spydle.shared.model.GameServer;
-import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,27 +30,17 @@ public class CurrentGameServerConfiguration {
     @Primary
     @ConditionalOnProperty(name = "agones.enabled", havingValue = "true")
     public GameServer currentAgonesGameServer(AgonesHook agonesHook) {
-<<<<<<< Updated upstream
-        logger.info("Agones has been enabled in application properties, loading agones current game server info...");
-        return agonesHook.getCurrentGameServer();
-=======
         logger.info("Agones enabled, loading agones current game server info...");
         currentGameServer = agonesHook.getCurrentGameServer();
         writeCurrentGameServer();
         return currentGameServer;
->>>>>>> Stashed changes
     }
 
     @Bean
     @ConditionalOnProperty(name = "agones.enabled", havingValue = "false")
     public GameServer currentLocalGameServer(@Value("${server.port}") int containerPort) {
-<<<<<<< Updated upstream
-        logger.info("Agones has been disabled in application properties, loading local current game server info...");
-        return GameServer.builder()
-=======
         logger.info("Agones disabled, loading local current game server info...");
         currentGameServer = GameServer.builder()
->>>>>>> Stashed changes
                 .address("localhost")
                 .port(containerPort)
                 .name("gameserver-local")
@@ -66,11 +55,6 @@ public class CurrentGameServerConfiguration {
     private void writeCurrentGameServer() {
         storage.storeGameServer(currentGameServer);
         logger.info("Wrote current game server to storage: {}", currentGameServer);
-    }
-
-    @PreDestroy
-    public void onShutdown() {
-        storage.deleteGameServer(currentGameServer.getName());
     }
 
 }
