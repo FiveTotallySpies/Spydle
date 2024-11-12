@@ -22,12 +22,6 @@ class GamePanel extends JPanel {
         substringLabel.setBounds(300, 250, 200, 50);
         add(substringLabel);
 
-        // Timer label
-        timerLabel = new JLabel("Timer: 0:30", SwingConstants.CENTER);
-        timerLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        timerLabel.setBounds(650, 10, 100, 30);
-        add(timerLabel);
-
         // Create player panels in a circle layout
         playerPanels = new ArrayList<>();
         for (int i = 0; i < playerCount; i++) {
@@ -76,10 +70,6 @@ class GamePanel extends JPanel {
 
             int targetX = activePlayer.getX() + activePlayer.getWidth() / 2;
             int targetY = activePlayer.getY() + activePlayer.getHeight() / 2;
-
-            g.setColor(Color.RED);
-            g.drawLine(arrowPoint.x, arrowPoint.y, targetX, targetY);
-            g.fillOval(targetX - 5, targetY - 5, 10, 10);
         }
     }
 }
