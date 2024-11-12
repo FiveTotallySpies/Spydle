@@ -89,7 +89,7 @@ components:
               type: string
             status:
               type: object
-              required: [replicas, allocatedReplicas]
+              required: [replicas, allocatedReplicas, readyReplicas, reservedReplicas]
               properties:
                 replicas:
                   type: integer
