@@ -127,14 +127,8 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
 
             registerExecutor(messageType, (message, client) -> {
                 try {
-<<<<<<< Updated upstream
                     method.invoke(message, client);
-                } catch (IllegalAccessException | InvocationTargetException exception) {
-=======
-                    logger.info("DEBUG: " + message.getClass().getName()+" method "+method.getName());
-                    method.invoke(bean, message, client);
                 } catch (Exception exception) {
->>>>>>> Stashed changes
                     throw new RuntimeException(exception);
                 }
             });
