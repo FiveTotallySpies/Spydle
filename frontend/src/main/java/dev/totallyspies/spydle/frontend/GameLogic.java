@@ -1,9 +1,8 @@
-package dev.totallyspies.spydle.frontend;
-
-import dev.totallyspies.spydle.frontend.GameOverScreen.GameOverScreen;
-import dev.totallyspies.spydle.frontend.WelcomeScreen.WelcomeStyled;
+package frontend.swing;
 
 import javax.swing.*;
+import frontend.swing.GameOverScreen.GameOverScreen;
+import frontend.swing.WelcomeScreen.WelcomeStyled;
 
 public class GameLogic {
     private JFrame frame;

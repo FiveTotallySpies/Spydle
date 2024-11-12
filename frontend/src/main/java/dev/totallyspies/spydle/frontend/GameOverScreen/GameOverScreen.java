@@ -1,24 +1,24 @@
-package dev.totallyspies.spydle.frontend.GameOverScreen;
-
-import dev.totallyspies.spydle.frontend.WelcomeScreen.WelcomeStyled;
+package frontend.swing.GameOverScreen;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import frontend.swing.WelcomeScreen.WelcomeStyled;
+
 public class GameOverScreen extends JFrame {
 
     public GameOverScreen() {
         setTitle("Game Over");
-        setSize(600, 600);
+        setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Container Panel
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.setBorder(BorderFactory.createEmptyBorder(120, 20, 50, 20));
+        container.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20));
         container.setBackground(new Color(195, 217, 255)); // Light blue background
 
         // Title label
@@ -26,8 +26,6 @@ public class GameOverScreen extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setForeground(Color.DARK_GRAY);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
-
 
         // Player rankings with emojis
         JPanel rankingsPanel = new JPanel();
@@ -60,7 +58,7 @@ public class GameOverScreen extends JFrame {
 
         // Thank you message
         JLabel thankYouLabel = new JLabel("Thank you for playing Spydle!");
-        thankYouLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        thankYouLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         thankYouLabel.setForeground(Color.DARK_GRAY);
         thankYouLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         thankYouLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));

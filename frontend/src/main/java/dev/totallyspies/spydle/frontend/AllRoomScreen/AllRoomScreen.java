@@ -1,7 +1,3 @@
-package dev.totallyspies.spydle.frontend.AllRoomScreen;
-
-import dev.totallyspies.spydle.frontend.WelcomeScreen.WelcomeStyled;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -9,14 +5,14 @@ public class AllRoomScreen extends JFrame {
 
     public AllRoomScreen() {
         setTitle("All Rooms");
-        setSize(600, 600);
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Main container panel styling
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        container.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         container.setBackground(new Color(195, 217, 255));
 
         // Title styling
@@ -39,14 +35,13 @@ public class AllRoomScreen extends JFrame {
         roomList.setFont(new Font("Arial", Font.PLAIN, 16));
         JScrollPane roomScrollPane = new JScrollPane(roomList);
         roomScrollPane.setPreferredSize(new Dimension(400, 200));
-        roomScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Back button
         JButton backButton = new JButton("Back to Welcome");
         styleButton(backButton);
         backButton.addActionListener(e -> {
             this.dispose(); // Close current window
-            new WelcomeStyled(); // Open the welcome page again (ensure the class is correctly named)
+            new welcomestyled(); // Open the welcome page again (ensure the class is correctly named)
         });
 
         // Adding components to container
@@ -61,27 +56,26 @@ public class AllRoomScreen extends JFrame {
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(138, 43, 226)); // Blueviolet
+        button.setBackground(new Color(138, 43, 226)); // blueviolet
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFont(new Font("Arial", Font.BOLD, 12));
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setPreferredSize(new Dimension(400, 40)); // Set preferred size to keep button size consistent
         button.setMaximumSize(new Dimension(400, 40));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 2)); // Use consistent border
+        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Hover effect without resizing
+        // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
-                button.setForeground(new Color(138, 43, 226)); // Blueviolet text
-                button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 2));
+                button.setForeground(new Color(138, 43, 226)); // blueviolet
+                button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 1));
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(138, 43, 226));
                 button.setForeground(Color.WHITE);
-                button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 2));
+                button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             }
         });
     }
