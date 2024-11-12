@@ -23,10 +23,7 @@ spec:
                   value: redis
                 - name: REDIS_PORT
                   value: "6379"
-              resources:
-                requests:
-                  memory: "256Mi"
-                  cpu: "200m"
-                limits:
-                  memory: "512Mi"
-                  cpu: "500m"
+                - name: GAME_HOST_PORT
+                  value: "7654"
+                - name: AGONES_HOST_PORT
+                  value: "9357"
