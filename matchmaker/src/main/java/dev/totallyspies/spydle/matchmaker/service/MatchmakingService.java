@@ -1,11 +1,13 @@
 package dev.totallyspies.spydle.matchmaker.service;
 
+import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
 import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -19,6 +21,8 @@ public class MatchmakingService {
 
     @Autowired
     private AgonesAllocatorService allocator;
+    @Autowired
+    private GameServerRepository gameServerRepository;
 
     public GameServer createGame(UUID clientId) {
         // Check if client already has a session
@@ -41,6 +45,13 @@ public class MatchmakingService {
         // Save client session
         ClientSession session = new ClientSession(clientId, room);
         sessionRepository.saveSession(session);
+    }
+
+    public List<GameServer> listGames() {
+        return gameServerRepository.getGameServers()
+                .stream()
+                .filter(GameServer::isPublicRoom)
+                .toList();
     }
 
 }

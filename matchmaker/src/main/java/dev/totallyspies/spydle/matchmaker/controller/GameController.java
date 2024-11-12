@@ -1,18 +1,25 @@
 package dev.totallyspies.spydle.matchmaker.controller;
 
-import dev.totallyspies.spydle.matchmaker.generated.model.*;
+import dev.totallyspies.spydle.matchmaker.generated.model.ClientErrorResponse;
+import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameRequestModel;
+import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameResponseModel;
+import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameRequestModel;
+import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameResponseModel;
+import dev.totallyspies.spydle.matchmaker.generated.model.ListGamesResponseModel;
 import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
-import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
 import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
+import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -80,6 +87,19 @@ public class GameController {
             return ResponseEntity.ok(new JoinGameResponseModel().gameServer(gameServer));
         } catch (Exception exception) {
             logger.error("Failed to handle /join-game", exception);
+            return ResponseEntity.status(500).body(exception.getMessage());
+        }
+    }
+
+    @GetMapping("/list-games")
+    public ResponseEntity<?> listGames() {
+        logger.info("Received request: /list-games");
+        try {
+            List<GameServer> games = matchmakingService.listGames();
+            logger.info("Successfully handled /list-games request: {}", games);
+            return ResponseEntity.ok(new ListGamesResponseModel().games(games));
+        } catch (Exception exception) {
+            logger.error("Failed to handle /list-games", exception);
             return ResponseEntity.status(500).body(exception.getMessage());
         }
     }

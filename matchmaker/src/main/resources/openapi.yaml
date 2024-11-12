@@ -78,8 +78,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientErrorResponse'
+  /list-games:
+    get:
+      operationId: listGames
+      summary: List all public rooms
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListGamesResponseModel'
 components:
   schemas:
+    GameServer:
+      type: object
     ClientErrorResponse:
       type: object
       required: [message]
@@ -154,17 +167,11 @@ components:
       properties:
         gameServer:
           $ref: '#/components/schemas/GameServer'
-    GameServer:
+    ListGamesResponseModel:
       type: object
-    LeaveGameRequestModel:
-      type: object
-      required: [clientId]
+      required: [games]
       properties:
-        clientId:
-          type: string
-    LeaveGameResponseModel:
-      type: object
-      required: [success]
-      properties:
-        success:
-          type: boolean
+        games:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameServer'

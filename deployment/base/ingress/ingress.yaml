@@ -3,9 +3,6 @@ kind: Ingress
 metadata:
   name: matchmaker-ingress
   namespace: spydle
-  annotations:
-#    kubernetes.io/ingress.class: nginx
-#    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   ingressClassName: nginx
   rules:
@@ -26,14 +23,10 @@ spec:
                 name: matchmaker-service
                 port:
                   number: 8080
-          - path: /leave-game
+          - path: /list-games
             pathType: Prefix
             backend:
               service:
                 name: matchmaker-service
                 port:
                   number: 8080
-#  tls:
-#    - hosts:
-#        - spydle.dev
-#      secretName: tls-secret  # TODO Add lets encrypt certs for TLS security
