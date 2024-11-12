@@ -95,9 +95,9 @@ public class GameController {
     public ResponseEntity<?> listGames() {
         logger.info("Received request: /list-games");
         try {
-            List<GameServer> games = matchmakingService.listGames();
+            List<String> games = matchmakingService.listGames();
             logger.info("Successfully handled /list-games request: {}", games);
-            return ResponseEntity.ok(new ListGamesResponseModel().games(games));
+            return ResponseEntity.ok(new ListGamesResponseModel().roomCodes(games));
         } catch (Exception exception) {
             logger.error("Failed to handle /list-games", exception);
             return ResponseEntity.status(500).body(exception.getMessage());

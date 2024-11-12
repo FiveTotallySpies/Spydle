@@ -47,10 +47,11 @@ public class MatchmakingService {
         sessionRepository.saveSession(session);
     }
 
-    public List<GameServer> listGames() {
+    public List<String> listGames() {
         return gameServerRepository.getGameServers()
                 .stream()
                 .filter(GameServer::isPublicRoom)
+                .map(GameServer::getRoomCode)
                 .toList();
     }
 

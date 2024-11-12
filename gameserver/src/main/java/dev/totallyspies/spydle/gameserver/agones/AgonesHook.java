@@ -74,7 +74,7 @@ public class AgonesHook {
                 .port(sdkGameServer.getStatus().getPorts(0).getPort())
                 .name(gameServerName)
                 .roomCode(roomCode)
-                .publicRoom(false)
+                .publicRoom(true) // TODO make false by default
                 .state(GameServer.State.WAITING)
                 .build();
 
