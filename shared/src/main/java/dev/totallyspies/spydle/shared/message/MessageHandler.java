@@ -94,11 +94,11 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
         }
     }
 
-    public void processClass(Object clazz) {
-        for (Method method : clazz.getClass().getMethods()) {
+    public void processBean(Object bean) {
+        for (Method method : bean.getClass().getMethods()) {
             if (method.isAnnotationPresent(annotationClass)) {
                 try {
-                    registerListener(method);
+                    registerListener(bean, method);
                     logger.debug("Registered {} for message {} on method {}#{}",
                             messageClass.getName(),
                             method.getParameters()[0].getType().getName(),
@@ -115,7 +115,7 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
         }
     }
 
-    private void registerListener(Method method) {
+    private void registerListener(Object bean, Method method) {
         if (method.getParameterCount() == 2
                 && method.getParameters()[1].getType() == UUID.class) {
             Class<?> messageType = method.getParameters()[0].getType();
@@ -127,8 +127,14 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
 
             registerExecutor(messageType, (message, client) -> {
                 try {
+<<<<<<< Updated upstream
                     method.invoke(message, client);
                 } catch (IllegalAccessException | InvocationTargetException exception) {
+=======
+                    logger.info("DEBUG: " + message.getClass().getName()+" method "+method.getName());
+                    method.invoke(bean, message, client);
+                } catch (Exception exception) {
+>>>>>>> Stashed changes
                     throw new RuntimeException(exception);
                 }
             });
