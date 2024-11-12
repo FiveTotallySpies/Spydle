@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.matchmaker.service;
 import allocation.Allocation;
 import allocation.AllocationServiceGrpc;
 import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
+import dev.totallyspies.spydle.shared.RoomCodeUtils;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -106,7 +107,7 @@ public class AgonesAllocatorService {
         }
 
         String gameServerName = response.getGameServerName();
-        String roomCode = gameServerName.substring(gameServerName.length() - 5).toUpperCase();
+        String roomCode = RoomCodeUtils.getFromName(gameServerName);
 
         if (!gameServerRepository.gameServerExists(roomCode)) {
             // TODO un-allocate/destroy instance?

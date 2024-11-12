@@ -1,7 +1,7 @@
 package dev.totallyspies.spydle.gameserver.storage;
 
 import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
-import dev.totallyspies.spydle.shared.RoomCodeGenerator;
+import dev.totallyspies.spydle.shared.RoomCodeUtils;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class CurrentGameServerConfiguration {
     @ConditionalOnProperty(name = "agones.enabled", havingValue = "false")
     public GameServer currentLocalGameServer(@Value("${server.port}") int containerPort) {
         logger.info("Agones disabled, loading local current game server info...");
-        String roomCode = RoomCodeGenerator.generateRandomCode();
+        String roomCode = RoomCodeUtils.generateRandomCode();
         String gameServerName = "gameserver-local-" + roomCode;
         return writeCurrentGameServer(GameServer.builder()
                 .address("localhost")

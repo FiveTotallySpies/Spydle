@@ -3,7 +3,7 @@ package dev.totallyspies.spydle.shared;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class RoomCodeGenerator {
+public class RoomCodeUtils {
 
     private static final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -16,6 +16,11 @@ public class RoomCodeGenerator {
             result.append(characters.charAt(index));
         }
         return result.toString();
+    }
+
+    // This is for getting it from the K8s resource name
+    public static String getFromName(String gameServerName) {
+        return gameServerName.substring(gameServerName.length() - 5).toUpperCase();
     }
 
 }

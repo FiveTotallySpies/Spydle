@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.gameserver.agones;
 
 import agones.dev.sdk.Sdk;
+import dev.totallyspies.spydle.shared.RoomCodeUtils;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import io.grpc.ManagedChannelBuilder;
 
@@ -66,7 +67,7 @@ public class AgonesHook {
         Sdk.GameServer sdkGameServer = agones.getGameServerFuture().get(); // Blocking
 
         String gameServerName = sdkGameServer.getObjectMeta().getName();
-        String roomCode = gameServerName.substring(gameServerName.length() - 5).toUpperCase();
+        String roomCode = RoomCodeUtils.getFromName(gameServerName);
 
         // Store currentGameServer so we can cache in redis
         currentGameServer = GameServer.builder()
