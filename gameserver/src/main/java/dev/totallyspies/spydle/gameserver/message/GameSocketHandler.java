@@ -78,7 +78,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
             }
             byte[] messageBytes = message.toByteArray();
             session.sendMessage(new BinaryMessage(messageBytes));
-            logger.debug("Sending client {} message of type {}", clientId.toString(), message.getPayloadCase().name());
+            logger.debug("Sending client {} message {}", clientId.toString(), message.toString().replaceAll("\\s+",""));
         } catch (IOException exception) {
             throw new RuntimeException("Failed to send client " + clientId.toString() + " packet of type " + message.getPayloadCase().name(), exception);
         }

@@ -85,7 +85,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         byte[] messageBytes = message.toByteArray();
         try {
             session.sendMessage(new BinaryMessage(messageBytes));
-            logger.debug("Sending server  message of type {}", message.getPayloadCase().name());
+            logger.debug("Sending server message {}", message.toString().replaceAll("\\s+",""));
         } catch (IOException exception) {
             throw new RuntimeException("Failed to send server packet of type " + message.getPayloadCase().name(), exception);
         }
