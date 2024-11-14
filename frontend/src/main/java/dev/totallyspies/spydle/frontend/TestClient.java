@@ -1,14 +1,15 @@
 package dev.totallyspies.spydle.frontend;
 
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
-import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
-import dev.totallyspies.spydle.shared.proto.messages.SbSelectName;
+import dev.totallyspies.spydle.frontend.client.message.CbMessageListener;
+import dev.totallyspies.spydle.shared.proto.messages.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import java.util.Scanner;
+import java.util.TimerTask;
 import java.util.UUID;
 
 @Component
@@ -27,12 +28,27 @@ public class TestClient {
         int port = in.nextInt();
         System.out.println("Enter CLIENT ID:");
         UUID clientId = UUID.fromString(in.next());
-        handler.open(ip, port, clientId); // opne the websocket
+        handler.open(ip, port, clientId); // open the websocket
         System.out.println("Handler open: " + handler.isOpen());
-        // Sample: Send join message
+
+        // Send join message
         handler.sendSbMessage(SbMessage.newBuilder().setSelectName(SbSelectName.newBuilder().setPlayerName("kai")).build());
+
+        // Start the game
+        handler.sendSbMessage(SbMessage.newBuilder().setStartGame(SbStartGame.newBuilder().build()).build());
+
+        try {
+            Thread.sleep(100000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // Close the websocket
-        handler.close();
+        //handler.close();
+    }
+
+    @CbMessageListener
+    public void myMessageListener(CbTimerTick message, UUID clientId) {
+        System.out.println("CbTimerTick: " + message.toString());
     }
 
     // Custom event fired after socket close

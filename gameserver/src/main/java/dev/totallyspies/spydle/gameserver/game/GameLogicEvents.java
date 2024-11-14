@@ -11,13 +11,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class GameLogicEvents {
-    private final int TIMER_INTERVAL_MILLIS = 1000;
-    private final AtomicInteger TOTAL_GAME_TIME_SECONDS = new AtomicInteger(30);
+    private final long TIMER_INTERVAL_MILLIS = 1000;
+    private final AtomicLong TOTAL_GAME_TIME_MILLIS = new AtomicLong(30000);
     private final Timer timer = new Timer();
-    private final StopWatch stopWatch = new StopWatch();
+    private final AtomicLong gameStartMillis = new AtomicLong(0);
 
     @Autowired
     private GameLogic gameLogic;
@@ -47,9 +48,8 @@ public class GameLogicEvents {
             gameSocketHandler.sendCbMessage(player, cbMessage);
         }
 
-        synchronized (this.stopWatch) {
-            this.stopWatch.start();
-        }
+        System.out.println("stopwatch started");
+        this.gameStartMillis.set(System.currentTimeMillis());
 
         this.timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -60,12 +60,14 @@ public class GameLogicEvents {
     }
 
     private void sendCbTimerTick() {
-        double secondsPassed;
-        synchronized (this.stopWatch) {
-            secondsPassed = this.stopWatch.getTotalTimeSeconds();
+        long millisPassed = System.currentTimeMillis() - gameStartMillis.get();
+        long millisLeft = TOTAL_GAME_TIME_MILLIS.get() - millisPassed;
+        if (millisLeft < 0) {
+            this.timer.cancel();
+            return;
         }
 
-        var secondsLeft = (int) Math.round(TOTAL_GAME_TIME_SECONDS.doubleValue() - secondsPassed);
+        var secondsLeft = (int) Math.round(millisLeft / 1000.0);
 
         var cbMessage = CbMessage
                         .newBuilder()
