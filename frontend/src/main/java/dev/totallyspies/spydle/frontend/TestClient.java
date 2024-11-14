@@ -27,8 +27,13 @@ public class TestClient {
         String ip = in.next();
         System.out.println("Enter PORT:");
         int port = in.nextInt();
-        System.out.println("Enter CLIENT ID:");
-        UUID clientId = UUID.fromString(in.next());
+        UUID clientId;
+        if (ip.equalsIgnoreCase("localhost")) {
+            clientId = UUID.randomUUID(); // Don't need a validated ID for local gameserver
+        } else {
+            System.out.println("Enter CLIENT ID:");
+            clientId = UUID.fromString(in.next());
+        }
         handler.open(ip, port, clientId); // open the websocket
         System.out.println("Handler open: " + handler.isOpen());
 

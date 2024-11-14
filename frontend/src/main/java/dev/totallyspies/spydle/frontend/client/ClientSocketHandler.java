@@ -65,7 +65,6 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
 
         // Execute
         annotationProcessor.getHandler().execute(cbMessage, clientId);
-        System.out.println("Received message: " + message.getPayload());
     }
 
     @Override
