@@ -25,7 +25,7 @@ public class SbMessageListenerProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        handler.processClass(bean);
+        handler.processBean(bean);
         return bean;
     }
 
