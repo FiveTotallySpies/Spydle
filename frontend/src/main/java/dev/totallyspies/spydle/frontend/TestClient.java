@@ -11,6 +11,7 @@ import org.springframework.web.socket.CloseStatus;
 import java.util.Scanner;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
 
 @Component
 public class TestClient {
@@ -38,7 +39,7 @@ public class TestClient {
         handler.sendSbMessage(SbMessage.newBuilder().setStartGame(SbStartGame.newBuilder().build()).build());
 
         try {
-            Thread.sleep(100000);
+            new Semaphore(0).acquire();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
