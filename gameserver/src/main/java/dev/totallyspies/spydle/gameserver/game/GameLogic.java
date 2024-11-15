@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.gameserver.game;
 
 import dev.totallyspies.spydle.shared.proto.messages.*;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -10,12 +11,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class GameLogic {
     private final Map<UUID, Player> joinedPlayers;
     private final AtomicBoolean gameInProgress;
-    private final Timer timer;
+    private final AtomicInteger turn;
+    private final AtomicReference<String> currentSubString;
 
     private static final int TIMER_INTERVAL_MILLIS = 1000;
     private static final AtomicInteger TOTAL_GAME_TIME_SECONDS = new AtomicInteger(30);
@@ -23,7 +26,8 @@ public class GameLogic {
     public GameLogic() {
         this.joinedPlayers = new ConcurrentHashMap<UUID, Player>();
         this.gameInProgress = new AtomicBoolean(false);
-        this.timer = new Timer();
+        this.currentSubString = new AtomicReference<>();
+        this.turn = new AtomicInteger(0);
     }
 
     public void playerLeft(UUID clientId) {
@@ -46,15 +50,36 @@ public class GameLogic {
         return this.gameInProgress.get();
     }
 
-    public CbGameStart onGameStart(UUID client) {
+    public CbMessage onGameStart(UUID client)
+    {
         // TODO: check whether client can start the game
-        // TODO: check for the number of players before the start
         this.gameInProgress.set(true);
 
-        return CbGameStart
+        return CbMessage
                 .newBuilder()
-                .setTotalGameTimeSeconds(100) // TODO: change this in the future
-                .addAllPlayers(joinedPlayers.values())
+                .setGameStart(
+                        CbGameStart.newBuilder()
+                        .setTotalGameTimeSeconds(100) // TODO: change this in the future
+                        .addAllPlayers(joinedPlayers.values())
+                ).build();
+    }
+
+    public CbMessage newTurn() {
+        this.turn.incrementAndGet();
+        String c = Character.toString((char) (turn.get() % 26 + 'A'));
+        this.currentSubString.set(c.repeat(3));
+
+        return CbMessage
+                .newBuilder()
+                .setNewTurn(
+                        CbNewTurn.newBuilder()
+                        .setAssignedString(this.currentSubString.get())
+                        .setCurrentPlayerName("kai")
+                )
                 .build();
+    }
+
+    public String getCurrentSubString() {
+        return this.currentSubString.get();
     }
 }

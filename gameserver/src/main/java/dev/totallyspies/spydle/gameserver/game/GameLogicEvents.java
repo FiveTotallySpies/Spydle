@@ -33,30 +33,43 @@ public class GameLogicEvents {
 
     @SbMessageListener
     public void onGameStart(SbStartGame event, UUID client) {
+        // 1. If the game is in progress we can't start it
         if (gameLogic.isGameInProgress())
             return;
 
-        var cbGameStart = gameLogic.onGameStart(client);
+        // 2. Get a message to send to all players
+        var gameStartMessage = gameLogic.onGameStart(client);
 
-        var cbMessage = CbMessage
-                .newBuilder()
-                .setGameStart(cbGameStart)
-                .build();
-
-        var connectedPlayers = gameSocketHandler.getSessions();
-        for (UUID player : connectedPlayers) {
-            gameSocketHandler.sendCbMessage(player, cbMessage);
+        // 3. Send a message to all players
+        for (UUID player : gameSocketHandler.getSessions()) {
+            gameSocketHandler.sendCbMessage(player, gameStartMessage);
         }
 
-        System.out.println("stopwatch started");
+        // 4. Schedule a timer to send to all players
         this.gameStartMillis.set(System.currentTimeMillis());
-
         this.timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 GameLogicEvents.this.sendCbTimerTick();
             }
         }, TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
+
+        // 5. Start a new turn
+        newTurn();
+    }
+
+    @SbMessageListener
+    public void onGuess(SbGuess event, UUID client) {
+        if (event.getGuessedWord().equals(this.gameLogic.getCurrentSubString())) {
+            newTurn();
+        }
+    }
+
+    private void newTurn() {
+        var newTurnMessage = gameLogic.newTurn();
+        for (UUID player : gameSocketHandler.getSessions()) {
+            gameSocketHandler.sendCbMessage(player, newTurnMessage);
+        }
     }
 
     private void sendCbTimerTick() {
