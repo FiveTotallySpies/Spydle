@@ -42,13 +42,14 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
-    public void open(String address, int port, UUID clientId) {
+    public void open(String address, int port, UUID clientId, String playerName) {
         if (isOpen()) {
             throw new IllegalStateException("Cannot open client socket when it is already open!");
         }
         this.clientId = clientId;
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
         headers.add(SharedConstants.CLIENT_ID_HTTP_HEADER, clientId.toString());
+        headers.add(SharedConstants.CLIENT_NAME_HTTP_HEADER, playerName);
         try {
             URI uri = new URI("ws://" + address + ":" + port + SharedConstants.GAME_SOCKET_ENDPOINT);
             session = client.execute(this, headers, uri).get();

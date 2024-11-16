@@ -51,9 +51,12 @@ public class GameController {
             return ResponseEntity.status(400).body(new ClientErrorResponse().message("Bad clientId: should be UUID"));
         }
         try {
-            GameServer gameServer = matchmakingService.createGame(clientId);
+            GameServer gameServer = matchmakingService.createGame(clientId, request.getPlayerName());
             logger.info("Successfully handled /create-game request: {}", gameServer);
-            return ResponseEntity.ok(new CreateGameResponseModel().gameServer(gameServer));
+            return ResponseEntity.ok(new CreateGameResponseModel()
+                    .gameServer(gameServer)
+                    .clientId(request.getClientId())
+                    .playerName(request.getPlayerName()));
         } catch (Exception exception) {
             logger.error("Failed to handle /create-game", exception);
             return ResponseEntity.status(500).body(exception.getMessage());
@@ -82,9 +85,12 @@ public class GameController {
                         new ClientErrorResponse().message("Cannot join room: you are already in one"));
             }
             GameServer gameServer = gameServerRepository.getGameServer(request.getRoomCode());
-            matchmakingService.joinGame(clientId, gameServer);
+            matchmakingService.joinGame(clientId, request.getPlayerName(), gameServer);
             logger.info("Successfully handled /join-game request: {}", gameServer);
-            return ResponseEntity.ok(new JoinGameResponseModel().gameServer(gameServer));
+            return ResponseEntity.ok(new JoinGameResponseModel()
+                    .gameServer(gameServer)
+                    .clientId(request.getClientId())
+                    .playerName(request.getPlayerName()));
         } catch (Exception exception) {
             logger.error("Failed to handle /join-game", exception);
             return ResponseEntity.status(500).body(exception.getMessage());

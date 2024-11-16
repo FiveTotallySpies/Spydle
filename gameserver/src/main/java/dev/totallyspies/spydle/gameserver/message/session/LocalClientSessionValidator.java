@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.session;
+package dev.totallyspies.spydle.gameserver.message.session;
 
 import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
 import dev.totallyspies.spydle.shared.model.ClientSession;
@@ -28,8 +28,8 @@ public class LocalClientSessionValidator implements ClientSessionValidator {
     }
 
     @Override
-    public boolean validateClientSession(UUID clientId) {
-        storage.storeClientSession(new ClientSession(clientId, currentGameServer));
+    public boolean validateClientSession(UUID clientId, String name) {
+        storage.storeClientSession(new ClientSession(clientId, currentGameServer, name));
         return true;
     }
 

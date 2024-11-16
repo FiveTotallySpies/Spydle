@@ -33,7 +33,7 @@ public class GameLogic {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
+
         // Move to the main game screen after the welcome screen
         frame.getContentPane().removeAll(); // Clear welcome screen components
         JLabel gameLabel = new JLabel("Game is running...");
