@@ -5,18 +5,13 @@ option java_multiple_files = true;
 
 message SbMessage {
   oneof payload {
-    SbJoinGame join_game = 1;
-    SbStartGame start_game = 2;
-    SbLeaveGame leave_game = 3;
-    SbGuess guess = 4;
+    SbStartGame start_game = 1;
+    SbLeaveGame leave_game = 2;
+    SbGuess guess = 3;
   }
 }
 
 // Server-bound messages
-message SbJoinGame {
-  string player_name = 1;
-}
-
 message SbStartGame {
 }
 

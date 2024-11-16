@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public class GameServerRepository {
 
@@ -14,12 +18,20 @@ public class GameServerRepository {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public GameServer getGameServer(String gameServerName) {
-        return (GameServer) redisTemplate.opsForValue().get(PREFIX + gameServerName);
+    public GameServer getGameServer(String roomCode) {
+        return (GameServer) redisTemplate.opsForValue().get(PREFIX + roomCode);
     }
 
-    public boolean gameServerExists(String gameServerName) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(PREFIX + gameServerName));
+    public boolean gameServerExists(String roomCode) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(PREFIX + roomCode));
+    }
+
+    public List<GameServer> getGameServers() {
+        Set<String> keys = redisTemplate.keys(PREFIX + "*");
+        if (keys == null) {
+            return new LinkedList<>();
+        }
+        return keys.stream().map(key -> (GameServer) redisTemplate.opsForValue().get(key)).toList();
     }
 
 }

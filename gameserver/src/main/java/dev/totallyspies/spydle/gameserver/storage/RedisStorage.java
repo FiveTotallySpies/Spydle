@@ -32,22 +32,22 @@ public class RedisStorage implements GameServerStorage {
 
     @Override
     public void storeGameServer(GameServer gameServer) {
-        redisTemplate.opsForValue().set(GAME_SERVER_PREFIX + gameServer.getName(), gameServer);
+        redisTemplate.opsForValue().set(GAME_SERVER_PREFIX + gameServer.getRoomCode(), gameServer);
     }
 
     @Override
-    public GameServer getGameServer(String name) {
-        Object value = redisTemplate.opsForValue().get(GAME_SERVER_PREFIX + name);
+    public GameServer getGameServer(String roomCode) {
+        Object value = redisTemplate.opsForValue().get(GAME_SERVER_PREFIX + roomCode);
         if (value == null) return null;
         if (!(value instanceof GameServer gameServer)) {
-            throw new IllegalStateException("Redis storage for gameserver " + name + " has invalid type " + value.getClass().getCanonicalName());
+            throw new IllegalStateException("Redis storage for gameserver " + roomCode + " has invalid type " + value.getClass().getCanonicalName());
         }
         return gameServer;
     }
 
     @Override
-    public void deleteGameServer(String name) {
-        redisTemplate.delete(GAME_SERVER_PREFIX + name);
+    public void deleteGameServer(String roomCode) {
+        redisTemplate.delete(GAME_SERVER_PREFIX + roomCode);
     }
 
     @Override

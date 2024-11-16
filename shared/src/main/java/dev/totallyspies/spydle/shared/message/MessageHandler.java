@@ -116,18 +116,36 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
     }
 
     private void registerListener(Object bean, Method method) {
-        if (method.getParameterCount() == 2
-                && method.getParameters()[1].getType() == UUID.class) {
-            Class<?> messageType = method.getParameters()[0].getType();
+        Class<?> messageType = null;
+        int uuidParamLocation = -1;
+        if (method.getParameterCount() == 2) {
+            if (method.getParameters()[1].getType() == UUID.class) {
+                messageType = method.getParameters()[0].getType();
+                uuidParamLocation = 1;
+            } else if (method.getParameters()[0].getType() == UUID.class) {
+                messageType = method.getParameters()[1].getType();
+                uuidParamLocation = 0;
+            }
+        } else if (method.getParameterCount() == 1) {
+            messageType = method.getParameters()[0].getType();
+        }
+        if (messageType != null) {
             PayloadCaseType payloadCase = messageToPayload.get(messageType);
-            if (payloadCase == null) throw new IllegalArgumentException("Unknown message type " + messageType.getCanonicalName());
-
+            if (payloadCase == null)
+                throw new IllegalArgumentException("Unknown message type " + messageType.getCanonicalName());
             Method messageGetter = payloadGetters.get(payloadCase);
-            if (messageGetter == null) throw new IllegalArgumentException("Unknown message payload " + payloadCase.name());
-
+            if (messageGetter == null)
+                throw new IllegalArgumentException("Unknown message payload " + payloadCase.name());
+            int finalUuidParamLocation = uuidParamLocation;
             registerExecutor(messageType, (message, client) -> {
                 try {
-                    method.invoke(bean, message, client);
+                    if (finalUuidParamLocation == 0) {
+                        method.invoke(bean, client, message);
+                    } else if (finalUuidParamLocation == 1) {
+                        method.invoke(bean, message, client);
+                    } else {
+                        method.invoke(bean, message);
+                    }
                 } catch (Exception exception) {
                     throw new RuntimeException(exception);
                 }

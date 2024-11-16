@@ -37,6 +37,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateGameResponseModel'
+        '400':
+          description: Bad client ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientErrorResponse'
   /join-game:
     post:
       operationId: joinGame
@@ -54,25 +60,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JoinGameResponseModel'
-  /leave-game:
-    post:
-      operationId: leaveGame
-      summary: Leave a game you are currently connected to
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LeaveGameRequestModel'
+        '400':
+          description: Bad client ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientErrorResponse'
+        '404':
+          description: Room not found or not public
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientErrorResponse'
+        '403':
+          description: Client is already in a game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientErrorResponse'
+  /list-games:
+    get:
+      operationId: listGames
+      summary: List all public rooms
       responses:
         '200':
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LeaveGameResponseModel'
+                $ref: '#/components/schemas/ListGamesResponseModel'
 components:
   schemas:
+    GameServer:
+      type: object
+    ClientErrorResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
     AutoscaleRequestModel:
       type: object
       required: [request]
@@ -117,41 +143,47 @@ components:
               type: string
     CreateGameRequestModel:
       type: object
-      required: [clientId]
+      required: [clientId, playerName]
       properties:
         clientId:
+          type: string
+        playerName:
           type: string
     CreateGameResponseModel:
       type: object
-      required: [gameServer]
+      required: [gameServer, clientId, playerName]
       properties:
         gameServer:
           $ref: '#/components/schemas/GameServer'
+        clientId:
+          type: string
+        playerName:
+          type: string
     JoinGameRequestModel:
       type: object
-      required: [clientId]
+      required: [clientId, playerName, roomCode]
       properties:
         clientId:
           type: string
-        gameServerName:
+        playerName:
+          type: string
+        roomCode:
           type: string
     JoinGameResponseModel:
       type: object
-      required: [gameServer]
+      required: [gameServer, clientId, playerName]
       properties:
         gameServer:
           $ref: '#/components/schemas/GameServer'
-    GameServer:
-      type: object
-    LeaveGameRequestModel:
-      type: object
-      required: [clientId]
-      properties:
         clientId:
           type: string
-    LeaveGameResponseModel:
+        playerName:
+          type: string
+    ListGamesResponseModel:
       type: object
-      required: [success]
+      required: [roomCodes]
       properties:
-        success:
-          type: boolean
+        roomCodes:
+          type: array
+          items:
+            type: string
