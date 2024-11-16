@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.gameserver.storage;
 
 import dev.totallyspies.spydle.gameserver.message.GameSocketHandler;
+import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +38,8 @@ public class GameShutdownHook implements ApplicationListener<ApplicationReadyEve
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Executing custom shutdown hook, clearing redis data");
             storage.deleteGameServer(currentGameServer);
-            for (UUID clientId : handler.getSessions()) {
-                storage.deleteClientSession(clientId);
+            for (ClientSession session : handler.getSessions()) {
+                storage.deleteClientSession(session);
             }
         }));
     }

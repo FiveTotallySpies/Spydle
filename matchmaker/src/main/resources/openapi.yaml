@@ -143,30 +143,42 @@ components:
               type: string
     CreateGameRequestModel:
       type: object
-      required: [clientId]
+      required: [clientId, playerName]
       properties:
         clientId:
           type: string
+        playerName:
+          type: string
     CreateGameResponseModel:
       type: object
-      required: [gameServer]
+      required: [gameServer, clientId, playerName]
       properties:
         gameServer:
           $ref: '#/components/schemas/GameServer'
+        clientId:
+          type: string
+        playerName:
+          type: string
     JoinGameRequestModel:
       type: object
-      required: [clientId]
+      required: [clientId, playerName, roomCode]
       properties:
         clientId:
+          type: string
+        playerName:
           type: string
         roomCode:
           type: string
     JoinGameResponseModel:
       type: object
-      required: [gameServer]
+      required: [gameServer, clientId, playerName]
       properties:
         gameServer:
           $ref: '#/components/schemas/GameServer'
+        clientId:
+          type: string
+        playerName:
+          type: string
     ListGamesResponseModel:
       type: object
       required: [roomCodes]

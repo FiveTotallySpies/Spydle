@@ -24,26 +24,26 @@ public class MatchmakingService {
     @Autowired
     private GameServerRepository gameServerRepository;
 
-    public GameServer createGame(UUID clientId) {
+    public GameServer createGame(UUID clientId, String playerName) {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) throw new IllegalStateException("Client is already in a game.");
 
         GameServer allocated = allocator.awaitAllocation();
 
         // Save client session
-        ClientSession session = new ClientSession(clientId, allocated);
+        ClientSession session = new ClientSession(clientId, allocated, playerName);
         sessionRepository.saveSession(session);
 
         return allocated;
     }
 
-    public void joinGame(UUID clientId, GameServer room) {
+    public void joinGame(UUID clientId, String playerName, GameServer room) {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) {
             throw new IllegalStateException("Client is already in a game.");
         }
         // Save client session
-        ClientSession session = new ClientSession(clientId, room);
+        ClientSession session = new ClientSession(clientId, room, playerName);
         sessionRepository.saveSession(session);
     }
 
