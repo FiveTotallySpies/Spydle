@@ -5,14 +5,9 @@ import java.awt.*;
 import java.awt.event.*;
 
 @org.springframework.stereotype.Component
-public class WelcomeScreenView extends JPanel {
+public class WelcomeView extends JPanel {
 
-    public WelcomeScreenView() {
-//        setTitle("Welcome - Join or Create Room");
-//        setSize(500, 500);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        setLocationRelativeTo(null);
-
+    public WelcomeView() {
         // Main container panel styling
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
@@ -37,7 +32,7 @@ public class WelcomeScreenView extends JPanel {
         JPanel createRoomPanel = new JPanel();
         createRoomPanel.setLayout(new BoxLayout(createRoomPanel, BoxLayout.Y_AXIS));
         createRoomPanel.setBackground(new Color(195, 217, 255)); // same as container
-        createRoomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        createRoomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
         JTextField nicknameField = createPlaceholderTextField("Enter your nickname");
         JTextField roomNameField = createPlaceholderTextField("Enter room name");
@@ -142,6 +137,21 @@ public class WelcomeScreenView extends JPanel {
                 button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             }
         });
+    }
+
+    // Test the JPanel in a JFrame with size 500x500
+    public static void main(String[] args){
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame();
+            frame.setTitle("Welcome - Join or Create Room");
+            frame.setSize(500, 500);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLocationRelativeTo(null);
+            frame.add(new WelcomeView());
+            frame.setVisible(true);
+        });
+
+
     }
 
     // Method to open the AllRoomsScreen.AllRoomsPage

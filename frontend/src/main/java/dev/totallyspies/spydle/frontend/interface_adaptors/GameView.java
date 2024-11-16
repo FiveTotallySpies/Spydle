@@ -1,12 +1,13 @@
 package dev.totallyspies.spydle.frontend.interface_adaptors;
 
+import dev.totallyspies.spydle.frontend.views.AllRoomView;
+import dev.totallyspies.spydle.frontend.views.GameOverView;
+import dev.totallyspies.spydle.frontend.views.GameRoomView;
+import dev.totallyspies.spydle.frontend.views.WelcomeView;
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import java.awt.*;
-import dev.totallyspies.spydle.frontend.views.GameOverView;
-import dev.totallyspies.spydle.frontend.views.AllRoomView;
-import dev.totallyspies.spydle.frontend.views.GameRoomView;
-import dev.totallyspies.spydle.frontend.views.WelcomeScreenView;
-import org.springframework.stereotype.Component;
 
 @Component
 public class GameView extends JFrame {
@@ -17,7 +18,7 @@ public class GameView extends JFrame {
     public GameView() {
         // Set up the frame properties
         setTitle("SpyDle");
-        setSize(800, 600);
+        setSize(500,500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -26,7 +27,7 @@ public class GameView extends JFrame {
         panelContainer = new JPanel(cardLayout);
 
         // Add the different view panels to the card layout
-        panelContainer.add(new WelcomeScreenView(), "WelcomeScreenView");
+        panelContainer.add(new WelcomeView(), "WelcomeScreenView");
         panelContainer.add(new AllRoomView(), "AllRoomView");
         panelContainer.add(new GameRoomView(), "GameRoomView");
         panelContainer.add(new GameOverView(), "GameOverView");
@@ -35,7 +36,7 @@ public class GameView extends JFrame {
         add(panelContainer);
 
         // Show the initial panel (WelcomeScreenView)
-        cardLayout.show(panelContainer, "WelcomeScreenView");
+        cardLayout.show(panelContainer, "AllRoomView");
     }
 
     // Method to switch between panels

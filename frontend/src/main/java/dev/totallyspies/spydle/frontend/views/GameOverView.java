@@ -2,23 +2,19 @@ package dev.totallyspies.spydle.frontend.views;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 @org.springframework.stereotype.Component
 public class GameOverView extends JPanel {
 
     public GameOverView() {
-//        setTitle("Game Over");
-//        setSize(400, 300);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        setLocationRelativeTo(null);
+        setLayout(new GridBagLayout()); // Center the container panel in the middle of the screen
+        setBackground(new Color(195, 217, 255)); // Light blue background for the entire panel
 
         // Container Panel
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20));
-        container.setBackground(new Color(195, 217, 255)); // Light blue background
+        container.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding around elements
+        container.setBackground(new Color(195, 217, 255)); // Same light blue background
 
         // Title label
         JLabel titleLabel = new JLabel("Congratulations to the Best Players!");
@@ -29,28 +25,23 @@ public class GameOverView extends JPanel {
         // Player rankings with emojis
         JPanel rankingsPanel = new JPanel();
         rankingsPanel.setLayout(new BoxLayout(rankingsPanel, BoxLayout.Y_AXIS));
-        rankingsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        rankingsPanel.setBackground(new Color(195, 217, 255)); // Same light blue background as the container
+        rankingsPanel.setBackground(new Color(195, 217, 255)); // Same light blue background
 
-        // First place (Darkened Gold)
         JLabel firstPlace = new JLabel("1st: 🥇 Player 1 - 100 points");
         firstPlace.setFont(new Font("Arial", Font.PLAIN, 18));
-        firstPlace.setForeground(new Color(212, 175, 55)); // Darker gold color (#D4AF37)
+        firstPlace.setForeground(new Color(212, 175, 55)); // Darker gold color
         firstPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Second place (Brightened Silver)
         JLabel secondPlace = new JLabel("2nd: 🥈 Player 2 - 80 points");
         secondPlace.setFont(new Font("Arial", Font.PLAIN, 18));
         secondPlace.setForeground(new Color(169, 169, 169));
         secondPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Third place (Bronze)
         JLabel thirdPlace = new JLabel("3rd: 🥉 Player 3 - 60 points");
         thirdPlace.setFont(new Font("Arial", Font.PLAIN, 18));
-        thirdPlace.setForeground(new Color(205, 136, 64)); // Bronze color (#CD8740)
+        thirdPlace.setForeground(new Color(205, 136, 64)); // Bronze color
         thirdPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Add the labels to the rankings panel
         rankingsPanel.add(firstPlace);
         rankingsPanel.add(secondPlace);
         rankingsPanel.add(thirdPlace);
@@ -65,27 +56,25 @@ public class GameOverView extends JPanel {
         // Return to Welcome Page Button
         JButton returnButton = new JButton("Return to Welcome Page");
         styleButton(returnButton);
-
-        returnButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Open the welcome window and close the GameOverScreen
-                new WelcomeScreenView(); // Open the main Spydle application
-//                dispose(); // Close the Game Over screen
-            }
+        returnButton.addActionListener(e -> {
+            new WelcomeView(); // Open the main Spydle application
         });
 
         // Add components to container
         container.add(titleLabel);
         container.add(Box.createVerticalStrut(10));
-        container.add(rankingsPanel);  // Add the rankings panel
+        container.add(rankingsPanel);
         container.add(Box.createVerticalStrut(20));
         container.add(thankYouLabel);
         container.add(Box.createVerticalStrut(20));
         container.add(returnButton);
 
-        add(container);
-        setVisible(true);
+        // Add container to the center of the GameOverView using GridBagConstraints
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(container, gbc);
     }
 
     private void styleButton(JButton button) {
@@ -115,6 +104,13 @@ public class GameOverView extends JPanel {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(GameOverView::new);
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("SpyDle - Game Over");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(500, 500); // Full-screen dimensions
+            frame.setLocationRelativeTo(null);
+            frame.add(new GameOverView());
+            frame.setVisible(true);
+        });
     }
 }

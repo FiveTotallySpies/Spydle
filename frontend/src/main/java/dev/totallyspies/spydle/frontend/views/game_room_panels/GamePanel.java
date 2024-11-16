@@ -1,14 +1,11 @@
 package dev.totallyspies.spydle.frontend.views.game_room_panels;
 
-import org.springframework.stereotype.Component;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 // Main Game Panel
-@Component
 public class GamePanel extends JPanel {
     private List<PlayerPanel> playerPanels;
     private JLabel substringLabel;
