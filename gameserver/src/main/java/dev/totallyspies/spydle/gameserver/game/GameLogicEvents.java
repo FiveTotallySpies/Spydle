@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.gameserver.game;
 import dev.totallyspies.spydle.gameserver.message.GameSocketHandler;
 import dev.totallyspies.spydle.gameserver.message.SbMessageListener;
 import dev.totallyspies.spydle.shared.proto.messages.*;
+import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +14,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class GameLogicEvents {
-    private final long TIMER_INTERVAL_MILLIS = 1000;
-    private final AtomicLong TOTAL_GAME_TIME_MILLIS = new AtomicLong(30000);
+    private static final long TIMER_INTERVAL_MILLIS = 1000;
+    private static final long TOTAL_GAME_TIME_MILLIS = 30000;
+
     private final Timer timer = new Timer();
     private final AtomicLong gameStartMillis = new AtomicLong(0);
 
@@ -30,12 +32,20 @@ public class GameLogicEvents {
         gameSocketHandler.broadcastCbMessage(gameStartMessage());
 
         gameStartMillis.set(System.currentTimeMillis());
+
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                GameLogicEvents.this.sendCbTimerTick();
+                GameLogicEvents.this.onTimerTick(this);
             }
         }, TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                GameLogicEvents.this.onGameEnd();
+            }
+        }, TOTAL_GAME_TIME_MILLIS);
 
         gameLogic.newTurn();
         gameSocketHandler.broadcastCbMessage(newTurnMessage());
@@ -43,8 +53,11 @@ public class GameLogicEvents {
 
     @SbMessageListener
     public void onGuess(SbGuess event, UUID client) {
-        var input = event.getGuessedWord();
+        if (!gameLogic.isPlayerTurn(client)) {
+            return;
+        }
 
+        var input = event.getGuessedWord();
         boolean guessCorrect = gameLogic.guess(input); /* makes a turn if a guess is correct */
 
         gameSocketHandler.broadcastCbMessage(guessMessage(input, guessCorrect));
@@ -53,17 +66,35 @@ public class GameLogicEvents {
         }
     }
 
+    private void onTimerTick(TimerTask task) {
+        long millisPassed = System.currentTimeMillis() - gameStartMillis.get();
+        long millisLeft = TOTAL_GAME_TIME_MILLIS - millisPassed;
+        if (millisLeft < 0) {
+            task.cancel();
+            return;
+        }
+
+        var secondsLeft = (int) Math.round(millisLeft / 1000.0);
+
+        var cbMessage = CbMessage
+                .newBuilder()
+                .setTimerTick(CbTimerTick.newBuilder().setTimeLeftSeconds(secondsLeft))
+                .build();
+
+        gameSocketHandler.broadcastCbMessage(cbMessage);
+    }
+
+    private void onGameEnd() {
+        this.timer.cancel();
+        gameSocketHandler.broadcastCbMessage(gameEndMessage());
+    }
+
     private CbMessage gameStartMessage()
     {
         var players = gameLogic.getPlayers();
         var gameTime = GameLogic.TOTAL_GAME_TIME_SECONDS;
 
-        var msgPlayers = players.stream().map(player ->
-                dev.totallyspies.spydle.shared.proto.messages.Player.newBuilder()
-                        .setPlayerName(player.getName())
-                        .setScore(player.getScore())
-                        .build()
-        ).toList();
+        var msgPlayers = players.stream().map(this::msgPlayer).toList();
 
         return CbMessage
                 .newBuilder()
@@ -97,21 +128,23 @@ public class GameLogicEvents {
                 .build();
     }
 
-    private void sendCbTimerTick() {
-        long millisPassed = System.currentTimeMillis() - gameStartMillis.get();
-        long millisLeft = TOTAL_GAME_TIME_MILLIS.get() - millisPassed;
-        if (millisLeft < 0) {
-            this.timer.cancel();
-            return;
-        }
+    private CbMessage gameEndMessage() {
+        var winner = gameLogic.getWinner();
+        return CbMessage
+                .newBuilder()
+                .setGameEnd(
+                        CbGameEnd.newBuilder()
+                                .setWinner(
+                                        msgPlayer(winner)
+                                )
+                )
+                .build();
+    }
 
-        var secondsLeft = (int) Math.round(millisLeft / 1000.0);
-
-        var cbMessage = CbMessage
-                        .newBuilder()
-                        .setTimerTick(CbTimerTick.newBuilder().setTimeLeftSeconds(secondsLeft))
-                        .build();
-
-        gameSocketHandler.broadcastCbMessage(cbMessage);
+    private Player msgPlayer(dev.totallyspies.spydle.gameserver.game.Player player) {
+        return dev.totallyspies.spydle.shared.proto.messages.Player.newBuilder()
+                .setPlayerName(player.getName())
+                .setScore(player.getScore())
+                .build();
     }
 }
