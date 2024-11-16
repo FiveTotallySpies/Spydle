@@ -35,10 +35,12 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     @Getter
     @Nullable
     private UUID clientId;
+
     private WebSocketSession session;
 
     @Autowired
     private CbMessageListenerProcessor annotationProcessor;
+
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
