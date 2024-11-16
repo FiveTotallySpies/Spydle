@@ -52,7 +52,8 @@ message CbTimerTick {
 }
 
 message CbGuessResult {
-  bool result = 1;
+  string guess = 1;
+  bool correct = 2;
 }
 
 message CbNewTurn {

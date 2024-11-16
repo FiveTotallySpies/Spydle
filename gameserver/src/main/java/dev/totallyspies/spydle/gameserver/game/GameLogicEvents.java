@@ -25,33 +25,76 @@ public class GameLogicEvents {
     private GameSocketHandler gameSocketHandler;
 
     @SbMessageListener
-    public void onPlayerJoin(SbJoinGame event, UUID client) {
-        gameLogic.onPlayerJoin(event, client);
-    }
-
-    @SbMessageListener
     public void onGameStart(SbStartGame event, UUID client) {
-        if (gameLogic.isGameInProgress())
-            return;
+        gameLogic.gameStart(gameSocketHandler.getSessions());
+        gameSocketHandler.broadcastCbMessage(gameStartMessage());
 
-        gameSocketHandler.sendToAllPlayers(gameLogic.onGameStart(client));
-
-        this.gameStartMillis.set(System.currentTimeMillis());
-        this.timer.scheduleAtFixedRate(new TimerTask() {
+        gameStartMillis.set(System.currentTimeMillis());
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 GameLogicEvents.this.sendCbTimerTick();
             }
         }, TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
 
-        gameSocketHandler.sendToAllPlayers(gameLogic.newTurn());
+        gameLogic.newTurn();
+        gameSocketHandler.broadcastCbMessage(newTurnMessage());
     }
 
     @SbMessageListener
     public void onGuess(SbGuess event, UUID client) {
-        if (event.getGuessedWord().equals(this.gameLogic.getCurrentSubString())) {
-            gameSocketHandler.sendToAllPlayers(gameLogic.newTurn());
+        var input = event.getGuessedWord();
+
+        boolean guessCorrect = gameLogic.guess(input); /* makes a turn if a guess is correct */
+
+        gameSocketHandler.broadcastCbMessage(guessMessage(input, guessCorrect));
+        if (guessCorrect) {
+            gameSocketHandler.broadcastCbMessage(newTurnMessage());
         }
+    }
+
+    private CbMessage gameStartMessage()
+    {
+        var players = gameLogic.getPlayers();
+        var gameTime = GameLogic.TOTAL_GAME_TIME_SECONDS;
+
+        var msgPlayers = players.stream().map(player ->
+                dev.totallyspies.spydle.shared.proto.messages.Player.newBuilder()
+                        .setPlayerName(player.getName())
+                        .setScore(player.getScore())
+                        .build()
+        ).toList();
+
+        return CbMessage
+                .newBuilder()
+                .setGameStart(
+                        CbGameStart.newBuilder()
+                                .setTotalGameTimeSeconds(gameTime)
+                                .addAllPlayers(msgPlayers)
+                ).build();
+    }
+
+    private CbMessage guessMessage(String guess, boolean correct) {
+        return CbMessage
+                .newBuilder()
+                .setGuessResult(
+                        CbGuessResult
+                                .newBuilder()
+                                .setGuess(guess)
+                                .setCorrect(correct)
+                )
+                .build();
+    }
+
+    private CbMessage newTurnMessage() {
+        return CbMessage
+                .newBuilder()
+                .setNewTurn(
+                        CbNewTurn.newBuilder()
+                                .setAssignedString(gameLogic.getCurrentSubString())
+                                .setCurrentPlayerName(gameLogic.getCurrentPlayer().getName())
+                )
+                .build();
     }
 
     private void sendCbTimerTick() {
@@ -69,6 +112,6 @@ public class GameLogicEvents {
                         .setTimerTick(CbTimerTick.newBuilder().setTimeLeftSeconds(secondsLeft))
                         .build();
 
-        gameSocketHandler.sendToAllPlayers(cbMessage);
+        gameSocketHandler.broadcastCbMessage(cbMessage);
     }
 }
