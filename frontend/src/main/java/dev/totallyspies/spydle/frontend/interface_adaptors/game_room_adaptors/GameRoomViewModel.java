@@ -1,4 +1,7 @@
-package dev.totallyspies.spydle.frontend.interface_adaptors;
+package dev.totallyspies.spydle.frontend.interface_adaptors.game_room_adaptors;
 
-public class GameRoomeViewModel {
+import org.springframework.stereotype.Component;
+
+@Component
+public class GameRoomViewModel {
 }

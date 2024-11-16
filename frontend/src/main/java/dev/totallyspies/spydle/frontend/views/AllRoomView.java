@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.frontend.views;
 import javax.swing.*;
 import java.awt.*;
 
+@org.springframework.stereotype.Component
 public class AllRoomView extends JPanel {
 
     public AllRoomView() {

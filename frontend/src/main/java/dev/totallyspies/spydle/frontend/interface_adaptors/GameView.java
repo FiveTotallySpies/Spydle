@@ -6,7 +6,9 @@ import dev.totallyspies.spydle.frontend.views.GameOverView;
 import dev.totallyspies.spydle.frontend.views.AllRoomView;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.frontend.views.WelcomeScreenView;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GameView extends JFrame {
     // Define the CardLayout and panel container
     private CardLayout cardLayout;

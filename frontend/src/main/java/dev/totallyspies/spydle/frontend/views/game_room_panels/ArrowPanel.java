@@ -1,9 +1,12 @@
 package dev.totallyspies.spydle.frontend.views.game_room_panels;
 
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import java.awt.*;
 
 // Arrow Panel (Used to indicate the current player, centered initially)
+@Component
 class ArrowPanel extends JPanel {
     public ArrowPanel() {
         setOpaque(false);

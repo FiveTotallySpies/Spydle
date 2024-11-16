@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+@org.springframework.stereotype.Component
 public class GameOverView extends JPanel {
 
     public GameOverView() {

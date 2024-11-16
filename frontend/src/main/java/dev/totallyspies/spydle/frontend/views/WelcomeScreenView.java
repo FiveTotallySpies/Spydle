@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+@org.springframework.stereotype.Component
 public class WelcomeScreenView extends JPanel {
 
     public WelcomeScreenView() {

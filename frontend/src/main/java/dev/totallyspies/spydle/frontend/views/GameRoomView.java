@@ -1,12 +1,14 @@
 package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 
+@Component
 public class GameRoomView extends JPanel {
-    private GamePanel gamePanel;
+    public GamePanel gamePanel;
 
     public GameRoomView() {
 //        setTitle("SPYDLE Game");

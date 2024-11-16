@@ -1,10 +1,14 @@
-package dev.totallyspies.spydle.frontend;
+package dev.totallyspies.spydle.frontend.interface_adaptors;
 
-import dev.totallyspies.spydle.frontend.GameOverView.GameOverView;
-import dev.totallyspies.spydle.frontend.WelcomeScreenView.WelcomeScreenView;
+import dev.totallyspies.spydle.frontend.views.GameOverView;
+import dev.totallyspies.spydle.frontend.views.WelcomeScreenView;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 
+
+// this is basically a presenter.
+@Component
 public class GameLogic {
     private JFrame frame;
     private WelcomeScreenView welcomeScreen;
