@@ -1,17 +1,15 @@
-package dev.totallyspies.spydle.frontend.AllRoomScreen;
-
-import dev.totallyspies.spydle.frontend.WelcomeScreen.WelcomeStyled;
+package dev.totallyspies.spydle.frontend.views;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class AllRoomScreen extends JFrame {
+public class AllRoomView extends JPanel {
 
-    public AllRoomScreen() {
-        setTitle("All Rooms");
-        setSize(500, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public AllRoomView() {
+//        setTitle("All Rooms");
+//        setSize(500, 400);
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setLocationRelativeTo(null);
 
         // Main container panel styling
         JPanel container = new JPanel();
@@ -44,8 +42,8 @@ public class AllRoomScreen extends JFrame {
         JButton backButton = new JButton("Back to Welcome");
         styleButton(backButton);
         backButton.addActionListener(e -> {
-            this.dispose(); // Close current window
-            new WelcomeStyled(); // Open the welcome page again (ensure the class is correctly named)
+//            this.dispose(); // Close current window
+            new WelcomeScreenView(); // Open the welcome page again (ensure the class is correctly named)
         });
 
         // Adding components to container
@@ -84,7 +82,7 @@ public class AllRoomScreen extends JFrame {
         });
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(AllRoomScreen::new);
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(AllRoomScreen::new);
+//    }
 }

@@ -1,18 +1,16 @@
-package dev.totallyspies.spydle.frontend.WelcomeScreen;
-
-import dev.totallyspies.spydle.frontend.AllRoomScreen.AllRoomScreen;
+package dev.totallyspies.spydle.frontend.views;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class WelcomeStyled extends JFrame {
+public class WelcomeScreenView extends JPanel {
 
-    public WelcomeStyled() {
-        setTitle("Welcome - Join or Create Room");
-        setSize(500, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public WelcomeScreenView() {
+//        setTitle("Welcome - Join or Create Room");
+//        setSize(500, 500);
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setLocationRelativeTo(null);
 
         // Main container panel styling
         JPanel container = new JPanel();
@@ -73,12 +71,12 @@ public class WelcomeStyled extends JFrame {
         // View All Rooms button
         JButton viewAllRoomsButton = new JButton("View All Rooms");
         styleButton(viewAllRoomsButton);
-        viewAllRoomsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openRoomsPage(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
-            }
-        });
+//        viewAllRoomsButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                openRoomsPage(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+//            }
+//        });
 
         // Adding components to container
         container.add(titleLabel);
@@ -146,14 +144,14 @@ public class WelcomeStyled extends JFrame {
     }
 
     // Method to open the AllRoomsScreen.AllRoomsPage
-    private void openRoomsPage() {
+//    private void openRoomsPage() {
         // Close the current window (optional)
-        this.dispose();
-        // Open the AllRoomScreen window
-        new AllRoomScreen(); // Ensure AllRoomScreen is correctly imported
-    }
+//        this.dispose();
+//        // Open the AllRoomScreen window
+//        new AllRoomScreen(); // Ensure AllRoomScreen is correctly imported
+    // }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(WelcomeStyled::new);
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(WelcomeScreenView::new);
+//    }
 }

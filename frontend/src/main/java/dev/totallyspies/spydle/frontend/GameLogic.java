@@ -1,14 +1,14 @@
 package dev.totallyspies.spydle.frontend;
 
-import dev.totallyspies.spydle.frontend.GameOverScreen.GameOverScreen;
-import dev.totallyspies.spydle.frontend.WelcomeScreen.WelcomeStyled;
+import dev.totallyspies.spydle.frontend.GameOverView.GameOverView;
+import dev.totallyspies.spydle.frontend.WelcomeScreenView.WelcomeScreenView;
 
 import javax.swing.*;
 
 public class GameLogic {
     private JFrame frame;
-    private WelcomeStyled welcomeScreen;
-    private GameOverScreen gameOverScreen;
+    private WelcomeScreenView welcomeScreen;
+    private GameOverView gameOverScreen;
 
     public GameLogic() {
         // Initialize the main frame that will hold different screens
@@ -21,7 +21,7 @@ public class GameLogic {
 
     public void startGame() {
         // Show the welcome screen
-        welcomeScreen = new WelcomeStyled();
+        welcomeScreen = new WelcomeScreenView();
         frame.getContentPane().removeAll(); // Clear existing components
         frame.add(welcomeScreen); // Add the welcome screen panel
         frame.revalidate();
@@ -54,7 +54,7 @@ public class GameLogic {
 
     public void gameOver() {
         // Show the Game Over screen
-        gameOverScreen = new GameOverScreen();
+        gameOverScreen = new GameOverView();
         frame.getContentPane().removeAll(); // Clear existing components
         frame.add(gameOverScreen.getContentPane()); // Add GameOverScreen content to main frame
         frame.revalidate();

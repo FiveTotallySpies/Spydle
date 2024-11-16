@@ -1,18 +1,18 @@
-package dev.totallyspies.spydle.frontend.GamePanel;
+package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.WelcomeScreen.WelcomeStyled;
+import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class GameFrame extends JFrame {
+public class GameRoomView extends JPanel {
     private GamePanel gamePanel;
 
-    public GameFrame() {
-        setTitle("SPYDLE Game");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public GameRoomView() {
+//        setTitle("SPYDLE Game");
+//        setSize(800, 600);
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setLocationRelativeTo(null);
 
         // Create a container panel for the game screen
         JPanel container = new JPanel();
@@ -36,8 +36,8 @@ public class GameFrame extends JFrame {
         // Add ActionListener to handle back button click
         backButton.addActionListener(e -> {
             // Close the game window and show the welcome page
-            this.dispose(); // Close the game window
-            new WelcomeStyled(); // Open the welcome page
+//            this.dispose(); // Close the game window
+            new WelcomeScreenView(); // Open the welcome page
         });
 
         // Add the back button to the top-left corner (NORTHWEST) of the window
@@ -54,7 +54,7 @@ public class GameFrame extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(GameFrame::new);
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(GameRoomView::new);
+//    }
 }

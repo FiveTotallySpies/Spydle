@@ -1,19 +1,17 @@
-package dev.totallyspies.spydle.frontend.GameOverScreen;
-
-import dev.totallyspies.spydle.frontend.WelcomeScreen.WelcomeStyled;
+package dev.totallyspies.spydle.frontend.views;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GameOverScreen extends JFrame {
+public class GameOverView extends JPanel {
 
-    public GameOverScreen() {
-        setTitle("Game Over");
-        setSize(400, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public GameOverView() {
+//        setTitle("Game Over");
+//        setSize(400, 300);
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setLocationRelativeTo(null);
 
         // Container Panel
         JPanel container = new JPanel();
@@ -71,8 +69,8 @@ public class GameOverScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Open the welcome window and close the GameOverScreen
-                new WelcomeStyled(); // Open the main Spydle application
-                dispose(); // Close the Game Over screen
+                new WelcomeScreenView(); // Open the main Spydle application
+//                dispose(); // Close the Game Over screen
             }
         });
 
@@ -116,6 +114,6 @@ public class GameOverScreen extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(GameOverScreen::new);
+        SwingUtilities.invokeLater(GameOverView::new);
     }
 }

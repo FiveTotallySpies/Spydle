@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.frontend.GamePanel;
+package dev.totallyspies.spydle.frontend.views.game_room_panels;
 
 import javax.swing.*;
 import java.awt.*;
