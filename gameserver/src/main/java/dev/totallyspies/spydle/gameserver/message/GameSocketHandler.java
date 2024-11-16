@@ -8,8 +8,6 @@ import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
-import java.util.Collection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +20,12 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class GameSocketHandler extends BinaryWebSocketHandler {
@@ -44,10 +44,10 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     @Autowired
     private ApplicationEventPublisher publisher;
 
-    private final Map<ClientSession, WebSocketSession> sessions = new ConcurrentHashMap<>();
-
-    public Collection<ClientSession> getSessions() {
-        return sessions.keySet();
+    private final Map<ClientSession, WebSocketSession> sessions = Collections.synchronizedMap(new LinkedHashMap<>());
+    
+    public List<ClientSession> getSessions() {
+        return new LinkedList<>(sessions.keySet());
     }
 
     @Override
