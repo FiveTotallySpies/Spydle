@@ -33,8 +33,7 @@ public class IntegratedClientSessionValidator implements ClientSessionValidator 
     public boolean validateClientSession(UUID clientId) {
         Object rawSession = storage.getClientSession(clientId);
         if (!(rawSession instanceof ClientSession session)) return false;
-        String gameServerName = currentGameServer.getName();
-        return gameServerName.equals(session.getGameServerName());
+        return currentGameServer.equals(session.getGameServer());
     }
 
 }

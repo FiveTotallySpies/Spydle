@@ -1,12 +1,14 @@
 package dev.totallyspies.spydle.gameserver.storage;
 
 import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
+import dev.totallyspies.spydle.shared.RoomCodeUtils;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -20,6 +22,9 @@ import org.springframework.context.annotation.Primary;
 public class CurrentGameServerConfiguration {
 
     private final Logger logger = LoggerFactory.getLogger(CurrentGameServerConfiguration.class);
+
+    @Autowired
+    private ApplicationContext context;
 
     @Autowired
     private GameServerStorage storage;
@@ -36,14 +41,21 @@ public class CurrentGameServerConfiguration {
     @ConditionalOnProperty(name = "agones.enabled", havingValue = "false")
     public GameServer currentLocalGameServer(@Value("${server.port}") int containerPort) {
         logger.info("Agones disabled, loading local current game server info...");
+        String roomCode = RoomCodeUtils.generateRandomCode();
+        String gameServerName = "gameserver-local-" + roomCode;
         return writeCurrentGameServer(GameServer.builder()
                 .address("localhost")
                 .port(containerPort)
-                .name("gameserver-local")
-                .roomId("12345") // TODO
-                .publicRoom(false) // TODO
-                .state(GameServer.State.WAITING)
+                .name(gameServerName)
+                .roomCode(roomCode)
+                .publicRoom(false)
+                .state(GameServer.State.READY)
                 .build());
+    }
+
+    public void updateInStorage() {
+        GameServer currentGameServer = context.getBean(GameServer.class);
+        writeCurrentGameServer(currentGameServer);
     }
 
     private GameServer writeCurrentGameServer(GameServer currentGameServer) {
