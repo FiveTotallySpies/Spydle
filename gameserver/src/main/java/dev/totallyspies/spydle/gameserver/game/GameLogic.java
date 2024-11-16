@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class GameLogic {
-    private final Map<UUID, Player> joinedPlayers;
+    private final Map<UUID, Player> joinedPlayers; // doesn't change after
     private final AtomicBoolean gameInProgress;
     private final AtomicInteger turn;
     private final AtomicReference<String> currentSubString;
@@ -30,11 +30,7 @@ public class GameLogic {
         this.turn = new AtomicInteger(0);
     }
 
-    public void playerLeft(UUID clientId) {
-        this.joinedPlayers.remove(clientId);
-    }
-
-    public void onPlayerNameSelect(SbSelectName event, UUID client) {
+    public void onPlayerJoin(SbJoinGame event, UUID client) {
         /* Player name can't be changed when the game is in progress. */
         if (this.gameInProgress.get()) {
             return;

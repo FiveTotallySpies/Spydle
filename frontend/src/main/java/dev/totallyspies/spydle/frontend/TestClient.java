@@ -38,7 +38,7 @@ public class TestClient {
         System.out.println("Handler open: " + handler.isOpen());
 
         // Send join message
-        handler.sendSbMessage(SbMessage.newBuilder().setSelectName(SbSelectName.newBuilder().setPlayerName("kai")).build());
+        handler.sendSbMessage(SbMessage.newBuilder().setJoinGame(SbJoinGame.newBuilder().setPlayerName("kai")).build());
 
         // Start the game
         handler.sendSbMessage(SbMessage.newBuilder().setStartGame(SbStartGame.newBuilder().build()).build());

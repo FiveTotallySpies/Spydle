@@ -5,12 +5,10 @@ import dev.totallyspies.spydle.gameserver.message.SbMessageListener;
 import dev.totallyspies.spydle.shared.proto.messages.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Component
@@ -27,25 +25,17 @@ public class GameLogicEvents {
     private GameSocketHandler gameSocketHandler;
 
     @SbMessageListener
-    public void onPlayerNameSelect(SbSelectName event, UUID client) {
-        gameLogic.onPlayerNameSelect(event, client);
+    public void onPlayerJoin(SbJoinGame event, UUID client) {
+        gameLogic.onPlayerJoin(event, client);
     }
 
     @SbMessageListener
     public void onGameStart(SbStartGame event, UUID client) {
-        // 1. If the game is in progress we can't start it
         if (gameLogic.isGameInProgress())
             return;
 
-        // 2. Get a message to send to all players
-        var gameStartMessage = gameLogic.onGameStart(client);
+        gameSocketHandler.sendToAllPlayers(gameLogic.onGameStart(client));
 
-        // 3. Send a message to all players
-        for (UUID player : gameSocketHandler.getSessions()) {
-            gameSocketHandler.sendCbMessage(player, gameStartMessage);
-        }
-
-        // 4. Schedule a timer to send to all players
         this.gameStartMillis.set(System.currentTimeMillis());
         this.timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -54,21 +44,13 @@ public class GameLogicEvents {
             }
         }, TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
 
-        // 5. Start a new turn
-        newTurn();
+        gameSocketHandler.sendToAllPlayers(gameLogic.newTurn());
     }
 
     @SbMessageListener
     public void onGuess(SbGuess event, UUID client) {
         if (event.getGuessedWord().equals(this.gameLogic.getCurrentSubString())) {
-            newTurn();
-        }
-    }
-
-    private void newTurn() {
-        var newTurnMessage = gameLogic.newTurn();
-        for (UUID player : gameSocketHandler.getSessions()) {
-            gameSocketHandler.sendCbMessage(player, newTurnMessage);
+            gameSocketHandler.sendToAllPlayers(gameLogic.newTurn());
         }
     }
 
@@ -87,9 +69,6 @@ public class GameLogicEvents {
                         .setTimerTick(CbTimerTick.newBuilder().setTimeLeftSeconds(secondsLeft))
                         .build();
 
-        var connectedPlayers = gameSocketHandler.getSessions();
-        for (UUID player : connectedPlayers) {
-            gameSocketHandler.sendCbMessage(player, cbMessage);
-        }
+        gameSocketHandler.sendToAllPlayers(cbMessage);
     }
 }

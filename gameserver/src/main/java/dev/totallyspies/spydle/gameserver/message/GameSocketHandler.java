@@ -84,6 +84,12 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         }
     }
 
+    public void sendToAllPlayers(CbMessage message) {
+        for (UUID player : this.getSessions()) {
+            this.sendCbMessage(player, message);
+        }
+    }
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // Validate that the client has been assigned to us
