@@ -1,11 +1,13 @@
-package dev.totallyspies.spydle.gameserver.session;
+package dev.totallyspies.spydle.gameserver.message.session;
+
+import dev.totallyspies.spydle.shared.model.ClientSession;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
 public interface ClientSessionValidator {
 
-    boolean validateClientSession(UUID clientId);
+    boolean validateClientSession(UUID clientId, String name);
 
     @Nullable
     default UUID parseClientId(Object clientIdObject) {

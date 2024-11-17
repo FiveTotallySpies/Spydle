@@ -15,7 +15,7 @@ public class GameServer implements Serializable {
     private String address;
     private int port;
     private String name;
-    private String roomId;
+    private String roomCode;
     private boolean publicRoom;
     private State state;
 
@@ -24,9 +24,9 @@ public class GameServer implements Serializable {
     }
 
     public enum State {
-        WAITING,
-        PLAYING,
-        FINISHING;
+        READY, // No one has joined our gameserver yet, we are waiting for the first player
+        WAITING, // Some players have joined, but the game hasn't started. New players can join.
+        PLAYING // Players are playing the game, no one can join
     }
 
 }

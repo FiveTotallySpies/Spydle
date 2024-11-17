@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.matchmaker.service;
 import allocation.Allocation;
 import allocation.AllocationServiceGrpc;
 import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
+import dev.totallyspies.spydle.shared.RoomCodeUtils;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -106,12 +107,13 @@ public class AgonesAllocatorService {
         }
 
         String gameServerName = response.getGameServerName();
+        String roomCode = RoomCodeUtils.getFromName(gameServerName);
 
-        if (!gameServerRepository.gameServerExists(gameServerName)) {
+        if (!gameServerRepository.gameServerExists(roomCode)) {
             // TODO un-allocate/destroy instance?
-            throw new RuntimeException("Game server does not exist in repository: " + gameServerName);
+            throw new RuntimeException("Game server does not exist in repository: " + roomCode);
         }
-        GameServer gameServer = gameServerRepository.getGameServer(gameServerName);
+        GameServer gameServer = gameServerRepository.getGameServer(roomCode);
 
         // Validate that repository contains correct information on gameserver
         assert gameServer.getAddress().equals(response.getAddress());
