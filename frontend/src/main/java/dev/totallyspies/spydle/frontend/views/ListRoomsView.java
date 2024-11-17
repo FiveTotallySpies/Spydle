@@ -9,11 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 @org.springframework.stereotype.Component
-public class AllRoomView extends JPanel {
+public class ListRoomsView extends JPanel {
     @Autowired
     private AllRoomController controller;
 
-    public AllRoomView() {
+    public ListRoomsView() {
         setLayout(new GridBagLayout()); // Center the container in the middle of the screen
         setBackground(new Color(195, 217, 255)); // Light blue background for the entire panel
 
@@ -105,7 +105,7 @@ public class AllRoomView extends JPanel {
             frame.setSize(500, 500);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLocationRelativeTo(null);
-            frame.add(new AllRoomView());
+            frame.add(new ListRoomsView());
             frame.setVisible(true);
         });
     }

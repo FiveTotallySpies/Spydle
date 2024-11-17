@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.interface_adaptors.game_view_adaptors;
 
-import dev.totallyspies.spydle.frontend.views.AllRoomView;
+import dev.totallyspies.spydle.frontend.views.ListRoomsView;
 import dev.totallyspies.spydle.frontend.views.GameOverView;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
@@ -22,15 +22,15 @@ public class GameViewModel extends JFrame {
 
     private final WelcomeView welcomeView;
     private final GameRoomView gameRoomView;
-    private final AllRoomView allRoomView;
+    private final ListRoomsView listRoomsView;
     private final GameOverView gameOverView;
 
     @Autowired // dependency injection
     public GameViewModel(WelcomeView welcomeView, GameRoomView gameRoomView,
-                         AllRoomView allRoomView, GameOverView gameOverView) {
+                         ListRoomsView listRoomsView, GameOverView gameOverView) {
         this.welcomeView = welcomeView;
         this.gameRoomView = gameRoomView;
-        this.allRoomView = allRoomView;
+        this.listRoomsView = listRoomsView;
         this.gameOverView = gameOverView;
 
         // Set up the frame properties
@@ -45,7 +45,7 @@ public class GameViewModel extends JFrame {
 
         // Add the different view panels to the card layout
         panelContainer.add(this.welcomeView, "WelcomeScreenView");
-        panelContainer.add(this.allRoomView, "AllRoomView");
+        panelContainer.add(this.listRoomsView, "AllRoomView");
         panelContainer.add(this.gameRoomView, "GameRoomView");
         panelContainer.add(this.gameOverView, "GameOverView");
 
@@ -65,7 +65,7 @@ public class GameViewModel extends JFrame {
     public static void launchGameView(String[] args) {
         // Run the GameWindowFrame
         SwingUtilities.invokeLater(() -> {
-            GameViewModel frame = new GameViewModel(new WelcomeView(), new GameRoomView(), new AllRoomView(), new GameOverView());
+            GameViewModel frame = new GameViewModel(new WelcomeView(), new GameRoomView(), new ListRoomsView(), new GameOverView());
             frame.setVisible(true);
         });
     }
