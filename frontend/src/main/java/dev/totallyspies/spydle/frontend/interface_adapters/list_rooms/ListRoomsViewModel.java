@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.frontend.interface_adaptors.all_room_adaptors;
+package dev.totallyspies.spydle.frontend.interface_adapters.list_rooms;
 
 import org.springframework.stereotype.Component;
 

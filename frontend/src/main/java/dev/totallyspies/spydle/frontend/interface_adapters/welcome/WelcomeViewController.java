@@ -1,12 +1,12 @@
-package dev.totallyspies.spydle.frontend.interface_adaptors.game_room_adaptors;
+package dev.totallyspies.spydle.frontend.interface_adapters.welcome;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.game_view_adaptors.SwitchViewEvent;
+import dev.totallyspies.spydle.frontend.SwitchViewEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GameRoomViewController {
+public class WelcomeViewController {
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -14,8 +14,8 @@ public class GameRoomViewController {
     /*
     Method called when View All Rooms Button is Pressed
      */
-    public void openWelcomeView() {
-        publisher.publishEvent(new SwitchViewEvent(this, "WelcomeView"));
+    public void openListRoomsView() {
+        publisher.publishEvent(new SwitchViewEvent(this, "ListRoomsView"));
     }
 
 }

@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.frontend.interface_adaptors.welcome_screen_adaptors;
+package dev.totallyspies.spydle.frontend.interface_adapters.welcome;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.welcome_screen_adaptors.WelcomeViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.welcome.WelcomeViewController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;

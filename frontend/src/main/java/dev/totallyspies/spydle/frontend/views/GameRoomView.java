@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.game_room_adaptors.GameRoomViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewController;
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

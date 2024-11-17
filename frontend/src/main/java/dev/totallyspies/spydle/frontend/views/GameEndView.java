@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.game_over_adaptors.GameOverViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.game_end.GameEndViewController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -9,12 +9,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 @org.springframework.stereotype.Component
-public class GameOverView extends JPanel {
+public class GameEndView extends JPanel {
 
     @Autowired
-    private GameOverViewController controller;
+    private GameEndViewController controller;
 
-    public GameOverView() {
+    public GameEndView() {
 
         setLayout(new GridBagLayout()); // Center the container panel in the middle of the screen
         setBackground(new Color(195, 217, 255)); // Light blue background for the entire panel
@@ -123,7 +123,7 @@ public class GameOverView extends JPanel {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(500, 500); // Full-screen dimensions
             frame.setLocationRelativeTo(null);
-            frame.add(new GameOverView());
+            frame.add(new GameEndView());
             frame.setVisible(true);
         });
     }

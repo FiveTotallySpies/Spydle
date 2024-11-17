@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.frontend.interface_adaptors.game_room_adaptors;
+package dev.totallyspies.spydle.frontend.interface_adapters.game_room;
 
 import org.springframework.stereotype.Component;
 

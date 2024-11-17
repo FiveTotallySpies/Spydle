@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.all_room_adaptors.ListRoomsViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.list_rooms.ListRoomsViewController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;

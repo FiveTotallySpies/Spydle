@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.frontend.interface_adaptors.game_view_adaptors;
+package dev.totallyspies.spydle.frontend;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
