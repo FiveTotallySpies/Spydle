@@ -6,8 +6,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import java.awt.*;
 
-;
-
 @SpringBootApplication
 public class FrontendApplication {
 
