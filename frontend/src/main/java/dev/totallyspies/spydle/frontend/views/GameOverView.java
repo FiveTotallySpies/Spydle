@@ -1,12 +1,20 @@
 package dev.totallyspies.spydle.frontend.views;
 
+import dev.totallyspies.spydle.frontend.interface_adaptors.game_over_adaptors.GameOverController;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 @org.springframework.stereotype.Component
 public class GameOverView extends JPanel {
+    @Autowired
+    private GameOverController controller;
 
     public GameOverView() {
+
         setLayout(new GridBagLayout()); // Center the container panel in the middle of the screen
         setBackground(new Color(195, 217, 255)); // Light blue background for the entire panel
 
@@ -53,11 +61,14 @@ public class GameOverView extends JPanel {
         thankYouLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         thankYouLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
-        // Return to Welcome Page Button
-        JButton returnButton = new JButton("Return to Welcome Page");
-        styleButton(returnButton);
-        returnButton.addActionListener(e -> {
-            new WelcomeView(); // Open the main Spydle application
+        // Back button
+        JButton backButton = new JButton("Back to Welcome");
+        styleButton(backButton);
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.changeView("WelcomeScreenView"); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+            }
         });
 
         // Add components to container
@@ -67,7 +78,7 @@ public class GameOverView extends JPanel {
         container.add(Box.createVerticalStrut(20));
         container.add(thankYouLabel);
         container.add(Box.createVerticalStrut(20));
-        container.add(returnButton);
+        container.add(backButton);
 
         // Add container to the center of the GameOverView using GridBagConstraints
         GridBagConstraints gbc = new GridBagConstraints();
@@ -78,27 +89,29 @@ public class GameOverView extends JPanel {
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(138, 43, 226)); // Blueviolet color
+        button.setBackground(new Color(138, 43, 226)); // blueviolet
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFont(new Font("Arial", Font.BOLD, 12));
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(250, 40));
+        button.setMaximumSize(new Dimension(400, 40));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Set a consistent, fixed padding around the button content
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(138, 43, 226), 1), // Outer border color
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)  // Inner padding to avoid layout shift
+        ));
 
         // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
-                button.setForeground(new Color(138, 43, 226));
-                button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 1));
+                button.setForeground(new Color(138, 43, 226)); // blueviolet
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(138, 43, 226));
                 button.setForeground(Color.WHITE);
-                button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             }
         });
     }

@@ -1,10 +1,17 @@
 package dev.totallyspies.spydle.frontend.views;
 
+import dev.totallyspies.spydle.frontend.interface_adaptors.all_room_adaptors.AllRoomController;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 @org.springframework.stereotype.Component
 public class AllRoomView extends JPanel {
+    @Autowired
+    private AllRoomController controller;
 
     public AllRoomView() {
         setLayout(new GridBagLayout()); // Center the container in the middle of the screen
@@ -42,9 +49,11 @@ public class AllRoomView extends JPanel {
         // Back button
         JButton backButton = new JButton("Back to Welcome");
         styleButton(backButton);
-        backButton.addActionListener(e -> {
-            // Navigate back to WelcomeScreenView
-//            new WelcomeView();
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.changeView("WelcomeScreenView"); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+            }
         });
 
         // Adding components to container
@@ -63,31 +72,32 @@ public class AllRoomView extends JPanel {
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(138, 43, 226)); // Blueviolet color
+        button.setBackground(new Color(138, 43, 226)); // blueviolet
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setFont(new Font("Arial", Font.BOLD, 12));
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setMaximumSize(new Dimension(400, 40));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Set a consistent, fixed padding around the button content
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(138, 43, 226), 1), // Outer border color
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)  // Inner padding to avoid layout shift
+        ));
 
         // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
                 button.setForeground(new Color(138, 43, 226)); // blueviolet
-                button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 1));
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(138, 43, 226));
                 button.setForeground(Color.WHITE);
-                button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             }
         });
     }
-
     // Test the JPanel in a JFrame with size 500x500
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

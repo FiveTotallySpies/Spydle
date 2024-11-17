@@ -1,5 +1,6 @@
 package dev.totallyspies.spydle.frontend.views;
 
+import dev.totallyspies.spydle.frontend.interface_adaptors.welcome_screen_adaptors.WelcomeScreenController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -13,9 +14,10 @@ import java.awt.event.FocusListener;
 public class WelcomeView extends JPanel {
 
     @Autowired
-    private WelcomeViewController controller;
+    private WelcomeScreenController controller;
 
     public WelcomeView() {
+
         // Main container panel styling
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
@@ -63,6 +65,7 @@ public class WelcomeView extends JPanel {
         JTextField joinNicknameField = createPlaceholderTextField("Enter your nickname");
         JTextField roomCodeField = createPlaceholderTextField("Enter existing room name");
 
+
         JButton joinRoomButton = new JButton("Join Room");
         styleButton(joinRoomButton);
 
@@ -75,12 +78,10 @@ public class WelcomeView extends JPanel {
         // View All Rooms button
         JButton viewAllRoomsButton = new JButton("View All Rooms");
         styleButton(viewAllRoomsButton);
-
-
         viewAllRoomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.viewRoomsPressed(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+                controller.changeView("AllRoomView"); // Open the rooms page (AllRoomScreen.AllRoomsPage)
             }
         });
 
@@ -132,20 +133,23 @@ public class WelcomeView extends JPanel {
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setMaximumSize(new Dimension(400, 40));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Set a consistent, fixed padding around the button content
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(138, 43, 226), 1), // Outer border color
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)  // Inner padding to avoid layout shift
+        ));
 
         // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
                 button.setForeground(new Color(138, 43, 226)); // blueviolet
-                button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 1));
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(138, 43, 226));
                 button.setForeground(Color.WHITE);
-                button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             }
         });
     }
@@ -165,7 +169,4 @@ public class WelcomeView extends JPanel {
 
     }
 
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(WelcomeScreenView::new);
-//    }
 }
