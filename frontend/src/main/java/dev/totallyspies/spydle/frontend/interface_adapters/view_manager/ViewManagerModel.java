@@ -1,5 +1,9 @@
-package dev.totallyspies.spydle.frontend.views;
+package dev.totallyspies.spydle.frontend.interface_adapters.view_manager;
 
+import dev.totallyspies.spydle.frontend.views.GameEndView;
+import dev.totallyspies.spydle.frontend.views.GameRoomView;
+import dev.totallyspies.spydle.frontend.views.ListRoomsView;
+import dev.totallyspies.spydle.frontend.views.WelcomeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
