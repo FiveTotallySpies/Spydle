@@ -7,10 +7,10 @@ import org.springframework.context.ApplicationEvent;
 Presentor for the GameView
  */
 @Getter
-public class ViewSwitchRoomEvent extends ApplicationEvent {
+public class SwitchViewSEvent extends ApplicationEvent {
     private final String viewName;
 
-    public ViewSwitchRoomEvent(Object source, String viewName) {
+    public SwitchViewSEvent(Object source, String viewName) {
         super(source);
         this.viewName = viewName;
     }

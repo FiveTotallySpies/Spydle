@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.interface_adaptors.game_room_adaptors;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.game_view_adaptors.ViewSwitchRoomEvent;
+import dev.totallyspies.spydle.frontend.interface_adaptors.game_view_adaptors.SwitchViewSEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,6 @@ public class GameRoomController {
     Method called when View All Rooms Button is Pressed
      */
     public void changeView(String view) {
-        publisher.publishEvent(new ViewSwitchRoomEvent(this, view));
+        publisher.publishEvent(new SwitchViewSEvent(this, view));
     }
 }
