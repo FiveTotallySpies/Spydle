@@ -82,17 +82,27 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     }
 
     public void sendCbMessage(UUID clientId, CbMessage message) {
+        ClientSession targetSession = getSessionFromClientId(clientId);
+        if (targetSession == null) {
+            throw new IllegalArgumentException("Cannot send message to invalid client " + clientId);
+        }
+        sendCbMessage(targetSession, message);
+    }
+
+    public void sendCbMessage(ClientSession targetSession, CbMessage message) {
         try {
-            ClientSession targetSession = getSessionFromClientId(clientId);
-            if (targetSession == null) {
-                throw new IllegalArgumentException("Cannot send message to invalid client " + clientId);
-            }
             WebSocketSession session = sessions.get(targetSession);
             byte[] messageBytes = message.toByteArray();
             session.sendMessage(new BinaryMessage(messageBytes));
-            logger.debug("Sending client {} message of type {}", clientId.toString(), message.getPayloadCase().name());
+            logger.debug("Sending client {} message of type {}", targetSession.getClientId().toString(), message.getPayloadCase().name());
         } catch (IOException exception) {
-            throw new RuntimeException("Failed to send client " + clientId.toString() + " packet of type " + message.getPayloadCase().name(), exception);
+            throw new RuntimeException("Failed to send client " + targetSession.getClientId().toString() + " packet of type " + message.getPayloadCase().name(), exception);
+        }
+    }
+
+    public void broadcastCbMessage(CbMessage message) {
+        for (ClientSession session : this.getSessions()) {
+            this.sendCbMessage(session, message);
         }
     }
 
