@@ -16,7 +16,7 @@ public class CustomFleetAutoscalerService {
         int desiredIdleReplicas = (int) (allocatedReplicas * 0.5);
         desiredIdleReplicas = Math.max(4, desiredIdleReplicas);
         desiredIdleReplicas = Math.min(10, desiredIdleReplicas);
-        int desiredReplicas = currentState.getReplicas() - currentState.getReadyReplicas() + desiredIdleReplicas;
+        int desiredReplicas = allocatedReplicas + desiredIdleReplicas;
         logger.debug("Calculated desired replicas for autoscale target: {}", desiredReplicas);
         return desiredReplicas;
     }

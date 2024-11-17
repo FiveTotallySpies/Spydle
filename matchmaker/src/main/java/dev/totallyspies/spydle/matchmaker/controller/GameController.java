@@ -12,7 +12,6 @@ import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,14 +32,17 @@ public class GameController {
 
     private final Logger logger = LoggerFactory.getLogger(GameController.class);
 
-    @Autowired
-    private MatchmakingService matchmakingService;
+    private final MatchmakingService matchmakingService;
+    private final GameServerRepository gameServerRepository;
+    private final SessionRepository sessionRepository;
 
-    @Autowired
-    private GameServerRepository gameServerRepository;
-
-    @Autowired
-    private SessionRepository sessionRepository;
+    public GameController(MatchmakingService matchmakingService,
+                          GameServerRepository gameServerRepository,
+                          SessionRepository sessionRepository) {
+        this.matchmakingService = matchmakingService;
+        this.gameServerRepository = gameServerRepository;
+        this.sessionRepository = sessionRepository;
+    }
 
     @PostMapping("/create-game")
     public ResponseEntity<?> createGame(@RequestBody CreateGameRequestModel request) {

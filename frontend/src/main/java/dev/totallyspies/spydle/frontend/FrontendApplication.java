@@ -1,10 +1,12 @@
 package dev.totallyspies.spydle.frontend;
 
-import dev.totallyspies.spydle.frontend.views.ViewManagerModel;
+import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.ViewManagerModel;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import java.awt.*;
+
+;
 
 @SpringBootApplication
 public class FrontendApplication {

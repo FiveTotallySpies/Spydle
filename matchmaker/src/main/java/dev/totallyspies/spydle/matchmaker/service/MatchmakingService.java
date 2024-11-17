@@ -4,7 +4,6 @@ import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
 import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,13 +15,17 @@ import java.util.UUID;
 @Service
 public class MatchmakingService {
 
-    @Autowired
-    private SessionRepository sessionRepository;
+    private final SessionRepository sessionRepository;
+    private final AgonesAllocatorService allocator;
+    private final GameServerRepository gameServerRepository;
 
-    @Autowired
-    private AgonesAllocatorService allocator;
-    @Autowired
-    private GameServerRepository gameServerRepository;
+    public MatchmakingService(SessionRepository sessionRepository,
+                              AgonesAllocatorService allocator,
+                              GameServerRepository gameServerRepository) {
+        this.sessionRepository = sessionRepository;
+        this.allocator = allocator;
+        this.gameServerRepository = gameServerRepository;
+    }
 
     public GameServer createGame(UUID clientId, String playerName) {
         // Check if client already has a session
