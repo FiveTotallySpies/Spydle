@@ -6,9 +6,9 @@ import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameResponseMode
 import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameResponseModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.ListGamesResponseModel;
-import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
-import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
-import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
+import dev.totallyspies.spydle.matchmaker.config.GameServerRepository;
+import dev.totallyspies.spydle.matchmaker.config.SessionRepository;
+import dev.totallyspies.spydle.matchmaker.use_case.MatchmakingService;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,17 +28,17 @@ import java.util.UUID;
  * leave-game: Delete a user session from a game server and notify it of client departure
  */
 @RestController
-public class GameController {
+public class MatchmakingController {
 
-    private final Logger logger = LoggerFactory.getLogger(GameController.class);
+    private final Logger logger = LoggerFactory.getLogger(MatchmakingController.class);
 
     private final MatchmakingService matchmakingService;
     private final GameServerRepository gameServerRepository;
     private final SessionRepository sessionRepository;
 
-    public GameController(MatchmakingService matchmakingService,
-                          GameServerRepository gameServerRepository,
-                          SessionRepository sessionRepository) {
+    public MatchmakingController(MatchmakingService matchmakingService,
+                                 GameServerRepository gameServerRepository,
+                                 SessionRepository sessionRepository) {
         this.matchmakingService = matchmakingService;
         this.gameServerRepository = gameServerRepository;
         this.sessionRepository = sessionRepository;

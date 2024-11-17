@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.matchmaker.service;
+package dev.totallyspies.spydle.matchmaker.config;
 
 import allocation.AllocationServiceGrpc;
 import io.grpc.ManagedChannel;
@@ -27,7 +27,7 @@ public class KubernetesClusterHook {
     public ApiClient k8sClient() throws IOException {
         ApiClient client = ClientBuilder.defaultClient();
         Configuration.setDefaultApiClient(client);
-        logger.info("Initalized K8s cluster API client");
+        logger.info("Initialized K8s cluster API client");
         return client;
     }
 

@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.matchmaker.service;
+package dev.totallyspies.spydle.matchmaker.use_case;
 
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModelRequestStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -6,13 +6,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CustomFleetAutoscalerServiceTest {
+public class AutoscaleServiceTest {
 
-    private CustomFleetAutoscalerService autoscalerService;
+    private AutoscaleService autoscalerService;
 
     @BeforeEach
     public void setUp() {
-        autoscalerService = new CustomFleetAutoscalerService();
+        autoscalerService = new AutoscaleService();
     }
 
     @Test

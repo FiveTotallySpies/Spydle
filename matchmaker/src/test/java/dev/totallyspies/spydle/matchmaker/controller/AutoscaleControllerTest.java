@@ -4,7 +4,7 @@ import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModelRequest;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModelRequestStatus;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModel;
-import dev.totallyspies.spydle.matchmaker.service.CustomFleetAutoscalerService;
+import dev.totallyspies.spydle.matchmaker.use_case.AutoscaleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -19,7 +19,7 @@ public class AutoscaleControllerTest {
     private AutoscaleController autoscaleController;
 
     @Mock
-    private CustomFleetAutoscalerService autoscalerService;
+    private AutoscaleService autoscalerService;
 
     @BeforeEach
     public void setUp() {

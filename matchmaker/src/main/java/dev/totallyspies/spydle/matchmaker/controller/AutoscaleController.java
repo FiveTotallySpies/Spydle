@@ -3,7 +3,7 @@ package dev.totallyspies.spydle.matchmaker.controller;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.AutoscaleResponseModelResponse;
-import dev.totallyspies.spydle.matchmaker.service.CustomFleetAutoscalerService;
+import dev.totallyspies.spydle.matchmaker.use_case.AutoscaleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +20,9 @@ public class AutoscaleController {
 
     private final Logger logger = LoggerFactory.getLogger(AutoscaleController.class);
 
-    private CustomFleetAutoscalerService autoscalerService;
+    private AutoscaleService autoscalerService;
 
-    public AutoscaleController(CustomFleetAutoscalerService autoscalerService) {
+    public AutoscaleController(AutoscaleService autoscalerService) {
         this.autoscalerService = autoscalerService;
     }
 

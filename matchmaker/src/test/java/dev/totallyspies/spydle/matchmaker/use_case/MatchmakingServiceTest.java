@@ -1,7 +1,7 @@
-package dev.totallyspies.spydle.matchmaker.service;
+package dev.totallyspies.spydle.matchmaker.use_case;
 
-import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
-import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
+import dev.totallyspies.spydle.matchmaker.config.GameServerRepository;
+import dev.totallyspies.spydle.matchmaker.config.SessionRepository;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.junit.jupiter.api.BeforeEach;

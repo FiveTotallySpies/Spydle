@@ -5,9 +5,9 @@ import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameResponseMode
 import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameResponseModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.ListGamesResponseModel;
-import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
-import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
-import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
+import dev.totallyspies.spydle.matchmaker.config.GameServerRepository;
+import dev.totallyspies.spydle.matchmaker.config.SessionRepository;
+import dev.totallyspies.spydle.matchmaker.use_case.MatchmakingService;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
-public class GameControllerTest {
+public class MatchmakingControllerTest {
 
-    private GameController gameController;
+    private MatchmakingController matchmakingController;
 
     @Mock
     private MatchmakingService matchmakingService;
@@ -41,7 +41,7 @@ public class GameControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        gameController = new GameController(matchmakingService, gameServerRepository, sessionRepository);
+        matchmakingController = new MatchmakingController(matchmakingService, gameServerRepository, sessionRepository);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class GameControllerTest {
         when(sessionRepository.parseClientId(anyString())).thenReturn(clientId);
         when(matchmakingService.createGame(clientId, "Player1")).thenReturn(fakeGameServer);
 
-        ResponseEntity<?> response = gameController.createGame(request);
+        ResponseEntity<?> response = matchmakingController.createGame(request);
 
         assertEquals(200, response.getStatusCode().value());
         CreateGameResponseModel responseBody = (CreateGameResponseModel) response.getBody();
@@ -70,7 +70,7 @@ public class GameControllerTest {
 
         when(sessionRepository.parseClientId(anyString())).thenReturn(null);
 
-        ResponseEntity<?> response = gameController.createGame(request);
+        ResponseEntity<?> response = matchmakingController.createGame(request);
 
         assertEquals(400, response.getStatusCode().value());
     }
@@ -88,7 +88,7 @@ public class GameControllerTest {
         when(gameServerRepository.getGameServer("ROOM1")).thenReturn(fakeGameServer);
         when(sessionRepository.sessionExists(clientId)).thenReturn(false);
 
-        ResponseEntity<?> response = gameController.joinGame(request);
+        ResponseEntity<?> response = matchmakingController.joinGame(request);
 
         assertEquals(200, response.getStatusCode().value());
         JoinGameResponseModel responseBody = (JoinGameResponseModel) response.getBody();
@@ -107,7 +107,7 @@ public class GameControllerTest {
         when(sessionRepository.parseClientId(anyString())).thenReturn(clientId);
         when(gameServerRepository.gameServerExists("ROOM1")).thenReturn(false);
 
-        ResponseEntity<?> response = gameController.joinGame(request);
+        ResponseEntity<?> response = matchmakingController.joinGame(request);
 
         assertEquals(404, response.getStatusCode().value());
     }
@@ -118,7 +118,7 @@ public class GameControllerTest {
 
         when(matchmakingService.listGames()).thenReturn(games);
 
-        ResponseEntity<?> response = gameController.listGames();
+        ResponseEntity<?> response = matchmakingController.listGames();
 
         assertEquals(200, response.getStatusCode().value());
         ListGamesResponseModel responseBody = (ListGamesResponseModel) response.getBody();

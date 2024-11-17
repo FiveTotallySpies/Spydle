@@ -1,8 +1,8 @@
-package dev.totallyspies.spydle.matchmaker.service;
+package dev.totallyspies.spydle.matchmaker.use_case;
 
 import allocation.Allocation;
 import allocation.AllocationServiceGrpc;
-import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
+import dev.totallyspies.spydle.matchmaker.config.GameServerRepository;
 import dev.totallyspies.spydle.shared.RoomCodeUtils;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import io.grpc.stub.StreamObserver;

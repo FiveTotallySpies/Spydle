@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.matchmaker.redis;
+package dev.totallyspies.spydle.matchmaker.config;
 
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
