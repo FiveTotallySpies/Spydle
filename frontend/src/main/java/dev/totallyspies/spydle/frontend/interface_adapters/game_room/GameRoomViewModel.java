@@ -1,8 +1,10 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.game_room;
 
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
 @Component
+@Data
 public class GameRoomViewModel {
 
 }
