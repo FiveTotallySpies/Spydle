@@ -24,15 +24,10 @@ public class KubernetesClusterHook {
     private final Logger logger = LoggerFactory.getLogger(KubernetesClusterHook.class);
 
     @Bean
-    public ApiClient k8sClient() throws IOException {
+    public CoreV1Api coreV1Api() throws IOException {
         ApiClient client = ClientBuilder.defaultClient();
         Configuration.setDefaultApiClient(client);
         logger.info("Initialized K8s cluster API client");
-        return client;
-    }
-
-    @Bean
-    public CoreV1Api coreV1Api() {
         return new CoreV1Api();
     }
 
