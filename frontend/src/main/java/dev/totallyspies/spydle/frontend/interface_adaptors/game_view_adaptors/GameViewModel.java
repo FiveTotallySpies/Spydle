@@ -58,7 +58,7 @@ public class GameViewModel extends JFrame {
 
     // Method to switch between panels
     @EventListener
-    public void handleViewSwitch(SwitchViewSEvent event) {
+    public void handleViewSwitch(SwitchViewEvent event) {
         cardLayout.show(panelContainer, event.getViewName());
     }
 

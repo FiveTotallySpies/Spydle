@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.interface_adaptors.game_over_adaptors;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.game_view_adaptors.SwitchViewSEvent;
+import dev.totallyspies.spydle.frontend.interface_adaptors.game_view_adaptors.SwitchViewEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,6 @@ public class GameOverController {
     Method called when View All Rooms Button is Pressed
      */
     public void changeView(String view) {
-        publisher.publishEvent(new SwitchViewSEvent(this, view));
+        publisher.publishEvent(new SwitchViewEvent(this, view));
     }
 }

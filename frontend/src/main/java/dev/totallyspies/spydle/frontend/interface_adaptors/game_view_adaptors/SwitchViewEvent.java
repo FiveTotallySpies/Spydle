@@ -4,13 +4,13 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 /*
-Presentor for the GameView
+ * Fired when we want to switch views
  */
 @Getter
-public class SwitchViewSEvent extends ApplicationEvent {
+public class SwitchViewEvent extends ApplicationEvent {
     private final String viewName;
 
-    public SwitchViewSEvent(Object source, String viewName) {
+    public SwitchViewEvent(Object source, String viewName) {
         super(source);
         this.viewName = viewName;
     }
