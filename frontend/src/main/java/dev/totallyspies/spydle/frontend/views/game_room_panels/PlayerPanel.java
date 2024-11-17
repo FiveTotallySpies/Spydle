@@ -1,11 +1,12 @@
-package dev.totallyspies.spydle.frontend.GamePanel;
+package dev.totallyspies.spydle.frontend.views.game_room_panels;
 
 import javax.swing.*;
 import java.awt.*;
 
 // Panel for each player
 class PlayerPanel extends JPanel {
-    private JLabel nameLabel;
+
+    private final JLabel nameLabel;
 
     public PlayerPanel(String name) {
         setLayout(new BorderLayout());
@@ -16,4 +17,5 @@ class PlayerPanel extends JPanel {
         nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
         add(nameLabel, BorderLayout.CENTER);
     }
+
 }

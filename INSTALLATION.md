@@ -36,11 +36,12 @@ If you are on Windows, WSL2 is recommended (and practically required).
 - Anytime you want to deploy a change to the pods' codebase, re-run these commands.
 
 ### Starting and Stopping the Cluster
-- To stop the cluster, run `sudo systemctl stop k3s`
-- To start the cluster, run `sudo systemctl start k3s`
+- To stop the cluster, run `./deployment/stop-k3s.sh`
+- To start the cluster, run `./deployment/start-k3s.sh`
+- To restart the cluster, run `./deployment/restart-k3s.sh`
 
 ### Deleting Resources
 - Many times it may be useful to delete all resources in the cluster and start fresh. Here are some useful commands:
-     - <b>Delete (most) resources</b>: `kubectl delete all --all --all-namespaces && sudo systemctl restart k3s`: Deletes everything from your cluster, and restarts k3s (which will bring back the bare minimum.
+     - <b>Delete (most) resources</b>: `kubectl delete all --all --all-namespaces && ./deployment/restart-k3s.sh`: Deletes everything from your cluster, and restarts k3s (which will bring back the bare minimum.
 	     - This however does not remove things like CRDs and helm charts. To delete those as well, just reinstall k3s by running `sudo /usr/local/bin/uninstall-k3s.sh && ./deployment/install-k3s.sh`
      - <b>Delete Spydle</b>: `kubectl delete all --all -n spydle`: Deletes all resources in the spydle namespace (gameservers, matchmakers, and ingress).
