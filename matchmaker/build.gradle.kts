@@ -2,7 +2,6 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
-	id("org.openapi.generator") version "7.9.0"
 }
 
 group = "dev.totallyspies.spydle"
@@ -53,43 +52,8 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-buildscript {
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.openapitools:openapi-generator-gradle-plugin:7.9.0")
-	}
-}
-
-
-openApiGenerate {
-	generatorName.set("java")
-	inputSpec.set("${layout.projectDirectory}/src/main/resources/openapi.yaml")
-	outputDir.set("${layout.buildDirectory.get()}/generated")
-	modelPackage.set("dev.totallyspies.spydle.matchmaker.generated.model")
-	apiPackage.set("dev.totallyspies.spydle.matchmaker.generated.api")
-	invokerPackage.set("dev.totallyspies.spydle.matchmaker.generated.invoker")
-
-	schemaMappings.put("GameServer", "dev.totallyspies.spydle.shared.model.GameServer")
-	schemaMappings.put("ClientSession", "dev.totallyspies.spydle.shared.model.ClientSession")
-
-}
-
-sourceSets {
-	main {
-		java {
-			srcDir("${layout.buildDirectory.get()}/generated/src/main/java")
-		}
-	}
-}
-
 tasks.withType<Test> {
 	useJUnitPlatform()
-}
-
-tasks.named("compileJava") {
-	dependsOn("openApiGenerate")
 }
 
 tasks.bootJar {
