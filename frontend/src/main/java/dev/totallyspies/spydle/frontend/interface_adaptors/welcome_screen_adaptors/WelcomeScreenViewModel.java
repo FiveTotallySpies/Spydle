@@ -9,5 +9,5 @@ public class WelcomeScreenViewModel {
 
     private String playerName;
     private String roomCode;
-    
+
 }

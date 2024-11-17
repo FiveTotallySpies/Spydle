@@ -1,6 +1,5 @@
 package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.welcome_screen_adaptors.WelcomeViewController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -12,6 +11,7 @@ import java.awt.event.FocusListener;
 
 @org.springframework.stereotype.Component
 public class WelcomeView extends JPanel {
+
     @Autowired
     private WelcomeViewController controller;
 
@@ -26,13 +26,13 @@ public class WelcomeView extends JPanel {
         // Title styling
         JLabel titleLabel = new JLabel("Spydle");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
-        titleLabel.setForeground(new Color(139, 0 ,0));
+        titleLabel.setForeground(new Color(139, 0, 0));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Subtitle styling
         JLabel joinLabel = new JLabel("Join an existing room");
         joinLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        joinLabel.setForeground(new Color(139, 0 ,0));
+        joinLabel.setForeground(new Color(139, 0, 0));
         joinLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         joinLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
@@ -141,6 +141,7 @@ public class WelcomeView extends JPanel {
                 button.setForeground(new Color(138, 43, 226)); // blueviolet
                 button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 1));
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(138, 43, 226));
                 button.setForeground(Color.WHITE);
@@ -150,7 +151,7 @@ public class WelcomeView extends JPanel {
     }
 
     // Test the JPanel in a JFrame with size 500x500
-    public static void main(String[] args){
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame();
             frame.setTitle("Welcome - Join or Create Room");

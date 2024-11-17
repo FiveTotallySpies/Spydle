@@ -7,9 +7,9 @@ import java.util.List;
 
 // Main Game Panel
 public class GamePanel extends JPanel {
-    private List<PlayerPanel> playerPanels;
-    private JLabel substringLabel;
-    private JLabel timerLabel;
+    private final List<PlayerPanel> playerPanels;
+    private final JLabel substringLabel;
+    private final JLabel timerLabel;
     private int currentPlayerIndex = 0;
 
     public GamePanel(int playerCount) {

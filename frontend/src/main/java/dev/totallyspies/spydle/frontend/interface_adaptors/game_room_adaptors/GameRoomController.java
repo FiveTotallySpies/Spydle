@@ -14,6 +14,6 @@ public class GameRoomController {
     Method called when View All Rooms Button is Pressed
      */
     public void changeView(String view) {
-        publisher.publishEvent(new ViewSwitchRoomEvent(this,view));
+        publisher.publishEvent(new ViewSwitchRoomEvent(this, view));
     }
 }

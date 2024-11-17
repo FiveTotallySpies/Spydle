@@ -5,7 +5,7 @@ import java.awt.*;
 
 // Panel for each player
 class PlayerPanel extends JPanel {
-    private JLabel nameLabel;
+    private final JLabel nameLabel;
 
     public PlayerPanel(String name) {
         setLayout(new BorderLayout());

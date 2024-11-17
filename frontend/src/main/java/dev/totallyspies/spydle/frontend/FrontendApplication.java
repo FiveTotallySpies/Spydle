@@ -15,8 +15,7 @@ public class FrontendApplication {
         EventQueue.invokeLater(() -> {
             var gameView = ctx.getBean(GameViewPresentor.class);
             gameView.setVisible(true);
-                }
-        );
+        });
     }
 
 }

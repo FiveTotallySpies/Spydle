@@ -17,8 +17,8 @@ Game View, which also acts as the window Frame
 @Component
 public class GameViewModel extends JFrame {
     // Define the CardLayout and panel container
-    private CardLayout cardLayout;
-    private JPanel panelContainer;
+    private final CardLayout cardLayout;
+    private final JPanel panelContainer;
 
     private final WelcomeView welcomeView;
     private final GameRoomView gameRoomView;
@@ -35,7 +35,7 @@ public class GameViewModel extends JFrame {
 
         // Set up the frame properties
         setTitle("SpyDle");
-        setSize(500,500);
+        setSize(500, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -65,7 +65,7 @@ public class GameViewModel extends JFrame {
     public static void launchGameView(String[] args) {
         // Run the GameWindowFrame
         SwingUtilities.invokeLater(() -> {
-            GameViewModel frame = new GameViewModel(new WelcomeView(),  new GameRoomView(), new AllRoomView(), new GameOverView());
+            GameViewModel frame = new GameViewModel(new WelcomeView(), new GameRoomView(), new AllRoomView(), new GameOverView());
             frame.setVisible(true);
         });
     }
