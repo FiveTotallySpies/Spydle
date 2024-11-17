@@ -31,7 +31,7 @@ public class MatchmakingService {
         // Check if client already has a session
         if (sessionRepository.sessionExists(clientId)) throw new IllegalStateException("Client is already in a game.");
 
-        GameServer allocated = allocator.awaitAllocation();
+        GameServer allocated = allocator.awaitAllocation(5000);
 
         // Save client session
         ClientSession session = new ClientSession(clientId, allocated, playerName);

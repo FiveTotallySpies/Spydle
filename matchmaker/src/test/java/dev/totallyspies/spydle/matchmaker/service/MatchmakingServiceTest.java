@@ -42,7 +42,7 @@ public class MatchmakingServiceTest {
         String playerName = "Player1";
 
         when(sessionRepository.sessionExists(clientId)).thenReturn(false);
-        when(allocator.awaitAllocation()).thenReturn(fakeGameServer);
+        when(allocator.awaitAllocation(anyInt())).thenReturn(fakeGameServer);
 
         GameServer result = matchmakingService.createGame(clientId, playerName);
 
@@ -57,9 +57,7 @@ public class MatchmakingServiceTest {
 
         when(sessionRepository.sessionExists(clientId)).thenReturn(true);
 
-        assertThrows(IllegalStateException.class, () -> {
-            matchmakingService.createGame(clientId, playerName);
-        });
+        assertThrows(IllegalStateException.class, () -> matchmakingService.createGame(clientId, playerName));
 
         verify(sessionRepository, never()).saveSession(any(ClientSession.class));
     }
@@ -83,9 +81,7 @@ public class MatchmakingServiceTest {
 
         when(sessionRepository.sessionExists(clientId)).thenReturn(true);
 
-        assertThrows(IllegalStateException.class, () -> {
-            matchmakingService.joinGame(clientId, playerName, fakeGameServer);
-        });
+        assertThrows(IllegalStateException.class, () -> matchmakingService.joinGame(clientId, playerName, fakeGameServer));
 
         verify(sessionRepository, never()).saveSession(any(ClientSession.class));
     }

@@ -61,7 +61,7 @@ public class AgonesAllocatorServiceTest {
         when(gameServerRepository.gameServerExists(anyString())).thenReturn(true);
         when(gameServerRepository.getGameServer(anyString())).thenReturn(gameServer);
 
-        GameServer result = agonesAllocatorService.awaitAllocation();
+        GameServer result = agonesAllocatorService.awaitAllocation(1);
 
         assertEquals(gameServer, result);
     }
@@ -81,9 +81,7 @@ public class AgonesAllocatorServiceTest {
 
         when(gameServerRepository.gameServerExists(anyString())).thenReturn(false);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            agonesAllocatorService.awaitAllocation();
-        });
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> agonesAllocatorService.awaitAllocation(1));
 
         assertTrue(exception.getMessage().contains("Game server does not exist in repository"));
     }
@@ -92,9 +90,7 @@ public class AgonesAllocatorServiceTest {
     public void testAwaitAllocation_Timeout() {
         doAnswer(invocation -> null).when(allocationServiceStub).allocate(any(), any());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            agonesAllocatorService.awaitAllocation();
-        });
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> agonesAllocatorService.awaitAllocation(1));
 
         assertTrue(exception.getMessage().contains("Gameserver allocation timed out"));
     }

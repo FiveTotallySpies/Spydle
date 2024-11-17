@@ -46,7 +46,7 @@ public class AgonesAllocatorService {
                 .build();
     }
 
-    public GameServer awaitAllocation() {
+    public GameServer awaitAllocation(int timeoutMillis) {
         CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Allocation.AllocationResponse> firstResponse = new AtomicReference<>(null);
         allocationService.allocate(request, new StreamObserver<>() {
@@ -66,7 +66,7 @@ public class AgonesAllocatorService {
             }
         });
         try {
-            boolean success = latch.await(5, TimeUnit.SECONDS);
+            boolean success = latch.await(timeoutMillis, TimeUnit.MILLISECONDS);
             if (!success) throw new RuntimeException("Gameserver allocation timed out");
         } catch (InterruptedException exception) {
             throw new RuntimeException("Requesting gameserver allocation was interrupted");
