@@ -1,17 +1,21 @@
-package dev.totallyspies.spydle.frontend.interface_adaptors;
+package dev.totallyspies.spydle.frontend.interface_adaptors.game_view_adaptors;
 
 import dev.totallyspies.spydle.frontend.views.AllRoomView;
 import dev.totallyspies.spydle.frontend.views.GameOverView;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 
+/*
+Game View, which also acts as the window Frame
+ */
 @Component
-public class GameViewPresentor extends JFrame {
+public class GameViewModel extends JFrame {
     // Define the CardLayout and panel container
     private CardLayout cardLayout;
     private JPanel panelContainer;
@@ -22,8 +26,8 @@ public class GameViewPresentor extends JFrame {
     private final GameOverView gameOverView;
 
     @Autowired // dependency injection
-    public GameViewPresentor(WelcomeView welcomeView, GameRoomView gameRoomView,
-                             AllRoomView allRoomView, GameOverView gameOverView) {
+    public GameViewModel(WelcomeView welcomeView, GameRoomView gameRoomView,
+                         AllRoomView allRoomView, GameOverView gameOverView) {
         this.welcomeView = welcomeView;
         this.gameRoomView = gameRoomView;
         this.allRoomView = allRoomView;
@@ -49,18 +53,19 @@ public class GameViewPresentor extends JFrame {
         add(panelContainer);
 
         // Show the initial panel (WelcomeScreenView)
-        cardLayout.show(panelContainer, "AllRoomView");
+        cardLayout.show(panelContainer, "WelcomeScreenView");
     }
 
     // Method to switch between panels
-    public void switchView(String viewName) {
-        cardLayout.show(panelContainer, viewName);
+    @EventListener
+    public void handleViewSwitch(ViewSwitchRoomEvent event) {
+        cardLayout.show(panelContainer, event.getViewName());
     }
 
-    public static void main(String[] args) {
+    public static void launchGameView(String[] args) {
         // Run the GameWindowFrame
         SwingUtilities.invokeLater(() -> {
-            GameViewPresentor frame = new GameViewPresentor();
+            GameViewModel frame = new GameViewModel(new WelcomeView(),  new GameRoomView(), new AllRoomView(), new GameOverView());
             frame.setVisible(true);
         });
     }
