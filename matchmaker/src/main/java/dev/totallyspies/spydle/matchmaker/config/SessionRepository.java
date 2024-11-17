@@ -1,8 +1,7 @@
-package dev.totallyspies.spydle.matchmaker.redis;
+package dev.totallyspies.spydle.matchmaker.config;
 
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -14,8 +13,11 @@ public class SessionRepository {
 
     private static final String PREFIX = SharedConstants.STORAGE_REDIS_SESSION_PREFIX;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    public SessionRepository(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     public void saveSession(ClientSession session) {
         redisTemplate.opsForValue().set(PREFIX + session.getClientId(), session);
