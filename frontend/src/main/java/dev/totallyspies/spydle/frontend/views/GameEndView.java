@@ -1,25 +1,29 @@
-package dev.totallyspies.spydle.frontend.GameOverScreen;
+package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.WelcomeScreen.WelcomeStyled;
+import dev.totallyspies.spydle.frontend.interface_adapters.game_end.GameEndViewController;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GameOverScreen extends JFrame {
+@org.springframework.stereotype.Component
+public class GameEndView extends JPanel {
 
-    public GameOverScreen() {
-        setTitle("Game Over");
-        setSize(400, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    @Autowired
+    private GameEndViewController controller;
+
+    public GameEndView() {
+
+        setLayout(new GridBagLayout()); // Center the container panel in the middle of the screen
+        setBackground(new Color(195, 217, 255)); // Light blue background for the entire panel
 
         // Container Panel
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20));
-        container.setBackground(new Color(195, 217, 255)); // Light blue background
+        container.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding around elements
+        container.setBackground(new Color(195, 217, 255)); // Same light blue background
 
         // Title label
         JLabel titleLabel = new JLabel("Congratulations to the Best Players!");
@@ -30,28 +34,23 @@ public class GameOverScreen extends JFrame {
         // Player rankings with emojis
         JPanel rankingsPanel = new JPanel();
         rankingsPanel.setLayout(new BoxLayout(rankingsPanel, BoxLayout.Y_AXIS));
-        rankingsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        rankingsPanel.setBackground(new Color(195, 217, 255)); // Same light blue background as the container
+        rankingsPanel.setBackground(new Color(195, 217, 255)); // Same light blue background
 
-        // First place (Darkened Gold)
         JLabel firstPlace = new JLabel("1st: 🥇 Player 1 - 100 points");
         firstPlace.setFont(new Font("Arial", Font.PLAIN, 18));
-        firstPlace.setForeground(new Color(212, 175, 55)); // Darker gold color (#D4AF37)
+        firstPlace.setForeground(new Color(212, 175, 55)); // Darker gold color
         firstPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Second place (Brightened Silver)
         JLabel secondPlace = new JLabel("2nd: 🥈 Player 2 - 80 points");
         secondPlace.setFont(new Font("Arial", Font.PLAIN, 18));
         secondPlace.setForeground(new Color(169, 169, 169));
         secondPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Third place (Bronze)
         JLabel thirdPlace = new JLabel("3rd: 🥉 Player 3 - 60 points");
         thirdPlace.setFont(new Font("Arial", Font.PLAIN, 18));
-        thirdPlace.setForeground(new Color(205, 136, 64)); // Bronze color (#CD8740)
+        thirdPlace.setForeground(new Color(205, 136, 64)); // Bronze color
         thirdPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Add the labels to the rankings panel
         rankingsPanel.add(firstPlace);
         rankingsPanel.add(secondPlace);
         rankingsPanel.add(thirdPlace);
@@ -63,59 +62,70 @@ public class GameOverScreen extends JFrame {
         thankYouLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         thankYouLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
-        // Return to Welcome Page Button
-        JButton returnButton = new JButton("Return to Welcome Page");
-        styleButton(returnButton);
-
-        returnButton.addActionListener(new ActionListener() {
+        // Back button
+        JButton backButton = new JButton("Back to Welcome");
+        styleButton(backButton);
+        backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Open the welcome window and close the GameOverScreen
-                new WelcomeStyled(); // Open the main Spydle application
-                dispose(); // Close the Game Over screen
+                controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
             }
         });
 
         // Add components to container
         container.add(titleLabel);
         container.add(Box.createVerticalStrut(10));
-        container.add(rankingsPanel);  // Add the rankings panel
+        container.add(rankingsPanel);
         container.add(Box.createVerticalStrut(20));
         container.add(thankYouLabel);
         container.add(Box.createVerticalStrut(20));
-        container.add(returnButton);
+        container.add(backButton);
 
-        add(container);
-        setVisible(true);
+        // Add container to the center of the GameOverView using GridBagConstraints
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(container, gbc);
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(138, 43, 226)); // Blueviolet color
+        button.setBackground(new Color(138, 43, 226)); // blueviolet
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFont(new Font("Arial", Font.BOLD, 12));
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(250, 40));
+        button.setMaximumSize(new Dimension(400, 40));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Set a consistent, fixed padding around the button content
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(138, 43, 226), 1), // Outer border color
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)  // Inner padding to avoid layout shift
+        ));
 
         // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
-                button.setForeground(new Color(138, 43, 226));
-                button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 1));
+                button.setForeground(new Color(138, 43, 226)); // blueviolet
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(138, 43, 226));
                 button.setForeground(Color.WHITE);
-                button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             }
         });
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(GameOverScreen::new);
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Spydle - Game Over");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(500, 500); // Full-screen dimensions
+            frame.setLocationRelativeTo(null);
+            frame.add(new GameEndView());
+            frame.setVisible(true);
+        });
     }
+
 }

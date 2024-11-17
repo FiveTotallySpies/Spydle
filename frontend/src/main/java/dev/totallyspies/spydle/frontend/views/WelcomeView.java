@@ -1,18 +1,22 @@
-package dev.totallyspies.spydle.frontend.WelcomeScreen;
+package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.AllRoomScreen.AllRoomScreen;
+import dev.totallyspies.spydle.frontend.interface_adapters.welcome.WelcomeViewController;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
-public class WelcomeStyled extends JFrame {
+@org.springframework.stereotype.Component
+public class WelcomeView extends JPanel {
 
-    public WelcomeStyled() {
-        setTitle("Welcome - Join or Create Room");
-        setSize(500, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    @Autowired
+    private WelcomeViewController controller;
+
+    public WelcomeView() {
 
         // Main container panel styling
         JPanel container = new JPanel();
@@ -24,13 +28,13 @@ public class WelcomeStyled extends JFrame {
         // Title styling
         JLabel titleLabel = new JLabel("Spydle");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
-        titleLabel.setForeground(new Color(139, 0 ,0));
+        titleLabel.setForeground(new Color(139, 0, 0));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Subtitle styling
         JLabel joinLabel = new JLabel("Join an existing room");
         joinLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        joinLabel.setForeground(new Color(139, 0 ,0));
+        joinLabel.setForeground(new Color(139, 0, 0));
         joinLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         joinLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
@@ -38,7 +42,7 @@ public class WelcomeStyled extends JFrame {
         JPanel createRoomPanel = new JPanel();
         createRoomPanel.setLayout(new BoxLayout(createRoomPanel, BoxLayout.Y_AXIS));
         createRoomPanel.setBackground(new Color(195, 217, 255)); // same as container
-        createRoomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        createRoomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
         JTextField nicknameField = createPlaceholderTextField("Enter your nickname");
         JTextField roomNameField = createPlaceholderTextField("Enter room name");
@@ -61,6 +65,7 @@ public class WelcomeStyled extends JFrame {
         JTextField joinNicknameField = createPlaceholderTextField("Enter your nickname");
         JTextField roomCodeField = createPlaceholderTextField("Enter existing room name");
 
+
         JButton joinRoomButton = new JButton("Join Room");
         styleButton(joinRoomButton);
 
@@ -76,7 +81,7 @@ public class WelcomeStyled extends JFrame {
         viewAllRoomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openRoomsPage(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+                controller.openListRoomsView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
             }
         });
 
@@ -128,32 +133,38 @@ public class WelcomeStyled extends JFrame {
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setMaximumSize(new Dimension(400, 40));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Set a consistent, fixed padding around the button content
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(138, 43, 226), 1), // Outer border color
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)  // Inner padding to avoid layout shift
+        ));
 
         // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
                 button.setForeground(new Color(138, 43, 226)); // blueviolet
-                button.setBorder(BorderFactory.createLineBorder(new Color(138, 43, 226), 1));
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(138, 43, 226));
                 button.setForeground(Color.WHITE);
-                button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             }
         });
     }
 
-    // Method to open the AllRoomsScreen.AllRoomsPage
-    private void openRoomsPage() {
-        // Close the current window (optional)
-        this.dispose();
-        // Open the AllRoomScreen window
-        new AllRoomScreen(); // Ensure AllRoomScreen is correctly imported
+    // Test the JPanel in a JFrame with size 500x500
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame();
+            frame.setTitle("Welcome - Join or Create Room");
+            frame.setSize(500, 500);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLocationRelativeTo(null);
+            frame.add(new WelcomeView());
+            frame.setVisible(true);
+        });
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(WelcomeStyled::new);
-    }
 }
