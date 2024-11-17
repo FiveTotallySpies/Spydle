@@ -7,6 +7,7 @@ import java.util.List;
 
 // Main Game Panel
 public class GamePanel extends JPanel {
+
     private final List<PlayerPanel> playerPanels;
     private final JLabel substringLabel;
     private final JLabel timerLabel;
@@ -82,4 +83,5 @@ public class GamePanel extends JPanel {
             g.fillOval(targetX - 5, targetY - 5, 10, 10);
         }
     }
+
 }

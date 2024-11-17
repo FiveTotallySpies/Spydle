@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.all_room_adaptors.AllRoomController;
+import dev.totallyspies.spydle.frontend.interface_adaptors.all_room_adaptors.ListRoomsViewController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -10,8 +10,9 @@ import java.awt.event.ActionListener;
 
 @org.springframework.stereotype.Component
 public class ListRoomsView extends JPanel {
+
     @Autowired
-    private AllRoomController controller;
+    private ListRoomsViewController controller;
 
     public ListRoomsView() {
         setLayout(new GridBagLayout()); // Center the container in the middle of the screen
@@ -52,7 +53,7 @@ public class ListRoomsView extends JPanel {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.changeView("WelcomeScreenView"); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+                controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
             }
         });
 
@@ -98,6 +99,7 @@ public class ListRoomsView extends JPanel {
             }
         });
     }
+
     // Test the JPanel in a JFrame with size 500x500
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -109,4 +111,5 @@ public class ListRoomsView extends JPanel {
             frame.setVisible(true);
         });
     }
+
 }

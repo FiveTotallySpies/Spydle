@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationEvent;
  */
 @Getter
 public class SwitchViewEvent extends ApplicationEvent {
+
     private final String viewName;
 
     public SwitchViewEvent(Object source, String viewName) {

@@ -16,6 +16,7 @@ Game View, which also acts as the window Frame
  */
 @Component
 public class GameViewModel extends JFrame {
+
     // Define the CardLayout and panel container
     private final CardLayout cardLayout;
     private final JPanel panelContainer;
@@ -44,7 +45,7 @@ public class GameViewModel extends JFrame {
         panelContainer = new JPanel(cardLayout);
 
         // Add the different view panels to the card layout
-        panelContainer.add(this.welcomeView, "WelcomeScreenView");
+        panelContainer.add(this.welcomeView, "WelcomeView");
         panelContainer.add(this.listRoomsView, "AllRoomView");
         panelContainer.add(this.gameRoomView, "GameRoomView");
         panelContainer.add(this.gameOverView, "GameOverView");
@@ -52,8 +53,8 @@ public class GameViewModel extends JFrame {
         // Add the panel container to the frame
         add(panelContainer);
 
-        // Show the initial panel (WelcomeScreenView)
-        cardLayout.show(panelContainer, "WelcomeScreenView");
+        // Show the initial panel (WelcomeView)
+        cardLayout.show(panelContainer, "WelcomeView");
     }
 
     // Method to switch between panels
@@ -69,4 +70,5 @@ public class GameViewModel extends JFrame {
             frame.setVisible(true);
         });
     }
+
 }

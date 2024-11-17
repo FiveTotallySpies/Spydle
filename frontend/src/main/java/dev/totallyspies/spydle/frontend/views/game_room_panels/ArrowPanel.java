@@ -5,6 +5,7 @@ import java.awt.*;
 
 // Arrow Panel (Used to indicate the current player, centered initially)
 class ArrowPanel extends JPanel {
+
     public ArrowPanel() {
         setOpaque(false);
     }
@@ -20,4 +21,5 @@ class ArrowPanel extends JPanel {
         int[] yPoints = {0, 30, 30};
         g2d.fillPolygon(xPoints, yPoints, 3);
     }
+
 }

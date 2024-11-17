@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Getter
-public class WelcomeScreenViewModel {
+public class WelcomeViewModel {
 
     private String playerName;
     private String roomCode;

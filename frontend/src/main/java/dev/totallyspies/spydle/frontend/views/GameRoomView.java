@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.game_room_adaptors.GameRoomController;
+import dev.totallyspies.spydle.frontend.interface_adaptors.game_room_adaptors.GameRoomViewController;
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ public class GameRoomView extends JPanel {
     public GamePanel gamePanel;
 
     @Autowired
-    private GameRoomController controller;
+    private GameRoomViewController controller;
 
     public GameRoomView() {
         setLayout(new BorderLayout()); // Set layout to BorderLayout for GameRoomView
@@ -45,7 +45,7 @@ public class GameRoomView extends JPanel {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.changeView("WelcomeScreenView"); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+                controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
             }
         });
 
@@ -72,4 +72,5 @@ public class GameRoomView extends JPanel {
             frame.setVisible(true);
         });
     }
+
 }

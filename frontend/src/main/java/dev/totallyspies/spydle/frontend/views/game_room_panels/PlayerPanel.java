@@ -5,6 +5,7 @@ import java.awt.*;
 
 // Panel for each player
 class PlayerPanel extends JPanel {
+
     private final JLabel nameLabel;
 
     public PlayerPanel(String name) {
@@ -16,4 +17,5 @@ class PlayerPanel extends JPanel {
         nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
         add(nameLabel, BorderLayout.CENTER);
     }
+
 }

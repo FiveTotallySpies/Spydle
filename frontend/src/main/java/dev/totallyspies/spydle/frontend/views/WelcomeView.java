@@ -1,6 +1,6 @@
 package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.interface_adaptors.welcome_screen_adaptors.WelcomeScreenController;
+import dev.totallyspies.spydle.frontend.interface_adaptors.welcome_screen_adaptors.WelcomeViewController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -14,7 +14,7 @@ import java.awt.event.FocusListener;
 public class WelcomeView extends JPanel {
 
     @Autowired
-    private WelcomeScreenController controller;
+    private WelcomeViewController controller;
 
     public WelcomeView() {
 
@@ -81,7 +81,7 @@ public class WelcomeView extends JPanel {
         viewAllRoomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.changeView("AllRoomView"); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+                controller.openListRoomsView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
             }
         });
 
@@ -165,8 +165,6 @@ public class WelcomeView extends JPanel {
             frame.add(new WelcomeView());
             frame.setVisible(true);
         });
-
-
     }
 
 }
