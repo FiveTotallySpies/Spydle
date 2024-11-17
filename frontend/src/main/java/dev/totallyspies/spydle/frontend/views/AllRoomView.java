@@ -44,7 +44,7 @@ public class AllRoomView extends JPanel {
         styleButton(backButton);
         backButton.addActionListener(e -> {
             // Navigate back to WelcomeScreenView
-            new WelcomeView();
+//            new WelcomeView();
         });
 
         // Adding components to container

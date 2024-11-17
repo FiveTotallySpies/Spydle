@@ -4,18 +4,31 @@ import dev.totallyspies.spydle.frontend.views.AllRoomView;
 import dev.totallyspies.spydle.frontend.views.GameOverView;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 
 @Component
-public class GameView extends JFrame {
+public class GameViewPresentor extends JFrame {
     // Define the CardLayout and panel container
     private CardLayout cardLayout;
     private JPanel panelContainer;
 
-    public GameView() {
+    private final WelcomeView welcomeView;
+    private final GameRoomView gameRoomView;
+    private final AllRoomView allRoomView;
+    private final GameOverView gameOverView;
+
+    @Autowired // dependency injection
+    public GameViewPresentor(WelcomeView welcomeView, GameRoomView gameRoomView,
+                             AllRoomView allRoomView, GameOverView gameOverView) {
+        this.welcomeView = welcomeView;
+        this.gameRoomView = gameRoomView;
+        this.allRoomView = allRoomView;
+        this.gameOverView = gameOverView;
+
         // Set up the frame properties
         setTitle("SpyDle");
         setSize(500,500);
@@ -27,10 +40,10 @@ public class GameView extends JFrame {
         panelContainer = new JPanel(cardLayout);
 
         // Add the different view panels to the card layout
-        panelContainer.add(new WelcomeView(), "WelcomeScreenView");
-        panelContainer.add(new AllRoomView(), "AllRoomView");
-        panelContainer.add(new GameRoomView(), "GameRoomView");
-        panelContainer.add(new GameOverView(), "GameOverView");
+        panelContainer.add(this.welcomeView, "WelcomeScreenView");
+        panelContainer.add(this.allRoomView, "AllRoomView");
+        panelContainer.add(this.gameRoomView, "GameRoomView");
+        panelContainer.add(this.gameOverView, "GameOverView");
 
         // Add the panel container to the frame
         add(panelContainer);
@@ -47,7 +60,7 @@ public class GameView extends JFrame {
     public static void main(String[] args) {
         // Run the GameWindowFrame
         SwingUtilities.invokeLater(() -> {
-            GameView frame = new GameView();
+            GameViewPresentor frame = new GameViewPresentor();
             frame.setVisible(true);
         });
     }

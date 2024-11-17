@@ -4,4 +4,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class WelcomeViewController {
+    public WelcomeViewController() {
+
+    }
+
+    /*
+    Method called when View All Rooms Button is Pressed
+     */
+    public void viewRoomsPressed(){
+
+    }
 }

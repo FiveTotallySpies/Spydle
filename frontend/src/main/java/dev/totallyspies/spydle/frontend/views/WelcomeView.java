@@ -1,11 +1,19 @@
 package dev.totallyspies.spydle.frontend.views;
 
+import dev.totallyspies.spydle.frontend.interface_adaptors.welcome_screen_adaptors.WelcomeViewController;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 @org.springframework.stereotype.Component
 public class WelcomeView extends JPanel {
+    @Autowired
+    private WelcomeViewController controller;
 
     public WelcomeView() {
         // Main container panel styling
@@ -67,12 +75,14 @@ public class WelcomeView extends JPanel {
         // View All Rooms button
         JButton viewAllRoomsButton = new JButton("View All Rooms");
         styleButton(viewAllRoomsButton);
-//        viewAllRoomsButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                openRoomsPage(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
-//            }
-//        });
+
+
+        viewAllRoomsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.viewRoomsPressed(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+            }
+        });
 
         // Adding components to container
         container.add(titleLabel);
@@ -153,14 +163,6 @@ public class WelcomeView extends JPanel {
 
 
     }
-
-    // Method to open the AllRoomsScreen.AllRoomsPage
-//    private void openRoomsPage() {
-        // Close the current window (optional)
-//        this.dispose();
-//        // Open the AllRoomScreen window
-//        new AllRoomScreen(); // Ensure AllRoomScreen is correctly imported
-    // }
 
 //    public static void main(String[] args) {
 //        SwingUtilities.invokeLater(WelcomeScreenView::new);
