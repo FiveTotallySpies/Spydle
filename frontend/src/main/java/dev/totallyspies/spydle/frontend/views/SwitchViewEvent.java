@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.frontend;
+package dev.totallyspies.spydle.frontend.views;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;

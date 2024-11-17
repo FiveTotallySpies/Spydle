@@ -103,7 +103,7 @@ public class ListRoomsView extends JPanel {
     // Test the JPanel in a JFrame with size 500x500
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("SpyDle - All Rooms");
+            JFrame frame = new JFrame("Spydle - All Rooms");
             frame.setSize(500, 500);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLocationRelativeTo(null);

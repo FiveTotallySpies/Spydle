@@ -119,7 +119,7 @@ public class GameEndView extends JPanel {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("SpyDle - Game Over");
+            JFrame frame = new JFrame("Spydle - Game Over");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(500, 500); // Full-screen dimensions
             frame.setLocationRelativeTo(null);

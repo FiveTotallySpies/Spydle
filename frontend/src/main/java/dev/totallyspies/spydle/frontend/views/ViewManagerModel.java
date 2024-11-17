@@ -1,9 +1,5 @@
-package dev.totallyspies.spydle.frontend;
+package dev.totallyspies.spydle.frontend.views;
 
-import dev.totallyspies.spydle.frontend.views.ListRoomsView;
-import dev.totallyspies.spydle.frontend.views.GameEndView;
-import dev.totallyspies.spydle.frontend.views.GameRoomView;
-import dev.totallyspies.spydle.frontend.views.WelcomeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -35,7 +31,7 @@ public class ViewManagerModel extends JFrame {
         this.gameEndView = gameEndView;
 
         // Set up the frame properties
-        setTitle("SpyDle");
+        setTitle("Spydle");
         setSize(500, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
