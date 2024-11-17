@@ -94,11 +94,11 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
         }
     }
 
-    public void processClass(Object clazz) {
-        for (Method method : clazz.getClass().getMethods()) {
+    public void processBean(Object bean) {
+        for (Method method : bean.getClass().getMethods()) {
             if (method.isAnnotationPresent(annotationClass)) {
                 try {
-                    registerListener(method);
+                    registerListener(bean, method);
                     logger.debug("Registered {} for message {} on method {}#{}",
                             messageClass.getName(),
                             method.getParameters()[0].getType().getName(),
@@ -115,20 +115,38 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
         }
     }
 
-    private void registerListener(Method method) {
-        if (method.getParameterCount() == 2
-                && method.getParameters()[1].getType() == UUID.class) {
-            Class<?> messageType = method.getParameters()[0].getType();
+    private void registerListener(Object bean, Method method) {
+        Class<?> messageType = null;
+        int uuidParamLocation = -1;
+        if (method.getParameterCount() == 2) {
+            if (method.getParameters()[1].getType() == UUID.class) {
+                messageType = method.getParameters()[0].getType();
+                uuidParamLocation = 1;
+            } else if (method.getParameters()[0].getType() == UUID.class) {
+                messageType = method.getParameters()[1].getType();
+                uuidParamLocation = 0;
+            }
+        } else if (method.getParameterCount() == 1) {
+            messageType = method.getParameters()[0].getType();
+        }
+        if (messageType != null) {
             PayloadCaseType payloadCase = messageToPayload.get(messageType);
-            if (payloadCase == null) throw new IllegalArgumentException("Unknown message type " + messageType.getCanonicalName());
-
+            if (payloadCase == null)
+                throw new IllegalArgumentException("Unknown message type " + messageType.getCanonicalName());
             Method messageGetter = payloadGetters.get(payloadCase);
-            if (messageGetter == null) throw new IllegalArgumentException("Unknown message payload " + payloadCase.name());
-
+            if (messageGetter == null)
+                throw new IllegalArgumentException("Unknown message payload " + payloadCase.name());
+            int finalUuidParamLocation = uuidParamLocation;
             registerExecutor(messageType, (message, client) -> {
                 try {
-                    method.invoke(message, client);
-                } catch (IllegalAccessException | InvocationTargetException exception) {
+                    if (finalUuidParamLocation == 0) {
+                        method.invoke(bean, client, message);
+                    } else if (finalUuidParamLocation == 1) {
+                        method.invoke(bean, message, client);
+                    } else {
+                        method.invoke(bean, message);
+                    }
+                } catch (Exception exception) {
                     throw new RuntimeException(exception);
                 }
             });

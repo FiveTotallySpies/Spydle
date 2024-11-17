@@ -28,17 +28,17 @@ public class LocalStorage implements GameServerStorage {
 
     @Override
     public void storeGameServer(GameServer gameServer) {
-        gameServerStorage.put(gameServer.getName(), gameServer);
+        gameServerStorage.put(gameServer.getRoomCode(), gameServer);
     }
 
     @Override
-    public GameServer getGameServer(String name) {
-        return gameServerStorage.get(name);
+    public GameServer getGameServer(String roomCode) {
+        return gameServerStorage.get(roomCode);
     }
 
     @Override
-    public void deleteGameServer(String name) {
-        gameServerStorage.remove(name);
+    public void deleteGameServer(String roomCode) {
+        gameServerStorage.remove(roomCode);
     }
 
     @Override
