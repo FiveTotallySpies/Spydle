@@ -121,7 +121,7 @@ public class GameEndView extends JPanel {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Spydle - Game Over");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(500, 500); // Full-screen dimensions
+            frame.setSize(800, 600); // Full-screen dimensions
             frame.setLocationRelativeTo(null);
             frame.add(new GameEndView());
             frame.setVisible(true);

@@ -21,12 +21,12 @@ public class WelcomeView extends JPanel {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        container.setBackground(new Color(195, 217, 255)); // Light blue background
-        container.setPreferredSize(new Dimension(400, 400)); // Compact container size
+        container.setBackground(new Color(195, 217, 255)); // Light blue background for the container
+        container.setPreferredSize(new Dimension(800, 567)); // Adjusted container size for optimal height
 
         // Title styling
         JLabel titleLabel = new JLabel("Spydle");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 32)); // Adjusted font size
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 40)); // Adjusted font size for larger window
         titleLabel.setForeground(new Color(139, 0, 0));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -36,14 +36,14 @@ public class WelcomeView extends JPanel {
 
         // Add horizontal line separator with increased thickness
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-        separator.setMaximumSize(new Dimension(350, 2)); // Smaller width and height for compact layout
+        separator.setMaximumSize(new Dimension(500, 2)); // Adjusted width for the larger container
         separator.setForeground(new Color(75, 0, 130)); // Darker purple
 
         // Create room button centered
         JButton createRoomButton = new JButton("Create Room");
         styleButton(createRoomButton);
         createRoomButton.setAlignmentX(Component.CENTER_ALIGNMENT); // Center alignment
-        createRoomButton.setMaximumSize(new Dimension(350, 40)); // Adjusted size for compact layout
+        createRoomButton.setMaximumSize(new Dimension(500, 40)); // Adjusted size for the new layout
 
         // Room code field and join button panel
         JPanel joinPanel = new JPanel();
@@ -52,28 +52,47 @@ public class WelcomeView extends JPanel {
         joinPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JTextField roomCodeField = createPlaceholderTextField("Enter existing room code");
-        roomCodeField.setMaximumSize(new Dimension(200, 30)); // Adjusted width for smaller layout
+        roomCodeField.setMaximumSize(new Dimension(300, 30)); // Adjusted width for new layout
 
         JButton joinRoomButton = new JButton("Join");
         styleButton(joinRoomButton);
-        joinRoomButton.setMaximumSize(new Dimension(100, 40)); // Smaller size for compact look
-        joinRoomButton.setPreferredSize(new Dimension(100, 40));
+        joinRoomButton.setMaximumSize(new Dimension(120, 40)); // Adjusted size for the button
+        joinRoomButton.setPreferredSize(new Dimension(120, 40));
 
         // Add components to the join panel
         joinPanel.add(roomCodeField);
         joinPanel.add(Box.createHorizontalStrut(10));
         joinPanel.add(joinRoomButton);
 
+        // View All Rooms button
+        JButton viewAllRoomsButton = new JButton("View All Rooms");
+        styleButton(viewAllRoomsButton);
+        viewAllRoomsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        viewAllRoomsButton.setMaximumSize(new Dimension(500, 40));
+        viewAllRoomsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                controller.openListRoomsView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+            }
+        });
+//        JButton listRoomsButton = new JButton("List of Rooms");
+//        styleButton(listRoomsButton);
+//        listRoomsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+//        listRoomsButton.setMaximumSize(new Dimension(500, 40)); // Adjusted size for the new layout
+
         // Adding components to the main container
         container.add(titleLabel);
-        container.add(Box.createVerticalStrut(30)); // Space below the title
+        container.add(Box.createVerticalStrut(40)); // Space below the title
         container.add(nicknameField);
-        container.add(Box.createVerticalStrut(30)); // Increased space between nickname and separator
+        container.add(Box.createVerticalStrut(40)); // Increased space between nickname and separator
         container.add(separator);
-        container.add(Box.createVerticalStrut(30)); // Reduced space between separator and create button
+        container.add(Box.createVerticalStrut(40)); // Reduced space between separator and create button
         container.add(createRoomButton); // Centered create button
-        container.add(Box.createVerticalStrut(5)); // Reduced space between create button and join section
-        container.add(joinPanel);
+
+        container.add(Box.createVerticalStrut(20)); // Space before join panel
+        container.add(joinPanel); // Join panel just below the create room button
+        container.add(Box.createVerticalStrut(20)); // Reduced space before the List Rooms button
+        container.add(viewAllRoomsButton); // List Rooms button right after join section
 
         add(container);
         setVisible(true);
@@ -83,7 +102,7 @@ public class WelcomeView extends JPanel {
         JTextField textField = new JTextField(15);
         textField.setText(placeholder);
         textField.setForeground(new Color(150, 150, 150)); // Light grey for placeholder
-        textField.setMaximumSize(new Dimension(350, 30)); // Adjusted for smaller container
+        textField.setMaximumSize(new Dimension(500, 30)); // Adjusted width for the larger container
 
         textField.addFocusListener(new FocusListener() {
             @Override
@@ -134,9 +153,10 @@ public class WelcomeView extends JPanel {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame();
             frame.setTitle("Welcome - Join or Create Room");
-            frame.setSize(400, 400); // Updated frame size to match the smaller container
+            frame.setSize(800, 600); // Set frame size to 800x600
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLocationRelativeTo(null);
+            // Add the WelcomeView panel with light blue background
             frame.add(new WelcomeView());
             frame.setVisible(true);
         });
