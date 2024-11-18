@@ -36,7 +36,7 @@ public class ViewManagerModel extends JFrame {
 
         // Set up the frame properties
         setTitle("Spydle");
-        setSize(600, 800);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
