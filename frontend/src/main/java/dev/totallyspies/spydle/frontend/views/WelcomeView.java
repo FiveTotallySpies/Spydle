@@ -17,82 +17,63 @@ public class WelcomeView extends JPanel {
     private WelcomeViewController controller;
 
     public WelcomeView() {
-
         // Main container panel styling
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
-        container.setBackground(new Color(195, 217, 255)); // #c3d9ff background color
-        container.setPreferredSize(new Dimension(500, 500));
+        container.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        container.setBackground(new Color(195, 217, 255)); // Light blue background
+        container.setPreferredSize(new Dimension(400, 400)); // Compact container size
 
         // Title styling
         JLabel titleLabel = new JLabel("Spydle");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 32)); // Adjusted font size
         titleLabel.setForeground(new Color(139, 0, 0));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Subtitle styling
-        JLabel joinLabel = new JLabel("Join an existing room");
-        joinLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        joinLabel.setForeground(new Color(139, 0, 0));
-        joinLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        joinLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
-
-        // Create Room Form
-        JPanel createRoomPanel = new JPanel();
-        createRoomPanel.setLayout(new BoxLayout(createRoomPanel, BoxLayout.Y_AXIS));
-        createRoomPanel.setBackground(new Color(195, 217, 255)); // same as container
-        createRoomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-
+        // Nickname input field
         JTextField nicknameField = createPlaceholderTextField("Enter your nickname");
-        JTextField roomNameField = createPlaceholderTextField("Enter room name");
+        nicknameField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // Add horizontal line separator with increased thickness
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        separator.setMaximumSize(new Dimension(350, 2)); // Smaller width and height for compact layout
+        separator.setForeground(new Color(75, 0, 130)); // Darker purple
+
+        // Create room button centered
         JButton createRoomButton = new JButton("Create Room");
         styleButton(createRoomButton);
+        createRoomButton.setAlignmentX(Component.CENTER_ALIGNMENT); // Center alignment
+        createRoomButton.setMaximumSize(new Dimension(350, 40)); // Adjusted size for compact layout
 
-        createRoomPanel.add(nicknameField);
-        createRoomPanel.add(Box.createVerticalStrut(10));
-        createRoomPanel.add(roomNameField);
-        createRoomPanel.add(Box.createVerticalStrut(10));
-        createRoomPanel.add(createRoomButton);
+        // Room code field and join button panel
+        JPanel joinPanel = new JPanel();
+        joinPanel.setLayout(new BoxLayout(joinPanel, BoxLayout.X_AXIS));
+        joinPanel.setBackground(new Color(195, 217, 255)); // Same background color as the container
+        joinPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Join Room Form
-        JPanel joinRoomPanel = new JPanel();
-        joinRoomPanel.setLayout(new BoxLayout(joinRoomPanel, BoxLayout.Y_AXIS));
-        joinRoomPanel.setBackground(new Color(195, 217, 255));
-        joinRoomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        JTextField roomCodeField = createPlaceholderTextField("Enter existing room code");
+        roomCodeField.setMaximumSize(new Dimension(200, 30)); // Adjusted width for smaller layout
 
-        JTextField joinNicknameField = createPlaceholderTextField("Enter your nickname");
-        JTextField roomCodeField = createPlaceholderTextField("Enter existing room name");
-
-
-        JButton joinRoomButton = new JButton("Join Room");
+        JButton joinRoomButton = new JButton("Join");
         styleButton(joinRoomButton);
+        joinRoomButton.setMaximumSize(new Dimension(100, 40)); // Smaller size for compact look
+        joinRoomButton.setPreferredSize(new Dimension(100, 40));
 
-        joinRoomPanel.add(joinNicknameField);
-        joinRoomPanel.add(Box.createVerticalStrut(10));
-        joinRoomPanel.add(roomCodeField);
-        joinRoomPanel.add(Box.createVerticalStrut(10));
-        joinRoomPanel.add(joinRoomButton);
+        // Add components to the join panel
+        joinPanel.add(roomCodeField);
+        joinPanel.add(Box.createHorizontalStrut(10));
+        joinPanel.add(joinRoomButton);
 
-        // View All Rooms button
-        JButton viewAllRoomsButton = new JButton("View All Rooms");
-        styleButton(viewAllRoomsButton);
-        viewAllRoomsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.openListRoomsView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
-            }
-        });
-
-        // Adding components to container
+        // Adding components to the main container
         container.add(titleLabel);
-        container.add(Box.createVerticalStrut(20));
-        container.add(createRoomPanel);
-        container.add(joinLabel);
-        container.add(joinRoomPanel);
-        container.add(Box.createVerticalStrut(20));
-        container.add(viewAllRoomsButton); // Add the button to the panel
+        container.add(Box.createVerticalStrut(30)); // Space below the title
+        container.add(nicknameField);
+        container.add(Box.createVerticalStrut(30)); // Increased space between nickname and separator
+        container.add(separator);
+        container.add(Box.createVerticalStrut(30)); // Reduced space between separator and create button
+        container.add(createRoomButton); // Centered create button
+        container.add(Box.createVerticalStrut(5)); // Reduced space between create button and join section
+        container.add(joinPanel);
 
         add(container);
         setVisible(true);
@@ -100,11 +81,10 @@ public class WelcomeView extends JPanel {
 
     private JTextField createPlaceholderTextField(String placeholder) {
         JTextField textField = new JTextField(15);
-        textField.setText(placeholder);  // Set the placeholder text
-        textField.setForeground(new Color(169, 169, 169));  // Grey color for placeholder
-        textField.setMaximumSize(new Dimension(400, 30));
+        textField.setText(placeholder);
+        textField.setForeground(new Color(150, 150, 150)); // Light grey for placeholder
+        textField.setMaximumSize(new Dimension(350, 30)); // Adjusted for smaller container
 
-        // FocusListener to implement placeholder text behavior
         textField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -118,7 +98,7 @@ public class WelcomeView extends JPanel {
             public void focusLost(FocusEvent e) {
                 if (textField.getText().isEmpty()) {
                     textField.setText(placeholder);
-                    textField.setForeground(new Color(169, 169, 169)); // Grey color
+                    textField.setForeground(new Color(150, 150, 150)); // Reset to light grey
                 }
             }
         });
@@ -126,45 +106,39 @@ public class WelcomeView extends JPanel {
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(138, 43, 226)); // blueviolet
+        button.setBackground(new Color(75, 0, 130)); // Darker purple color
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(400, 40));
+        button.setFont(new Font("Arial", Font.BOLD, 14)); // Slightly smaller font for a compact layout
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Set a consistent, fixed padding around the button content
         button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(138, 43, 226), 1), // Outer border color
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)  // Inner padding to avoid layout shift
+                BorderFactory.createLineBorder(new Color(75, 0, 130), 1), // Dark purple border
+                BorderFactory.createEmptyBorder(10, 10, 10, 10) // Inner padding for button
         ));
 
-        // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
-                button.setForeground(new Color(138, 43, 226)); // blueviolet
+                button.setForeground(new Color(75, 0, 130)); // Dark purple on hover
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(138, 43, 226));
+                button.setBackground(new Color(75, 0, 130));
                 button.setForeground(Color.WHITE);
             }
         });
     }
 
-    // Test the JPanel in a JFrame with size 500x500
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame();
             frame.setTitle("Welcome - Join or Create Room");
-            frame.setSize(500, 500);
+            frame.setSize(400, 400); // Updated frame size to match the smaller container
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLocationRelativeTo(null);
             frame.add(new WelcomeView());
             frame.setVisible(true);
         });
     }
-
 }
