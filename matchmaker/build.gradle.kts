@@ -29,6 +29,7 @@ dependencies {
 	// SpringBoot
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	// Redis
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("redis.clients:jedis:5.1.2")
@@ -36,6 +37,9 @@ dependencies {
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+	// Jakarta
+	implementation("jakarta.annotation:jakarta.annotation-api:3.0.0") // Bundled in spring 3
+	implementation("jakarta.validation:jakarta.validation-api:3.1.0")
 	// K8s
 	implementation("io.kubernetes:client-java:21.0.2")
 	// Agones GRPC wrapper

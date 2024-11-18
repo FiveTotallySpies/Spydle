@@ -2,10 +2,10 @@ package dev.totallyspies.spydle.matchmaker.config;
 
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
+import jakarta.annotation.Nullable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 @Repository
