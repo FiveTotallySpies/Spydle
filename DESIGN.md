@@ -153,9 +153,9 @@ First we need some shared terminology between the application components:
 	- When a player launches our app, they would not be in a "room" until they either created one to invite other players into, or were invited into one themselves.
 	- Players may exist in a room while either playing the game, or waiting for others to join.
 - <b>Game State</b>: Every room/game has a state:
-	- WAITING: The room is waiting for players to join before it can start
-	- PLAYING: The players in the room are actively playing the game
-	- FINISHING: The players in the room have finished playing and can see the victor, and are about to be kicked out of the room as it shuts down.
+	- READY: The room has no players joined, it is waiting for someone to call /create-game.
+	- WAITING: The room has at least one player, but the game hasn't started. Other players can join
+	- PLAYING: The players in the room are actively playing the game. No one can join.
 	- <i>Note that these do not correspond to Agones's GameServer states, and are only used internally be our game logic.</i>
 
 ## GameServer
