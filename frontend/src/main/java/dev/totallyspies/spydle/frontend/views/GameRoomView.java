@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,10 +10,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class GameRoomView extends JPanel {
 
+    private ArrayList<String> playerList;
     public GamePanel gamePanel;
 
     @Autowired
@@ -25,9 +29,13 @@ public class GameRoomView extends JPanel {
         // Create a container panel for the game screen
         JPanel container = new JPanel(new BorderLayout());
         container.setOpaque(false); // Make container transparent to show the GameRoomView background
-
+        List<String> playerList = new ArrayList<>();
+        playerList.add("Player1");
         // Initialize the Game Panel with 4 players (adjust the number of players as needed)
-        gamePanel = new GamePanel(4);
+        gamePanel = new GamePanel(playerList.size());
+        playerList.add("hllo");
+        playerList.add("Kai");
+        gamePanel.setPlayers(playerList);
 
         // Add the game panel to the center of the container
         container.add(gamePanel, BorderLayout.CENTER);
