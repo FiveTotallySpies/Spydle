@@ -54,6 +54,7 @@ public class ViewManagerModel extends JFrame {
         add(panelContainer);
 
         // Show the initial panel (WelcomeView)
+        // this is the first page that will run!
         cardLayout.show(panelContainer, "WelcomeView");
     }
 

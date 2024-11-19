@@ -1,7 +1,8 @@
 package dev.totallyspies.spydle.frontend.client;
 
+import dev.totallyspies.spydle.frontend.client.message.CbMessageListenerProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -10,12 +11,19 @@ import org.springframework.context.annotation.Profile;
 public class ClientSocketConfig {
 
     @Autowired
-    private ApplicationContext context;
+    private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private CbMessageListenerProcessor processor;
 
     @Bean
     @Profile("!local")
     public ClientSocketHandler clientSocketHandler() {
-        return new ClientSocketHandler(context);
+        return createClient();
+    }
+
+    public ClientSocketHandler createClient() {
+        return new ClientSocketHandler(processor, publisher);
     }
 
 }
