@@ -47,7 +47,6 @@ public class WelcomeView extends JPanel {
 
             private void updateNickname() {
                 welcomeViewModel.setPlayerName(nicknameField.getText());
-                System.out.println("Nickname: " + welcomeViewModel.getPlayerName());
             }
         });
 
@@ -65,7 +64,6 @@ public class WelcomeView extends JPanel {
 
                 if (isEnter) {
                     welcomeMessageLabel.setText("Welcome " + welcomeViewModel.getPlayerName() + "!");
-                    System.out.println("Welcome " + welcomeViewModel.getPlayerName());
                     enterButton.setText("Cancel");
                     isEnter = false;
                 } else {
@@ -103,7 +101,7 @@ public class WelcomeView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 welcomeViewModel.setRoomCode(nicknameField.getText());
-                System.out.println("Create Room button clicked with nickname: " + welcomeViewModel.getPlayerName());
+                controller.createGame();
             }
         });
 
@@ -121,7 +119,6 @@ public class WelcomeView extends JPanel {
 
             private void updateRoomCode() {
                 welcomeViewModel.setRoomCode(roomCodeField.getText());
-                System.out.println("Room Code: " + welcomeViewModel.getRoomCode());
             }
         });
 
@@ -133,7 +130,7 @@ public class WelcomeView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 welcomeViewModel.setRoomCode(roomCodeField.getText());
-                System.out.println("Join Room button clicked with room code: " + welcomeViewModel.getRoomCode());
+                controller.joinGame();
             }
         });
 
@@ -148,7 +145,6 @@ public class WelcomeView extends JPanel {
         viewAllRoomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("View All Rooms button clicked");
                 controller.openListRoomsView();
             }
         });
