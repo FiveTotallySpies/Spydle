@@ -28,26 +28,22 @@ public class MatchmakingService {
     }
 
     public GameServer createGame(UUID clientId, String playerName) {
-        // Check if client already has a session
-        if (sessionRepository.sessionExists(clientId)) throw new IllegalStateException("Client is already in a game.");
+        validateSession(clientId);
 
+        // Await allocation for a new gameserver
         GameServer allocated = allocator.awaitAllocation(5000);
 
         // Save client session
-        ClientSession session = new ClientSession(clientId, allocated, playerName);
+        ClientSession session = new ClientSession(clientId, allocated, playerName, ClientSession.State.ASSIGNED);
         sessionRepository.saveSession(session);
 
         return allocated;
     }
 
     public void joinGame(UUID clientId, String playerName, GameServer room) {
-        // Check if client already has a session
-        if (sessionRepository.sessionExists(clientId)) {
-            throw new IllegalStateException("Client is already in a game.");
-        }
+        validateSession(clientId);
         // Save client session
-        ClientSession session = new ClientSession(clientId, room, playerName);
-        sessionRepository.saveSession(session);
+        sessionRepository.saveSession(new ClientSession(clientId, room, playerName, ClientSession.State.ASSIGNED));
     }
 
     public List<String> listGames() {
@@ -58,6 +54,18 @@ public class MatchmakingService {
                         && gameServer.getState() == GameServer.State.WAITING)
                 .map(GameServer::getRoomCode)
                 .toList();
+    }
+
+    private void validateSession(UUID clientId) {
+        // Check if client already has a session
+        if (sessionRepository.sessionExists(clientId)) {
+            ClientSession session = sessionRepository.getSession(clientId);
+            if (session.getState() == ClientSession.State.CONNECTED) {
+                throw new IllegalStateException("Client is already connected to a game.");
+            }
+            // Otherwise, reset session since they are only ASSIGNED
+            sessionRepository.deleteSession(clientId);
+        }
     }
 
 }
