@@ -14,7 +14,7 @@ public class GameServerRepository {
 
     private static final String PREFIX = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX;
 
-    private RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public GameServerRepository(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;

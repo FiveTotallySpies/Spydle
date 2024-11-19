@@ -10,6 +10,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
 
-@Component
 public class ClientSocketHandler extends BinaryWebSocketHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ClientSocketHandler.class);
@@ -38,11 +38,14 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
 
     private WebSocketSession session;
 
-    @Autowired
     private CbMessageListenerProcessor annotationProcessor;
 
-    @Autowired
     private ApplicationEventPublisher eventPublisher;
+
+    public ClientSocketHandler(ApplicationContext context) {
+        this.annotationProcessor = context.getBean(CbMessageListenerProcessor.class);
+        this.eventPublisher = context.getBean(ApplicationEventPublisher.class);
+    }
 
     public void open(String address, int port, UUID clientId, String playerName) {
         if (isOpen()) {
