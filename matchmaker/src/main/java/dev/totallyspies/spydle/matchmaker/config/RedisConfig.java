@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.matchmaker.redis;
+package dev.totallyspies.spydle.matchmaker.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-public class RedisConfiguration {
+public class RedisConfig {
 
     @Value("${redis.host}")
     private String redisHost;
