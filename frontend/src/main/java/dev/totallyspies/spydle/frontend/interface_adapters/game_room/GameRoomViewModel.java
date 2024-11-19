@@ -10,7 +10,8 @@ import java.util.ArrayList;
 public class GameRoomViewModel {
     private ArrayList<String> playerList;
 
-    public void setPlayerList(ArrayList<String> playerList) {
-        this.playerList = playerList;
-    }
+    private String currentPlayerTurnUUID = "test";
+    private String localPlayerUUID = "yes";
+
+    private String stringEntered = "???";
 }
