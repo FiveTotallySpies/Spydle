@@ -24,8 +24,6 @@ public class WelcomeView extends JPanel {
 
     private JTextField nicknameField;
     private JTextField roomCodeField;
-    private String nicknameText;
-    private String roomCodeText;
     private JLabel welcomeMessageLabel; // New label for welcome message
 
     public WelcomeView() {
@@ -48,9 +46,8 @@ public class WelcomeView extends JPanel {
             public void changedUpdate(DocumentEvent e) { updateNickname(); }
 
             private void updateNickname() {
-                nicknameText = nicknameField.getText();
-                welcomeViewModel.setPlayerName(nicknameText);
-                System.out.println("Nickname: " + nicknameText);
+                welcomeViewModel.setPlayerName(nicknameField.getText());
+                System.out.println("Nickname: " + welcomeViewModel.getPlayerName());
             }
         });
 
@@ -64,11 +61,11 @@ public class WelcomeView extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                nicknameText = nicknameField.getText();
+                welcomeViewModel.setPlayerName(nicknameField.getText());
 
                 if (isEnter) {
-                    welcomeMessageLabel.setText("Welcome " + nicknameText + "!");
-                    System.out.println("Welcome " + nicknameText);
+                    welcomeMessageLabel.setText("Welcome " + welcomeViewModel.getPlayerName() + "!");
+                    System.out.println("Welcome " + welcomeViewModel.getPlayerName());
                     enterButton.setText("Cancel");
                     isEnter = false;
                 } else {
@@ -105,8 +102,8 @@ public class WelcomeView extends JPanel {
         createRoomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                nicknameText = nicknameField.getText();
-                System.out.println("Create Room button clicked with nickname: " + nicknameText);
+                welcomeViewModel.setRoomCode(nicknameField.getText());
+                System.out.println("Create Room button clicked with nickname: " + welcomeViewModel.getPlayerName());
             }
         });
 
@@ -123,9 +120,9 @@ public class WelcomeView extends JPanel {
             public void changedUpdate(DocumentEvent e) { updateRoomCode(); }
 
             private void updateRoomCode() {
-                roomCodeText = roomCodeField.getText();
-                welcomeViewModel.setRoomCode(roomCodeText);
-                System.out.println("Room Code: " + roomCodeText);
+                welcomeViewModel.setRoomCode(roomCodeField.getText());
+                welcomeViewModel.setRoomCode(welcomeViewModel.getRoomCode());
+                System.out.println("Room Code: " + welcomeViewModel.getRoomCode());
             }
         });
 
@@ -136,8 +133,8 @@ public class WelcomeView extends JPanel {
         joinRoomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                roomCodeText = roomCodeField.getText();
-                System.out.println("Join Room button clicked with room code: " + roomCodeText);
+                welcomeViewModel.setRoomCode(roomCodeField.getText());
+                System.out.println("Join Room button clicked with room code: " + welcomeViewModel.getRoomCode());
             }
         });
 
