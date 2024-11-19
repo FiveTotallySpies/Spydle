@@ -7,16 +7,13 @@ import dev.totallyspies.spydle.shared.proto.messages.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
-@Component
+//@Component
 public class TestClient {
     @Autowired
     private ClientSocketConfig config1;
