@@ -121,7 +121,6 @@ public class WelcomeView extends JPanel {
 
             private void updateRoomCode() {
                 welcomeViewModel.setRoomCode(roomCodeField.getText());
-                welcomeViewModel.setRoomCode(welcomeViewModel.getRoomCode());
                 System.out.println("Room Code: " + welcomeViewModel.getRoomCode());
             }
         });
