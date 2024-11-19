@@ -35,8 +35,8 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     @Getter
     @Nullable
     private UUID clientId;
-    private WebSocketSession session;
 
+    private WebSocketSession session;
     private final CbMessageListenerProcessor annotationProcessor;
     private final ApplicationEventPublisher eventPublisher;
 

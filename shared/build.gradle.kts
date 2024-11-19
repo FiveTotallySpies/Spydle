@@ -29,6 +29,9 @@ dependencies {
     // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+    // Jakarta
+    implementation("jakarta.annotation:jakarta.annotation-api:3.0.0")
+    implementation("jakarta.validation:jakarta.validation-api:3.1.0")
     // Protobuf
     implementation("com.google.protobuf:protobuf-java:4.28.3")
     implementation("com.google.code.gson:gson:2.11.0")
@@ -70,6 +73,9 @@ openApiGenerate {
 
     schemaMappings.put("GameServer", "dev.totallyspies.spydle.shared.model.GameServer")
     schemaMappings.put("ClientSession", "dev.totallyspies.spydle.shared.model.ClientSession")
+
+    configOptions.put("useJakartaEe", "true")
+    configOptions.put("useBeanValidation", "true")
 }
 
 sourceSets {

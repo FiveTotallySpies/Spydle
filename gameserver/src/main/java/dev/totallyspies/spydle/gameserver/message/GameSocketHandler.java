@@ -81,7 +81,6 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         annotationProcessor.getHandler().execute(sbMessage, clientId);
     }
 
-
     public void sendCbMessage(UUID clientId, CbMessage message) {
         ClientSession targetSession = getSessionFromClientId(clientId);
         if (targetSession == null) {
@@ -134,6 +133,15 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
             logger.warn("Client attempted to open session {} with no stored client session for this UUID, closing...", rawClientId);
             return;
         }
+        if (storedSession.getState() != ClientSession.State.ASSIGNED) {
+            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
+            logger.warn("Client attempt to open session {} but they are already connected, closing...", rawClientId);
+            return;
+        }
+        // Update client session to CONNECTED
+        storedSession.setState(ClientSession.State.CONNECTED);
+        storage.storeClientSession(storedSession);
+
         sessions.put(storedSession, socketSession);
         logger.info("Initiated connection with client {} and name {}", clientId, clientName);
         publisher.publishEvent(new SessionOpenEvent(this, storedSession, socketSession));
@@ -192,6 +200,5 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
                 .stream()
                 .anyMatch(session -> session.getPlayerName().equalsIgnoreCase(name));
     }
-
 
 }
