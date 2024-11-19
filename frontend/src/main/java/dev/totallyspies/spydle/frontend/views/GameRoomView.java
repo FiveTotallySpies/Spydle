@@ -30,12 +30,8 @@ public class GameRoomView extends JPanel {
         JPanel container = new JPanel(new BorderLayout());
         container.setOpaque(false); // Make container transparent to show the GameRoomView background
         List<String> playerList = new ArrayList<>();
-//        playerList.add("Player1");
         // Initialize the Game Panel with 4 players (adjust the number of players as needed)
         gamePanel = new GamePanel(playerList.size());
-//        playerList.add("hllo");
-//        playerList.add("Kai");
-//        gamePanel.setPlayers(playerList);
 
         // Add the game panel to the center of the container
         container.add(gamePanel, BorderLayout.CENTER);
