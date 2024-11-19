@@ -42,6 +42,8 @@ public class GamePanel extends JPanel {
         ArrowPanel arrowPanel = new ArrowPanel();
         arrowPanel.setBounds(390, 220, 20, 50);
         add(arrowPanel);
+
+
     }
 
     // Position players in a circular layout
@@ -67,21 +69,27 @@ public class GamePanel extends JPanel {
         repaint();
     }
 
-    // Paint the arrow to point to the current player
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (currentPlayerIndex < playerPanels.size()) {
-            PlayerPanel activePlayer = playerPanels.get(currentPlayerIndex);
-            Point arrowPoint = new Point(400, 275); // Center point for arrow
-
-            int targetX = activePlayer.getX() + activePlayer.getWidth() / 2;
-            int targetY = activePlayer.getY() + activePlayer.getHeight() / 2;
-
-            g.setColor(Color.RED);
-            g.drawLine(arrowPoint.x, arrowPoint.y, targetX, targetY);
-            g.fillOval(targetX - 5, targetY - 5, 10, 10);
+    public void setPlayers(List<String> playerNames) {
+        // Clear existing player panels
+        for (PlayerPanel panel : playerPanels) {
+            remove(panel); // Remove panel from the GamePanel
         }
+        playerPanels.clear(); // Clear the list of player panels
+
+        // Create and add new player panels
+        for (String playerName : playerNames) {
+            PlayerPanel playerPanel = new PlayerPanel(playerName);
+            playerPanels.add(playerPanel);
+            add(playerPanel);
+        }
+
+        // Reposition the players in a circular layout
+        positionPlayersInCircle();
+
+        // Refresh the panel to reflect changes
+        revalidate();
+        repaint();
     }
+
 
 }
