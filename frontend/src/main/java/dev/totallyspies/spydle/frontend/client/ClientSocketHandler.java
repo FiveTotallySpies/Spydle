@@ -59,6 +59,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         } catch (Exception exception) {
             throw new RuntimeException("Failed to open client socket " + exception.getMessage(), exception);
         }
+        logger.info("Opened socket connection with gameserver at {}:{}, with client ID {} and name {}", address, port, clientId, playerName);
     }
 
     @Override
