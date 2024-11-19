@@ -54,7 +54,7 @@ public class ViewManagerModel extends JFrame {
         add(panelContainer);
 
         // Show the initial panel (WelcomeView)
-        cardLayout.show(panelContainer, "GameRoomView");
+        cardLayout.show(panelContainer, "WelcomeView");
     }
 
     // Method to switch between panels
