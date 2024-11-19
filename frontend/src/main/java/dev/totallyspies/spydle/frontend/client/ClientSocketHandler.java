@@ -37,14 +37,12 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     private UUID clientId;
 
     private WebSocketSession session;
+    private final CbMessageListenerProcessor annotationProcessor;
+    private final ApplicationEventPublisher eventPublisher;
 
-    private CbMessageListenerProcessor annotationProcessor;
-
-    private ApplicationEventPublisher eventPublisher;
-
-    public ClientSocketHandler(ApplicationContext context) {
-        this.annotationProcessor = context.getBean(CbMessageListenerProcessor.class);
-        this.eventPublisher = context.getBean(ApplicationEventPublisher.class);
+    public ClientSocketHandler(CbMessageListenerProcessor annotationProcessor, ApplicationEventPublisher eventPublisher) {
+        this.annotationProcessor = annotationProcessor;
+        this.eventPublisher = eventPublisher;
     }
 
     public void open(String address, int port, UUID clientId, String playerName) {
@@ -71,7 +69,6 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
 
         // Execute
         annotationProcessor.getHandler().execute(cbMessage, clientId);
-        System.out.println("Received message: " + message.getPayload());
     }
 
     @Override
@@ -92,7 +89,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         byte[] messageBytes = message.toByteArray();
         try {
             session.sendMessage(new BinaryMessage(messageBytes));
-            logger.debug("Sending server  message of type {}", message.getPayloadCase().name());
+            logger.debug("Sending server message {}", message.toString().replaceAll("\\s+",""));
         } catch (IOException exception) {
             throw new RuntimeException("Failed to send server packet of type " + message.getPayloadCase().name(), exception);
         }
