@@ -69,12 +69,12 @@ public class ViewManagerModel extends JFrame {
         JOptionPane.showMessageDialog(this, event.getMessage());
     }
 
-    public static void launchGameView(String[] args) {
-        // Run the GameWindowFrame
-        SwingUtilities.invokeLater(() -> {
-            ViewManagerModel frame = new ViewManagerModel(new WelcomeView(), new GameRoomView(), new ListRoomsView(), new GameEndView());
-            frame.setVisible(true);
-        });
-    }
+//    public static void launchGameView(String[] args) {
+//        // Run the GameWindowFrame
+//        SwingUtilities.invokeLater(() -> {
+//            ViewManagerModel frame = new ViewManagerModel(new WelcomeView(), new GameRoomView(), new ListRoomsView(), new GameEndView());
+//            frame.setVisible(true);
+//        });
+//    }
 
 }
