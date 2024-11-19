@@ -17,7 +17,7 @@ public class GameLogic {
 
     private final AtomicInteger turn;
     private final AtomicReference<String> currentSubString;
-    public static final int TOTAL_GAME_TIME_SECONDS = 30;
+    private final AtomicInteger gameTimeSeconds = new AtomicInteger(60); // length of 1 minute by default
 
     public GameLogic() {
         this.players = new AtomicReference<>(new ArrayList<>());
@@ -26,7 +26,10 @@ public class GameLogic {
         this.playerMap = new ConcurrentHashMap<>();
     }
 
-    public void gameStart(Collection<ClientSession> sessions) {
+    public void gameStart(Collection<ClientSession> sessions, int proposedGameTimeSeconds) {
+        if (isValidTotalGameTime(proposedGameTimeSeconds)) {
+            this.gameTimeSeconds.set(proposedGameTimeSeconds);
+        }
         List<Player> players = new ArrayList<>();
         for (ClientSession session : sessions) {
             var player = new Player(session.getClientId(), session.getPlayerName(), 0);
@@ -92,6 +95,18 @@ public class GameLogic {
         }
 
         return maxPlayer;
+    }
+
+    public int getTotalGameTimeSeconds() {
+        return this.gameTimeSeconds.get();
+    }
+
+    public long getTotalGameTimeMillis() {
+        return this.gameTimeSeconds.get() * 1000L;
+    }
+
+    public boolean isValidTotalGameTime(int seconds) {
+        return (seconds >= 5 && seconds <= 1000);
     }
 
     public String getCurrentSubString() {

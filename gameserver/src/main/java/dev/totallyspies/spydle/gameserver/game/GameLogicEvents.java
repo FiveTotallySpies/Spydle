@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Component
 public class GameLogicEvents {
     private static final long TIMER_INTERVAL_MILLIS = 1000;
-    private static final long TOTAL_GAME_TIME_MILLIS = 30000;
 
     private final Timer timer = new Timer();
     private final AtomicLong gameStartMillis = new AtomicLong(0);
@@ -28,7 +27,7 @@ public class GameLogicEvents {
 
     @SbMessageListener
     public void onGameStart(SbStartGame event, UUID client) {
-        gameLogic.gameStart(gameSocketHandler.getSessions());
+        gameLogic.gameStart(gameSocketHandler.getSessions(), event.getTotalGameTimeSeconds());
         gameSocketHandler.broadcastCbMessage(gameStartMessage());
 
         gameStartMillis.set(System.currentTimeMillis());
@@ -45,7 +44,7 @@ public class GameLogicEvents {
             public void run() {
                 GameLogicEvents.this.onGameEnd();
             }
-        }, TOTAL_GAME_TIME_MILLIS);
+        }, gameLogic.getTotalGameTimeMillis());
 
         gameLogic.newTurn();
         gameSocketHandler.broadcastCbMessage(newTurnMessage());
@@ -68,7 +67,7 @@ public class GameLogicEvents {
 
     private void onTimerTick(TimerTask task) {
         long millisPassed = System.currentTimeMillis() - gameStartMillis.get();
-        long millisLeft = TOTAL_GAME_TIME_MILLIS - millisPassed;
+        long millisLeft = gameLogic.getTotalGameTimeMillis() - millisPassed;
         if (millisLeft < 0) {
             task.cancel();
             return;
@@ -92,7 +91,6 @@ public class GameLogicEvents {
     private CbMessage gameStartMessage()
     {
         var players = gameLogic.getPlayers();
-        var gameTime = GameLogic.TOTAL_GAME_TIME_SECONDS;
 
         var msgPlayers = players.stream().map(this::msgPlayer).toList();
 
@@ -100,7 +98,7 @@ public class GameLogicEvents {
                 .newBuilder()
                 .setGameStart(
                         CbGameStart.newBuilder()
-                                .setTotalGameTimeSeconds(gameTime)
+                                .setTotalGameTimeSeconds(gameLogic.getTotalGameTimeSeconds())
                                 .addAllPlayers(msgPlayers)
                 ).build();
     }

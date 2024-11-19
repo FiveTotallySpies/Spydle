@@ -10,8 +10,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
@@ -32,15 +30,14 @@ public class TestClient {
 
     public void initPlayers() {
         this.player1 = new TestPlayer("player1",
-                UUID.fromString("04f01a02-11b7-4c64-ab25-2f02c6cab409"),
+                UUID.fromString("11111111-1111-1111-1111-111111111111"),
                 config1.createClient());
 
         this.player2 = new TestPlayer("player2",
-                UUID.fromString("f754601e-47f3-4b15-b9fd-3517a232dd31"),
+                UUID.fromString("22222222-2222-2222-2222-222222222222"),
                 config2.createClient());
     }
 
-    // Executed on application startup, but could be instead on the press of a button?
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         setIpPort();
@@ -50,17 +47,56 @@ public class TestClient {
         this.player1.open(ip, port);
         this.player2.open(ip, port);
 
-        testStartNewGame(player1);
-        testGuess(player2, "BBBBBB");
-        testGuess(player1, "CCCCCC");
+        testStartNewGame(player1, 5);
+        testGuess(player2, "BBBBBB"); // right guess
+        waitMs(500);
+        testGuess(player1, "BBBBBB"); // wrong guess
+        waitMs(500);
+        testGuess(player1, "CCCCCCCCCC");
+
+        /*
+        Expected logs (shortened):
+        */
+        /*
+        Sending server message start_game{total_game_time_seconds:5}
+        Fired message with PayloadCase GAME_START to 1, message: game_start {  players {    player_name: "player1"  }  players {    player_name: "player2"  }  total_game_time_seconds: 5}
+        Fired message with PayloadCase GAME_START to 2, message: game_start {  players {    player_name: "player1"  }  players {    player_name: "player2"  }  total_game_time_seconds: 5}
+        Sending server message guess{guessed_word:"BBBBBB"} // Correct guess, + 6 points for player2
+        Fired message with PayloadCase NEW_TURN to 2, message: new_turn {  assigned_string: "BBB"  current_player_name: "player2"}
+        Fired message with PayloadCase NEW_TURN to 1, message: new_turn {  assigned_string: "BBB"  current_player_name: "player2"}
+        Fired message with PayloadCase GUESS_RESULT to 1, message: guess_result {  guess: "BBBBBB"  correct: true}
+        Fired message with PayloadCase GUESS_RESULT to 2, message: guess_result {  guess: "BBBBBB"  correct: true}
+        Fired message with PayloadCase NEW_TURN to 1, message: new_turn {  assigned_string: "CCC"  current_player_name: "player1"}
+        Fired message with PayloadCase NEW_TURN to 2, message: new_turn {  assigned_string: "CCC"  current_player_name: "player1"}
+        Sending server message guess{guessed_word:"BBBBBB"}
+        Fired message with PayloadCase GUESS_RESULT to 1, message: guess_result {  guess: "BBBBBB"}  //the value of 'correct' is false, not showing up
+        Fired message with PayloadCase GUESS_RESULT to 2, message: guess_result {  guess: "BBBBBB"}
+        Fired message with PayloadCase TIMER_TICK to 2, message: timer_tick {  time_left_seconds: 4}
+        Fired message with PayloadCase TIMER_TICK to 1, message: timer_tick {  time_left_seconds: 4}
+        Sending server message guess{guessed_word:"CCCCCCCCCC"} // Correct guess, +10 players to player1
+        Fired message with PayloadCase GUESS_RESULT to 1, message: guess_result {  guess: "CCCCCCCCCC"  correct: true} // player1 gets 10 points
+        Fired message with PayloadCase GUESS_RESULT to 2, message: guess_result {  guess: "CCCCCCCCCC"  correct: true}
+        Fired message with PayloadCase NEW_TURN to 1, message: new_turn {  assigned_string: "DDD"  current_player_name: "player2"}
+        Fired message with PayloadCase NEW_TURN to 2, message: new_turn {  assigned_string: "DDD"  current_player_name: "player2"}
+        Fired message with PayloadCase TIMER_TICK to 1, message: timer_tick {  time_left_seconds: 3}
+        Fired message with PayloadCase TIMER_TICK to 2, message: timer_tick {  time_left_seconds: 3}
+        Fired message with PayloadCase TIMER_TICK to 1, message: timer_tick {  time_left_seconds: 2}
+        Fired message with PayloadCase TIMER_TICK to 2, message: timer_tick {  time_left_seconds: 2}
+        Fired message with PayloadCase TIMER_TICK to 1, message: timer_tick {  time_left_seconds: 1}
+        Fired message with PayloadCase TIMER_TICK to 2, message: timer_tick {  time_left_seconds: 1}
+        Fired message with PayloadCase GAME_END to 1, message: game_end {  winner {    player_name: "player1"    score: 10  }}
+        Fired message with PayloadCase GAME_END to 2, message: game_end {  winner {    player_name: "player1"    score: 10  }}
+        */
 
         waitForever();
         // Close the websocket
         //handler.close();
     }
 
-    public void testStartNewGame(TestPlayer player) {
-        var message = SbMessage.newBuilder().setStartGame(SbStartGame.newBuilder()).build();
+    public void testStartNewGame(TestPlayer player, int timeSeconds) {
+        var message = SbMessage.newBuilder().setStartGame(
+                SbStartGame.newBuilder().setTotalGameTimeSeconds(timeSeconds)
+        ).build();
 
         player.send(message);
     }
@@ -68,18 +104,6 @@ public class TestClient {
     public void testGuess(TestPlayer player, String guess) {
         var message = SbMessage.newBuilder().setGuess(SbGuess.newBuilder().setGuessedWord(guess)).build();
         player.send(message);
-    }
-
-    @CbMessageListener
-    public void gameStartListener(CbGameStart message, UUID clientId) {
-        TestPlayer player = determinePlayerByUUID(clientId);
-        System.out.println("Got a message CbGameStart for " + player.getName() + " message: " + message);
-    }
-
-    @CbMessageListener
-    public void newTurnListener(CbNewTurn message, UUID clientId) {
-        TestPlayer player = determinePlayerByUUID(clientId);
-        System.out.println("Got a message CbNewTurn for " + player.getName() + " message: " + message);
     }
 
     // Custom event fired after socket close
@@ -90,24 +114,20 @@ public class TestClient {
         // Close window, do other logic?
     }
 
-    private TestPlayer determinePlayerByUUID(UUID id) {
-        if (id.equals(player1.getUuid())) {
-            return player1;
-        }
-
-        if (id.equals(player2.getUuid())) {
-            return player2;
-        }
-
-        throw new RuntimeException("Couldn't determine player by uuid: " + id.toString());
-    }
-
     private void setIpPort() {
         Scanner in = new Scanner(System.in);
         System.out.println("Enter IP:");
         this.ip = in.next();
         System.out.println("Enter PORT:");
         this.port = in.nextInt();
+    }
+
+    private void waitMs(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void waitForever() {

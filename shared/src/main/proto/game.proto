@@ -13,6 +13,7 @@ message SbMessage {
 
 // Server-bound messages
 message SbStartGame {
+  int32 total_game_time_seconds = 1;
 }
 
 message SbLeaveGame {
