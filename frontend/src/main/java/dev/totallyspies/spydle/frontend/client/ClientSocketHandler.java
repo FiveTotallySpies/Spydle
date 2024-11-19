@@ -37,12 +37,12 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     private UUID clientId;
     private WebSocketSession session;
 
-    private CbMessageListenerProcessor annotationProcessor;
-    private ApplicationEventPublisher eventPublisher;
+    private final CbMessageListenerProcessor annotationProcessor;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ClientSocketHandler(ApplicationContext context) {
-        this.annotationProcessor = context.getBean(CbMessageListenerProcessor.class);
-        this.eventPublisher = context.getBean(ApplicationEventPublisher.class);
+    public ClientSocketHandler(CbMessageListenerProcessor annotationProcessor, ApplicationEventPublisher eventPublisher) {
+        this.annotationProcessor = annotationProcessor;
+        this.eventPublisher = eventPublisher;
     }
 
     public void open(String address, int port, UUID clientId, String playerName) {
