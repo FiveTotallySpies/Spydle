@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Data
 public class WelcomeViewModel {
 
-    private String playerName;
-    private String roomCode;
+    private String playerName = "";
+    private String roomCode = "";
 
 }

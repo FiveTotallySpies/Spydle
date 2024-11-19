@@ -1,0 +1,14 @@
+package dev.totallyspies.spydle.frontend.use_cases.list_games;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+public class ListGamesOutputData {
+
+    private List<String> roomCodes;
+
+}

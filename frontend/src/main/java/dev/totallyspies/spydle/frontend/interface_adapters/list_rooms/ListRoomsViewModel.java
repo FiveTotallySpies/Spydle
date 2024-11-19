@@ -7,4 +7,6 @@ import org.springframework.stereotype.Component;
 @Data
 public class ListRoomsViewModel {
 
+    private String[] linesInRoomList;
+
 }

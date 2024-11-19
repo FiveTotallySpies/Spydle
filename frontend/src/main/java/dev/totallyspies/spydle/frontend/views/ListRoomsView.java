@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.list_rooms.ListRoomsViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.list_rooms.ListRoomsViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -13,6 +14,11 @@ public class ListRoomsView extends JPanel {
 
     @Autowired
     private ListRoomsViewController controller;
+
+    @Autowired
+    private ListRoomsViewModel model;
+
+    private JList<String> roomList;
 
     public ListRoomsView() {
         setLayout(new GridBagLayout()); // Center the container in the middle of the screen
@@ -30,16 +36,15 @@ public class ListRoomsView extends JPanel {
         titleLabel.setForeground(new Color(139, 0, 0)); // Dark red color
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Fake room data with the format "Room 1: Name"
+        // Fake room data
         String[] roomData = {
-                "Room 1: When you wake up",
-                "Room 2: Next to him",
-                "Room 3: In the middle",
-                "Room 4: Of the night"
+                "Loading..."
         };
 
+        model.setLinesInRoomList(roomData);
+
         // Create JList with fake data
-        JList<String> roomList = new JList<>(roomData);
+        roomList = new JList<>(roomData);
         roomList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         roomList.setFont(new Font("Arial", Font.PLAIN, 16));
 
@@ -98,6 +103,10 @@ public class ListRoomsView extends JPanel {
                 button.setForeground(Color.WHITE);
             }
         });
+    }
+
+    public void updateRoomList() {
+        roomList.setListData(model.getLinesInRoomList());
     }
 
     // Test the JPanel in a JFrame with size 500x500

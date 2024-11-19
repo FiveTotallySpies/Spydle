@@ -13,16 +13,16 @@ public class WebClientService {
     @Autowired
     private WebClient webClient;
 
-    public <T> T postEndpoint(String path, Object data, Class<T> responseModel) throws ClientErrorException {
+    public <T> Object postEndpoint(String path, Object data, Class<T> responseModel) throws ClientErrorException {
         return handleResponse(webClient.post().uri(formatPath(path)).bodyValue(data).retrieve(), responseModel);
 
     }
 
-    public <T> T getEndpoint(String path, Class<T> responseModel) {
+    public <T> Object getEndpoint(String path, Class<T> responseModel) {
         return handleResponse(webClient.get().uri(formatPath(path)).retrieve(), responseModel);
     }
 
-    private <T> T handleResponse(WebClient.ResponseSpec responseSpec, Class<T> responseModel) throws ClientErrorException {
+    private <T> Object handleResponse(WebClient.ResponseSpec responseSpec, Class<T> responseModel) throws ClientErrorException {
         return responseSpec
                 .onStatus(
                         HttpStatusCode::is4xxClientError,
