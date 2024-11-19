@@ -10,6 +10,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
 
-@Component
 public class ClientSocketHandler extends BinaryWebSocketHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ClientSocketHandler.class);
@@ -35,12 +35,15 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     @Getter
     @Nullable
     private UUID clientId;
-    private WebSocketSession session;
 
-    @Autowired
-    private CbMessageListenerProcessor annotationProcessor;
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private WebSocketSession session;
+    private final CbMessageListenerProcessor annotationProcessor;
+    private final ApplicationEventPublisher eventPublisher;
+
+    public ClientSocketHandler(CbMessageListenerProcessor annotationProcessor, ApplicationEventPublisher eventPublisher) {
+        this.annotationProcessor = annotationProcessor;
+        this.eventPublisher = eventPublisher;
+    }
 
     public void open(String address, int port, UUID clientId, String playerName) {
         if (isOpen()) {
@@ -66,7 +69,6 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
 
         // Execute
         annotationProcessor.getHandler().execute(cbMessage, clientId);
-        System.out.println("Received message: " + message.getPayload());
     }
 
     @Override
@@ -87,7 +89,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         byte[] messageBytes = message.toByteArray();
         try {
             session.sendMessage(new BinaryMessage(messageBytes));
-            logger.debug("Sending server  message of type {}", message.getPayloadCase().name());
+            logger.debug("Sending server message {}", message.toString().replaceAll("\\s+",""));
         } catch (IOException exception) {
             throw new RuntimeException("Failed to send server packet of type " + message.getPayloadCase().name(), exception);
         }

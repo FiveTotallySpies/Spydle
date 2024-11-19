@@ -29,7 +29,7 @@ public class LocalClientSessionValidator implements ClientSessionValidator {
 
     @Override
     public boolean validateClientSession(UUID clientId, String name) {
-        storage.storeClientSession(new ClientSession(clientId, currentGameServer, name));
+        storage.storeClientSession(new ClientSession(clientId, currentGameServer, name, ClientSession.State.ASSIGNED));
         return true;
     }
 

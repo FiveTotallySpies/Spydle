@@ -1,19 +1,20 @@
 package dev.totallyspies.spydle.matchmaker.controller;
 
+import dev.totallyspies.spydle.matchmaker.config.GameServerRepository;
+import dev.totallyspies.spydle.matchmaker.config.SessionRepository;
 import dev.totallyspies.spydle.matchmaker.generated.model.ClientErrorResponse;
 import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameResponseModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameResponseModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.ListGamesResponseModel;
-import dev.totallyspies.spydle.matchmaker.redis.GameServerRepository;
-import dev.totallyspies.spydle.matchmaker.redis.SessionRepository;
-import dev.totallyspies.spydle.matchmaker.service.MatchmakingService;
+import dev.totallyspies.spydle.matchmaker.use_case.MatchmakingService;
 import dev.totallyspies.spydle.shared.model.GameServer;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,21 +30,25 @@ import java.util.UUID;
  * leave-game: Delete a user session from a game server and notify it of client departure
  */
 @RestController
-public class GameController {
+@Validated
+public class MatchmakingController {
 
-    private final Logger logger = LoggerFactory.getLogger(GameController.class);
+    private final Logger logger = LoggerFactory.getLogger(MatchmakingController.class);
 
-    @Autowired
-    private MatchmakingService matchmakingService;
+    private final MatchmakingService matchmakingService;
+    private final GameServerRepository gameServerRepository;
+    private final SessionRepository sessionRepository;
 
-    @Autowired
-    private GameServerRepository gameServerRepository;
-
-    @Autowired
-    private SessionRepository sessionRepository;
+    public MatchmakingController(MatchmakingService matchmakingService,
+                                 GameServerRepository gameServerRepository,
+                                 SessionRepository sessionRepository) {
+        this.matchmakingService = matchmakingService;
+        this.gameServerRepository = gameServerRepository;
+        this.sessionRepository = sessionRepository;
+    }
 
     @PostMapping("/create-game")
-    public ResponseEntity<?> createGame(@RequestBody CreateGameRequestModel request) {
+    public ResponseEntity<?> createGame(@Valid @RequestBody CreateGameRequestModel request) {
         UUID clientId = sessionRepository.parseClientId(request.getClientId());
         logger.info("Received request: /create-game, clientId: {}", request.getClientId());
         if (clientId == null) {
@@ -64,7 +69,7 @@ public class GameController {
     }
 
     @PostMapping("/join-game")
-    public ResponseEntity<?> joinGame(@RequestBody JoinGameRequestModel request) {
+    public ResponseEntity<?> joinGame(@Valid @RequestBody JoinGameRequestModel request) {
         UUID clientId = sessionRepository.parseClientId(request.getClientId());
         logger.info("Received request: /join-game, clientId: {}, gameServerName: {}", request.getClientId(), request.getRoomCode());
         if (clientId == null) {

@@ -2,7 +2,6 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.3.5"
 	id("io.spring.dependency-management") version "1.1.6"
-	id("org.openapi.generator") version "7.9.0"
 }
 
 group = "dev.totallyspies.spydle"
@@ -30,6 +29,7 @@ dependencies {
 	// SpringBoot
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	// Redis
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 	implementation("redis.clients:jedis:5.1.2")
@@ -37,6 +37,9 @@ dependencies {
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+	// Jakarta
+	implementation("jakarta.annotation:jakarta.annotation-api:3.0.0") // Bundled in spring 3
+	implementation("jakarta.validation:jakarta.validation-api:3.1.0")
 	// K8s
 	implementation("io.kubernetes:client-java:21.0.2")
 	// Agones GRPC wrapper
@@ -51,45 +54,11 @@ dependencies {
 	// Testing
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-buildscript {
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.openapitools:openapi-generator-gradle-plugin:7.9.0")
-	}
-}
-
-
-openApiGenerate {
-	generatorName.set("java")
-	inputSpec.set("${layout.projectDirectory}/src/main/resources/openapi.yaml")
-	outputDir.set("${layout.buildDirectory.get()}/generated")
-	modelPackage.set("dev.totallyspies.spydle.matchmaker.generated.model")
-	apiPackage.set("dev.totallyspies.spydle.matchmaker.generated.api")
-	invokerPackage.set("dev.totallyspies.spydle.matchmaker.generated.invoker")
-
-	schemaMappings.put("GameServer", "dev.totallyspies.spydle.shared.model.GameServer")
-	schemaMappings.put("ClientSession", "dev.totallyspies.spydle.shared.model.ClientSession")
-
-}
-
-sourceSets {
-	main {
-		java {
-			srcDir("${layout.buildDirectory.get()}/generated/src/main/java")
-		}
-	}
+	testImplementation("org.mockito:mockito-core")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-}
-
-tasks.named("compileJava") {
-	dependsOn("openApiGenerate")
 }
 
 tasks.bootJar {

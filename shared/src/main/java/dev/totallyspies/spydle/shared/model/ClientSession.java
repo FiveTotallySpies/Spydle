@@ -16,9 +16,15 @@ public class ClientSession implements Serializable {
     private UUID clientId;
     private GameServer gameServer;
     private String playerName;
+    private State state;
 
     public static void validateJsonElement(JsonElement clientSession) {
         JsonValidator.validateJsonElement(clientSession, ClientSession.class);
+    }
+
+    public enum State {
+        ASSIGNED, // Client has been assigned to a gameserver, but hasn't connected to it yet
+        CONNECTED // Client has connected to this gameserver
     }
 
 }

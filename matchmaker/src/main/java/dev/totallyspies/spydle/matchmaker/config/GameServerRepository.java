@@ -1,8 +1,7 @@
-package dev.totallyspies.spydle.matchmaker.redis;
+package dev.totallyspies.spydle.matchmaker.config;
 
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.GameServer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -15,8 +14,11 @@ public class GameServerRepository {
 
     private static final String PREFIX = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    public GameServerRepository(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     public GameServer getGameServer(String roomCode) {
         return (GameServer) redisTemplate.opsForValue().get(PREFIX + roomCode);
