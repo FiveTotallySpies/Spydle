@@ -1,16 +1,19 @@
 package dev.totallyspies.spydle.gameserver.message;
 
+import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
 import dev.totallyspies.spydle.gameserver.message.session.ClientSessionValidator;
 import dev.totallyspies.spydle.gameserver.message.session.SessionCloseEvent;
 import dev.totallyspies.spydle.gameserver.message.session.SessionOpenEvent;
 import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
+import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
@@ -43,6 +46,15 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
     @Autowired
     private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private GameServer currentGameServer;
+
+    @Value("${agones.enabled}")
+    private boolean agonesEnabled;
+
+    @Autowired(required = false)
+    private AgonesHook agonesHook; // Is set to null if agones is not enabled
 
     private final Map<ClientSession, WebSocketSession> sessions = Collections.synchronizedMap(new LinkedHashMap<>());
     
@@ -173,6 +185,16 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
             }
         }
         logger.info("Closed connection with client {} for reason {}", rawClientId, status);
+
+        // Close server if everyone has left!
+        // Check that we are either PLAYING or WAITING
+        if (agonesEnabled
+                && currentGameServer.getState() != GameServer.State.READY
+                && sessions.isEmpty()
+                && agonesHook != null) {
+            logger.info("All players left! Shutting down...");
+            agonesHook.getAgones().shutdown(); // Stop server
+        }
     }
 
     @Nullable
