@@ -41,7 +41,7 @@ public class MatchmakingServiceTest {
 
         // Mock behavior
         when(sessionRepository.sessionExists(clientId)).thenReturn(false);
-        when(allocator.awaitAllocation(5000)).thenReturn(fakeGameServer);
+        when(allocator.awaitAllocation(anyInt())).thenReturn(fakeGameServer);
 
         // Call method
         GameServer result = matchmakingService.createGame(clientId, playerName);
@@ -84,7 +84,7 @@ public class MatchmakingServiceTest {
         // Mock existing session in ASSIGNED state
         when(sessionRepository.sessionExists(clientId)).thenReturn(true);
         when(sessionRepository.getSession(clientId)).thenReturn(fakeClientSession);
-        when(allocator.awaitAllocation(5000)).thenReturn(fakeGameServer);
+        when(allocator.awaitAllocation(anyInt())).thenReturn(fakeGameServer);
 
         // Call method
         GameServer result = matchmakingService.createGame(clientId, playerName);
