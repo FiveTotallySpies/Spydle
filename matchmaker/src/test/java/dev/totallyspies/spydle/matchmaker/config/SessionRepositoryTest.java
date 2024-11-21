@@ -36,7 +36,7 @@ public class SessionRepositoryTest {
 
     @Test
     public void testSaveSession() {
-        ClientSession session = new ClientSession(UUID.randomUUID(), fakeGameServer, "");
+        ClientSession session = new ClientSession(UUID.randomUUID(), fakeGameServer, "", ClientSession.State.ASSIGNED);
         session.setClientId(UUID.randomUUID());
         String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + session.getClientId();
 
@@ -48,7 +48,7 @@ public class SessionRepositoryTest {
     @Test
     public void testGetSession() {
         UUID clientId = UUID.randomUUID();
-        ClientSession session = new ClientSession(clientId, fakeGameServer, "");
+        ClientSession session = new ClientSession(clientId, fakeGameServer, "", ClientSession.State.ASSIGNED);
         String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
         when(valueOperations.get(key)).thenReturn(session);
