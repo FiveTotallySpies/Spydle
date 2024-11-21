@@ -41,6 +41,7 @@ public class GameLogic {
     public void onSessionOpen() {
         if (currentGameServer.getState() == GameServer.State.READY) { // This is our first client! Set us to WAITING
             currentGameServer.setState(GameServer.State.WAITING);
+            currentGameServerConfiguration.updateInStorage();
         }
     }
 
