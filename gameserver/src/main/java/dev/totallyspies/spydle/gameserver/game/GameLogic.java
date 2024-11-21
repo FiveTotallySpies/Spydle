@@ -1,11 +1,6 @@
 package dev.totallyspies.spydle.gameserver.game;
 
-import dev.totallyspies.spydle.gameserver.message.session.SessionOpenEvent;
-import dev.totallyspies.spydle.gameserver.storage.CurrentGameServerConfiguration;
 import dev.totallyspies.spydle.shared.model.ClientSession;
-import dev.totallyspies.spydle.shared.model.GameServer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -24,25 +19,11 @@ public class GameLogic {
     private final AtomicReference<String> currentSubString;
     public static final int TOTAL_GAME_TIME_SECONDS = 30;
 
-    @Autowired
-    public GameServer currentGameServer;
-
-    @Autowired
-    public CurrentGameServerConfiguration currentGameServerConfiguration;
-
     public GameLogic() {
         this.players = new AtomicReference<>(new ArrayList<>());
         this.currentSubString = new AtomicReference<>("");
         this.turn = new AtomicInteger(0);
         this.playerMap = new ConcurrentHashMap<>();
-    }
-
-    @EventListener(SessionOpenEvent.class)
-    public void onSessionOpen() {
-        if (currentGameServer.getState() == GameServer.State.READY) { // This is our first client! Set us to WAITING
-            currentGameServer.setState(GameServer.State.WAITING);
-            currentGameServerConfiguration.updateInStorage();
-        }
     }
 
     public void gameStart(Collection<ClientSession> sessions) {
