@@ -123,7 +123,9 @@ public class GameLogicEvents {
                 .setNewTurn(
                         CbNewTurn.newBuilder()
                                 .setAssignedString(gameLogic.getCurrentSubString())
-                                .setCurrentPlayerName(gameLogic.getCurrentPlayer().getName())
+                                .setCurrentPlayer(Player.newBuilder()
+                                        .setPlayerName(gameLogic.getCurrentPlayer().getName())
+                                        .setScore(gameLogic.getCurrentPlayer().getScore()))
                 )
                 .build();
     }

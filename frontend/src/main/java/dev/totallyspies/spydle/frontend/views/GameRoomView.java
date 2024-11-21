@@ -14,25 +14,28 @@ import java.util.ArrayList;
 @Component
 public class GameRoomView extends JPanel {
 
-    private GameRoomViewModel gameRoomViewModel;
-    private GameRoomViewController controller;
+    private final GameRoomViewModel model;
+    private final GameRoomViewController controller;
 
-    public GamePanel gamePanel;
+    private final GamePanel gamePanel;
 
+    private final JPanel container;
+    private final JTextField substringInputField;
+    private final JPanel inputPanel;
 
-    public GameRoomView(GameRoomViewModel gameRoomViewModel, GameRoomViewController controller) {
-        this.gameRoomViewModel = gameRoomViewModel;
+    public GameRoomView(GameRoomViewModel model, GameRoomViewController controller) {
+        this.model = model;
         this.controller = controller;
 
         setLayout(new BorderLayout()); // Set layout to BorderLayout for GameRoomView
         setBackground(new Color(195, 217, 255)); // Set light blue background for entire view
 
         // Create a container panel for the game screen
-        JPanel container = new JPanel(new BorderLayout());
+        container = new JPanel(new BorderLayout());
         container.setOpaque(false); // Make container transparent to show the GameRoomView background
-        this.gameRoomViewModel.setPlayerList(new ArrayList<>());
+        model.setPlayerList(new ArrayList<>());
         // Initialize the Game Panel with 4 players (adjust the number of players as needed)
-        gamePanel = new GamePanel(this.gameRoomViewModel.getPlayerList().size());
+        gamePanel = new GamePanel(this.model);
 
         // Add the game panel to the center of the container
         container.add(gamePanel, BorderLayout.CENTER);
@@ -47,11 +50,8 @@ public class GameRoomView extends JPanel {
         backButton.setPreferredSize(new Dimension(150, 40));
 
         // Back button action listener
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
-            }
+        backButton.addActionListener(event -> {
+            controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
         });
 
         // Top panel to hold the back button on the left
@@ -63,34 +63,36 @@ public class GameRoomView extends JPanel {
         container.add(topPanel, BorderLayout.NORTH);
 
         // Create a panel for the substring input field and submit button
-        JPanel inputPanel = new JPanel();
+        inputPanel = new JPanel();
         inputPanel.setOpaque(false); // Transparent background
-        JTextField substringField = new JTextField(20); // Text field for substring input
+        substringInputField = new JTextField(20); // Text field for substring input
         JButton submitButton = new JButton("Submit");
 
         // Action listener for submit button
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameRoomViewModel.setStringEntered(substringField.getText());
-                // Handle the entered substring as needed
-                System.out.println("Entered substring: " + gameRoomViewModel.getStringEntered());
-            }
+        submitButton.addActionListener(event -> {
+            model.setStringEntered(substringInputField.getText());
+            // Handle the entered substring as needed
+            System.out.println("Entered substring: " + model.getStringEntered());
         });
 
-
-        // check if the local player matches the player at the current turn
-        if (this.gameRoomViewModel.getLocalPlayerUUID().equals(this.gameRoomViewModel.getCurrentPlayerTurnUUID())){
-            inputPanel.add(substringField); // Add text field to input panel
-            inputPanel.add(submitButton); // Add submit button to input panel
-
-            // Add the input panel to the bottom of the container
-            container.add(inputPanel, BorderLayout.SOUTH);
-
-            // Add the container to the center of GameRoomView
-        }
+        // Note that we only add the inputPanel to the container if it is our turn during updateGame()
+        inputPanel.add(substringInputField); // Add text field to input panel
+        inputPanel.add(submitButton); // Add submit button to input panel
 
         add(container, BorderLayout.CENTER);
+    }
+
+    public void updateGame() {
+        gamePanel.updateGame(); // Update game panel
+
+        // check if the local player matches the player at the current turn
+        if (model.getCurrentTurnPlayer().getPlayerName()
+                .equals(model.getLocalPlayer().getPlayerName())){
+            // Add the input panel to the bottom of the container
+            container.add(inputPanel, BorderLayout.SOUTH);
+        } else {
+            container.remove(inputPanel);
+        }
     }
 
 //    public static void main(String[] args) {

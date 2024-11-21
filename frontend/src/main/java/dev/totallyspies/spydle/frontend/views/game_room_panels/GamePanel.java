@@ -1,19 +1,25 @@
 package dev.totallyspies.spydle.frontend.views.game_room_panels;
 
+import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
+import dev.totallyspies.spydle.shared.proto.messages.Player;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 // Main Game Panel
 public class GamePanel extends JPanel {
 
-    private final List<PlayerPanel> playerPanels;
+    private final GameRoomViewModel model;
+
+    private final Map<Player, PlayerPanel> playerPanels = new ConcurrentHashMap<>();
     private final JLabel substringLabel;
     private final JLabel timerLabel;
-    private int currentPlayerIndex = 0;
 
-    public GamePanel(int playerCount) {
+    public GamePanel(GameRoomViewModel model) {
+        this.model = model;
         setLayout(null);
         setBackground(Color.WHITE);
 
@@ -24,72 +30,75 @@ public class GamePanel extends JPanel {
         add(substringLabel);
 
         // Timer label
-        timerLabel = new JLabel("Timer: 0:30", SwingConstants.CENTER);
+        timerLabel = new JLabel("Timer: 0:00", SwingConstants.CENTER);
         timerLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         timerLabel.setBounds(650, 10, 100, 30);
         add(timerLabel);
 
         // Create player panels in a circle layout
-        playerPanels = new ArrayList<>();
-        for (int i = 0; i < playerCount; i++) {
-            PlayerPanel playerPanel = new PlayerPanel("Player " + (i + 1));
-            playerPanels.add(playerPanel);
-            add(playerPanel);
-        }
-        positionPlayersInCircle();
+        createPlayerPanels();
 
         // Add arrow pointing to the current player
         ArrowPanel arrowPanel = new ArrowPanel();
         arrowPanel.setBounds(390, 220, 20, 50);
         add(arrowPanel);
-
-
     }
 
     // Position players in a circular layout
-    private void positionPlayersInCircle() {
+    private void createPlayerPanels() {
+        for (PlayerPanel panel : playerPanels.values()) {
+            remove(panel); // Remove panel from the GamePanel
+        }
+        playerPanels.clear();
+        int i = 1;
+        for (Player player : model.getPlayerList()) {
+            PlayerPanel playerPanel = new PlayerPanel("Player " + (i++));
+            playerPanels.put(player, playerPanel);
+            add(playerPanel);
+        }
+
         int centerX = 400;
         int centerY = 250;
         int radius = 150;
 
-        for (int i = 0; i < playerPanels.size(); i++) {
-            PlayerPanel playerPanel = playerPanels.get(i);
-            double angle = 2 * Math.PI * i / playerPanels.size();
+        int j = 0;
+        for (PlayerPanel panel : playerPanels.values()) {
+            double angle = 2 * Math.PI * (j++) / playerPanels.size();
             int x = (int) (centerX + radius * Math.cos(angle) - 50);
             int y = (int) (centerY + radius * Math.sin(angle) - 50);
-            playerPanel.setBounds(x, y, 100, 100);
+            panel.setBounds(x, y, 100, 100);
         }
     }
 
-    // Update the substring, timer, and which player the arrow points to
-    public void updateGame(String substring, int timer, int activePlayerIndex) {
-        substringLabel.setText(substring);
-        timerLabel.setText("Timer: " + timer / 60 + ":" + String.format("%02d", timer % 60));
-        currentPlayerIndex = activePlayerIndex;
-        repaint();
-    }
-
-    public void setPlayers(List<String> playerNames) {
-        // Clear existing player panels
-        for (PlayerPanel panel : playerPanels) {
-            remove(panel); // Remove panel from the GamePanel
-        }
-        playerPanels.clear(); // Clear the list of player panels
-
-        // Create and add new player panels
-        for (String playerName : playerNames) {
-            PlayerPanel playerPanel = new PlayerPanel(playerName);
-            playerPanels.add(playerPanel);
-            add(playerPanel);
+    public void updateGame() {
+        // Update list of players
+        Set<String> currentPlayerNames = playerPanels
+                .keySet()
+                .stream()
+                .map(Player::getPlayerName)
+                .collect(Collectors.toSet());
+        Set<String> modelPlayerNames = model.getPlayerList()
+                .stream()
+                .map(Player::getPlayerName)
+                .collect(Collectors.toSet());
+        boolean playersChanged = currentPlayerNames.size() != modelPlayerNames.size()
+                || modelPlayerNames.stream().anyMatch(name -> !currentPlayerNames.contains(name));
+        if (playersChanged) {
+            createPlayerPanels();
         }
 
-        // Reposition the players in a circular layout
-        positionPlayersInCircle();
+        // Update points
+        for (Player player : model.getPlayerList()) {
+            playerPanels.get(player).updateScore(player.getScore());
+        }
 
-        // Refresh the panel to reflect changes
+        // TODO: make arrow change to model.turnPlayer
+
+        substringLabel.setText(model.getCurrentSubstring());
+        timerLabel.setText("Timer: " + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
+
         revalidate();
         repaint();
     }
-
 
 }

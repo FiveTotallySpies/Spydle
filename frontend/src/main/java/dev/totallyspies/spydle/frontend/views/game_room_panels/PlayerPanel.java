@@ -7,6 +7,7 @@ import java.awt.*;
 class PlayerPanel extends JPanel {
 
     private final JLabel nameLabel;
+    private final JLabel pointsLabel;
 
     public PlayerPanel(String name) {
         setLayout(new BorderLayout());
@@ -16,6 +17,15 @@ class PlayerPanel extends JPanel {
         nameLabel = new JLabel(name, SwingConstants.CENTER);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
         add(nameLabel, BorderLayout.CENTER);
+
+        pointsLabel = new JLabel(name, SwingConstants.CENTER);
+        pointsLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        pointsLabel.setText("Score: 0");
+        add(pointsLabel, BorderLayout.SOUTH);
+    }
+
+    public void updateScore(int points) {
+        pointsLabel.setText("Score: " + points);
     }
 
 }
