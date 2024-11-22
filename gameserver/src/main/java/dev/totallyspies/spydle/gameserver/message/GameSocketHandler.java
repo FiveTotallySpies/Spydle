@@ -80,8 +80,8 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
         // Validate that session is allowed to communicate with this gameserver
         if (!sessionValidator.validateClientSession(clientId, clientName)) {
-            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unconfirmed client session ID!"));
             logger.warn("Received message from unconfirmed session {}", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Message from unconfirmed client session ID!"));
             return;
         }
 
@@ -125,30 +125,30 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         UUID clientId = sessionValidator.parseClientId(rawClientId);
         String clientName = getHeader(socketSession, SharedConstants.CLIENT_NAME_HTTP_HEADER);
         if (clientName == null) {
-            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "No name provided!"));
             logger.warn("Client attempted to open session {} with no name, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "No name provided!"));
             return;
         }
         if (clientId == null || !sessionValidator.validateClientSession(clientId, clientName)) {
-            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unconfirmed session client ID!"));
             logger.warn("Client attempted to open unconfirmed session {}, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unconfirmed session client ID!"));
             return;
         }
         if (hasSessionWithPlayerName(clientName)) {
             // TODO: have some way to notify the player that their name is taken already
-            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Name already exists!"));
             logger.warn("Client attempted to open session {} but their name already exists, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Name already exists!"));
             return;
         }
         ClientSession storedSession = storage.getClientSession(clientId);
         if (storedSession == null) {
-            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unknown client session!"));
             logger.warn("Client attempted to open session {} with no stored client session for this UUID, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unknown client session!"));
             return;
         }
         if (storedSession.getState() != ClientSession.State.ASSIGNED) {
-            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Already connected!"));
             logger.warn("Client attempt to open session {} but they are already connected, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Already connected!"));
             return;
         }
         // Update client session to CONNECTED
