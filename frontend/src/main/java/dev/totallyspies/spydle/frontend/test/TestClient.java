@@ -5,6 +5,8 @@ import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
 import dev.totallyspies.spydle.shared.proto.messages.SbGuess;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
@@ -19,6 +21,8 @@ import java.util.concurrent.Semaphore;
 @Component
 @Profile("local")
 public class TestClient {
+
+    private final Logger logger = LoggerFactory.getLogger(TestClient.class);
 
     @Autowired
     private ClientSocketConfig config;
@@ -37,6 +41,8 @@ public class TestClient {
         this.player2 = new TestPlayer("player2",
                 UUID.fromString("22222222-2222-2222-2222-222222222222"),
                 config.createClient());
+
+        logger.debug("initPlayers() finished");
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -46,7 +52,10 @@ public class TestClient {
         initPlayers();
 
         this.player1.open(ip, port);
+        logger.debug("player1 socket open");
         this.player2.open(ip, port);
+
+        logger.debug("player sockets open");
 
         testStartNewGame(player1, 5);
         testGuess(player2, "BBBBBB"); // right guess
@@ -121,6 +130,7 @@ public class TestClient {
         this.ip = in.next();
         System.out.println("Enter PORT:");
         this.port = in.nextInt();
+        logger.debug("ip and port set");
     }
 
     private void waitMs(long ms) {

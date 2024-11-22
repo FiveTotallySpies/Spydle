@@ -46,6 +46,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     }
 
     public synchronized void open(String address, int port, UUID clientId, String playerName) {
+        logger.debug("clientSocketHandler open");
         if (isOpen()) {
             throw new IllegalStateException("Cannot open client socket when it is already open!");
         }

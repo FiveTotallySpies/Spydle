@@ -4,6 +4,7 @@ import dev.totallyspies.spydle.gameserver.message.GameSocketHandler;
 import dev.totallyspies.spydle.gameserver.message.SbMessageListener;
 import dev.totallyspies.spydle.gameserver.message.session.SessionCloseEvent;
 import dev.totallyspies.spydle.gameserver.message.session.SessionOpenEvent;
+import dev.totallyspies.spydle.gameserver.storage.CurrentGameServerConfiguration;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.*;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
@@ -30,12 +31,17 @@ public class GameLogicEvents {
     private GameSocketHandler gameSocketHandler;
 
     @Autowired
+    public CurrentGameServerConfiguration currentGameServerConfiguration;
+
+    @Autowired
     public GameServer currentGameServer;
 
     @EventListener(SessionOpenEvent.class)
     public void onSessionOpen() {
-        // TODO: Update game server state (possibly need gameServerConfiguration?)
-        broadcastPlayers();
+        if (currentGameServer.getState() == GameServer.State.READY) { // This is our first client! Set us to WAITING
+            currentGameServer.setState(GameServer.State.WAITING);
+            currentGameServerConfiguration.updateInStorage();
+        }
     }
 
     @EventListener(SessionCloseEvent.class)
@@ -45,11 +51,18 @@ public class GameLogicEvents {
 
     @SbMessageListener
     public void onGameStart(SbStartGame event, UUID client) {
-        /* 1. Update the game logic state, send the game start message to every player. */
+        /* 1. Change the game server state. */
+        if (currentGameServer.getState() != GameServer.State.WAITING) {
+            return;
+        }
+        currentGameServer.setState(GameServer.State.PLAYING);
+        currentGameServerConfiguration.updateInStorage();
+
+        /* 2. Update the game logic state, send the game start message to every player. */
         gameLogic.gameStart(gameSocketHandler.getSessions(), event.getTotalGameTimeSeconds());
         gameSocketHandler.broadcastCbMessage(gameStartMessage());
 
-        /* 2. Start the game timer. */
+        /* 3. Start the game timer. */
         gameStartMillis.set(System.currentTimeMillis());
 
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -66,7 +79,7 @@ public class GameLogicEvents {
             }
         }, gameLogic.getTotalGameTimeMillis());
 
-        /* 3. Make a new turn. */
+        /* 4. Make a new turn. */
         gameLogic.newTurn();
         gameSocketHandler.broadcastCbMessage(newTurnMessage());
     }
