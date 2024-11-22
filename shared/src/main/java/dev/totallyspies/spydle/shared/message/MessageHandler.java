@@ -181,7 +181,7 @@ public class MessageHandler<MessageType, PayloadCaseType extends Enum<?>, Annota
             getExecutors(subMessage.getClass()).forEach(executor -> executor.accept(subMessage, client));
 
             var msg = message.toString().replaceAll("\n", "");
-            logger.debug("Fired message with PayloadCase {} to {}, message: {}", payloadCase, client, msg);
+            logger.debug("Fired message with PayloadCase {} with client {}, message: {}", payloadCase, client, msg);
         } catch (IllegalAccessException | InvocationTargetException exception) {
             throw new RuntimeException("Failed to execute message", exception);
         }

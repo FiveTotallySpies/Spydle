@@ -19,7 +19,7 @@ import java.util.concurrent.Semaphore;
 @Component
 @Profile("local")
 public class TestClient {
-    
+
     @Autowired
     private ClientSocketConfig config;
 

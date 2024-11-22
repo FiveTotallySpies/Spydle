@@ -45,7 +45,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         this.eventPublisher = eventPublisher;
     }
 
-    public void open(String address, int port, UUID clientId, String playerName) {
+    public synchronized void open(String address, int port, UUID clientId, String playerName) {
         if (isOpen()) {
             throw new IllegalStateException("Cannot open client socket when it is already open!");
         }
@@ -62,7 +62,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     }
 
     @Override
-    public void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws InvalidProtocolBufferException {
+    public synchronized void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws InvalidProtocolBufferException {
         // Deserialize packet using protobuf
         byte[] payload = message.getPayload().array();
         CbMessage cbMessage = CbMessage.parseFrom(payload);
@@ -72,19 +72,19 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
+    public synchronized void afterConnectionEstablished(WebSocketSession session) {
         logger.info("Established connection to websocket");
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+    public synchronized void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         this.session = null;
         this.clientId = null;
         logger.info("Closed connection to websocket, status: {}", status);
         eventPublisher.publishEvent(new CloseEvent(this, clientId, status));
     }
 
-    public void sendSbMessage(SbMessage message) {
+    public synchronized void sendSbMessage(SbMessage message) {
         if (!isOpen()) throw new IllegalStateException("Cannot send server-bound message when session is closed!");
         byte[] messageBytes = message.toByteArray();
         try {
@@ -99,7 +99,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         return session != null && session.isOpen();
     }
 
-    public void close() {
+    public synchronized void close() {
         try {
             session.close(CloseStatus.GOING_AWAY);
         } catch (IOException exception) {
