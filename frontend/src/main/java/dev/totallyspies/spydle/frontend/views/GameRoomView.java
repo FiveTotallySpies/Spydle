@@ -47,17 +47,30 @@ public class GameRoomView extends JPanel {
         backButton.setForeground(Color.BLACK); // Black text color
         backButton.setFocusPainted(false);
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        backButton.setPreferredSize(new Dimension(150, 40));
+        backButton.setPreferredSize(new Dimension(170, 40));
 
         // Back button action listener
         backButton.addActionListener(event -> {
             controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
         });
 
+        JButton startGameButton = new JButton("Start Game");
+        startGameButton.setFont(new Font("Arial", Font.BOLD, 14));
+        startGameButton.setBackground(new Color(138, 43, 226)); // Blueviolet
+        startGameButton.setForeground(Color.BLACK); // Black text color
+        startGameButton.setFocusPainted(false);
+        startGameButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        startGameButton.setPreferredSize(new Dimension(170, 40));
+
+        startGameButton.addActionListener(event -> {
+            controller.startGame(); // Starts the game
+        });
+
         // Top panel to hold the back button on the left
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false); // Transparent background to show main background color
         topPanel.add(backButton, BorderLayout.WEST); // Add back button to the left side
+        topPanel.add(startGameButton, BorderLayout.EAST);
 
         // Add the top panel to the top (NORTH) of the main container
         container.add(topPanel, BorderLayout.NORTH);
