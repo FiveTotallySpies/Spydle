@@ -80,7 +80,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
         // Validate that session is allowed to communicate with this gameserver
         if (!sessionValidator.validateClientSession(clientId, clientName)) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unconfirmed client session ID!"));
             logger.warn("Received message from unconfirmed session {}", rawClientId);
             return;
         }
@@ -125,28 +125,29 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         UUID clientId = sessionValidator.parseClientId(rawClientId);
         String clientName = getHeader(socketSession, SharedConstants.CLIENT_NAME_HTTP_HEADER);
         if (clientName == null) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "No name provided!"));
             logger.warn("Client attempted to open session {} with no name, closing...", rawClientId);
             return;
         }
         if (clientId == null || !sessionValidator.validateClientSession(clientId, clientName)) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unconfirmed session client ID!"));
             logger.warn("Client attempted to open unconfirmed session {}, closing...", rawClientId);
             return;
         }
         if (hasSessionWithPlayerName(clientName)) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE); // TODO: have some way to notify the player that their name is taken already
+            // TODO: have some way to notify the player that their name is taken already
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Name already exists!"));
             logger.warn("Client attempted to open session {} but their name already exists, closing...", rawClientId);
             return;
         }
         ClientSession storedSession = storage.getClientSession(clientId);
         if (storedSession == null) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unknown client session!"));
             logger.warn("Client attempted to open session {} with no stored client session for this UUID, closing...", rawClientId);
             return;
         }
         if (storedSession.getState() != ClientSession.State.ASSIGNED) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Already connected!"));
             logger.warn("Client attempt to open session {} but they are already connected, closing...", rawClientId);
             return;
         }
@@ -176,11 +177,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         if (clientId != null) {
             ClientSession session = getSessionFromClientId(clientId);
             if (session != null) {
-                try {
-                    sessions.remove(session).close();
-                } catch (IOException exception) {
-                    logger.error("Failed to close session {}", clientId, exception);
-                }
+                sessions.remove(session);
                 publisher.publishEvent(new SessionCloseEvent(this, session, socketSession));
             }
         }

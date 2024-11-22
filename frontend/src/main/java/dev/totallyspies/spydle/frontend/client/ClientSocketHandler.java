@@ -9,11 +9,8 @@ import jakarta.annotation.Nullable;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHttpHeaders;
@@ -83,6 +80,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         this.clientId = null;
         logger.info("Closed connection to websocket, status: {}", status);
         eventPublisher.publishEvent(new CloseEvent(this, clientId, status));
+
     }
 
     public void sendSbMessage(SbMessage message) {
@@ -102,7 +100,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
 
     public void close() {
         try {
-            session.close(CloseStatus.GOING_AWAY);
+            session.close(new CloseStatus(CloseStatus.GOING_AWAY.getCode(), "Client prompted session termination"));
         } catch (IOException exception) {
             throw new RuntimeException("Failed to close socket handler", exception);
         }
