@@ -2,9 +2,13 @@ package dev.totallyspies.spydle.gameserver.game;
 
 import dev.totallyspies.spydle.gameserver.message.GameSocketHandler;
 import dev.totallyspies.spydle.gameserver.message.SbMessageListener;
+import dev.totallyspies.spydle.gameserver.message.session.SessionOpenEvent;
+import dev.totallyspies.spydle.gameserver.storage.CurrentGameServerConfiguration;
+import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.*;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Timer;
@@ -26,20 +30,41 @@ public class GameLogicEvents {
     @Autowired
     private GameSocketHandler gameSocketHandler;
 
+    @Autowired
+    public CurrentGameServerConfiguration currentGameServerConfiguration;
+
+    @Autowired
+    public GameServer currentGameServer;
+
+    @EventListener(SessionOpenEvent.class)
+    public void onSessionOpen() {
+        if (currentGameServer.getState() == GameServer.State.READY) { // This is our first client! Set us to WAITING
+            currentGameServer.setState(GameServer.State.WAITING);
+            currentGameServerConfiguration.updateInStorage();
+        }
+    }
+
     @SbMessageListener
     public void onGameStart(SbStartGame event, UUID client) {
+        /* 1. Change the game server state */
+        if (currentGameServer.getState() != GameServer.State.WAITING) {
+            return;
+        }
+        currentGameServer.setState(GameServer.State.PLAYING);
+        currentGameServerConfiguration.updateInStorage();
+
+        /* 2. Update the game logic state, send the game start message to every player. */
         gameLogic.gameStart(gameSocketHandler.getSessions());
         gameSocketHandler.broadcastCbMessage(gameStartMessage());
 
+        /* 3. Start the game timer */
         gameStartMillis.set(System.currentTimeMillis());
-
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 GameLogicEvents.this.onTimerTick(this);
             }
         }, TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
-
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -47,6 +72,7 @@ public class GameLogicEvents {
             }
         }, TOTAL_GAME_TIME_MILLIS);
 
+        /* 4. Make a new turn */
         gameLogic.newTurn();
         gameSocketHandler.broadcastCbMessage(newTurnMessage());
     }
