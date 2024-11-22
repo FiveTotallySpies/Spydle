@@ -2,9 +2,13 @@ package dev.totallyspies.spydle.gameserver.game;
 
 import dev.totallyspies.spydle.gameserver.message.GameSocketHandler;
 import dev.totallyspies.spydle.gameserver.message.SbMessageListener;
+import dev.totallyspies.spydle.gameserver.message.session.SessionCloseEvent;
+import dev.totallyspies.spydle.gameserver.message.session.SessionOpenEvent;
+import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.*;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Timer;
@@ -25,11 +29,27 @@ public class GameLogicEvents {
     @Autowired
     private GameSocketHandler gameSocketHandler;
 
+    @Autowired
+    public GameServer currentGameServer;
+
+    @EventListener(SessionOpenEvent.class)
+    public void onSessionOpen() {
+        // TODO: Update game server state (possibly need gameServerConfiguration?)
+        broadcastPlayers();
+    }
+
+    @EventListener(SessionCloseEvent.class)
+    public void onSessionClose() {
+        broadcastPlayers();
+    }
+
     @SbMessageListener
     public void onGameStart(SbStartGame event, UUID client) {
+        /* 1. Update the game logic state, send the game start message to every player. */
         gameLogic.gameStart(gameSocketHandler.getSessions(), event.getTotalGameTimeSeconds());
         gameSocketHandler.broadcastCbMessage(gameStartMessage());
 
+        /* 2. Start the game timer. */
         gameStartMillis.set(System.currentTimeMillis());
 
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -46,6 +66,7 @@ public class GameLogicEvents {
             }
         }, gameLogic.getTotalGameTimeMillis());
 
+        /* 3. Make a new turn. */
         gameLogic.newTurn();
         gameSocketHandler.broadcastCbMessage(newTurnMessage());
     }
@@ -56,12 +77,16 @@ public class GameLogicEvents {
             return;
         }
 
+        var playerName = gameLogic.getCurrentPlayer().getName();
         var input = event.getGuessedWord();
-        boolean guessCorrect = gameLogic.guess(input); /* makes a turn if a guess is correct */
+        /* makes a turn, adds the score if a guess is correct */
+        boolean guessCorrect = gameLogic.guess(input);
 
-        gameSocketHandler.broadcastCbMessage(guessMessage(input, guessCorrect));
+        gameSocketHandler.broadcastCbMessage(guessMessage(input, guessCorrect, playerName));
         if (guessCorrect) {
+            /* .guess() updated a turn and a score */
             gameSocketHandler.broadcastCbMessage(newTurnMessage());
+            gameSocketHandler.broadcastCbMessage(updatePlayerListMessage());
         }
     }
 
@@ -88,11 +113,15 @@ public class GameLogicEvents {
         gameSocketHandler.broadcastCbMessage(gameEndMessage());
     }
 
+    private void broadcastPlayers() {
+        gameSocketHandler.broadcastCbMessage(updatePlayerListMessage());
+    }
+
     private CbMessage gameStartMessage()
     {
         var players = gameLogic.getPlayers();
 
-        var msgPlayers = players.stream().map(this::msgPlayer).toList();
+        var msgPlayers = players.stream().map(this::playerMessage).toList();
 
         return CbMessage
                 .newBuilder()
@@ -103,12 +132,13 @@ public class GameLogicEvents {
                 ).build();
     }
 
-    private CbMessage guessMessage(String guess, boolean correct) {
+    private CbMessage guessMessage(String guess, boolean correct, String playerName) {
         return CbMessage
                 .newBuilder()
                 .setGuessResult(
                         CbGuessResult
                                 .newBuilder()
+                                .setPlayerName(playerName)
                                 .setGuess(guess)
                                 .setCorrect(correct)
                 )
@@ -133,16 +163,28 @@ public class GameLogicEvents {
                 .setGameEnd(
                         CbGameEnd.newBuilder()
                                 .setWinner(
-                                        msgPlayer(winner)
+                                        playerMessage(winner)
                                 )
                 )
                 .build();
     }
 
-    private Player msgPlayer(dev.totallyspies.spydle.gameserver.game.Player player) {
+    private Player playerMessage(dev.totallyspies.spydle.gameserver.game.Player player) {
         return dev.totallyspies.spydle.shared.proto.messages.Player.newBuilder()
                 .setPlayerName(player.getName())
                 .setScore(player.getScore())
                 .build();
+    }
+
+    private CbMessage updatePlayerListMessage() {
+        var players = gameLogic
+                .getPlayers()
+                .stream()
+                .map(this::playerMessage)
+                .toList();
+
+        return CbMessage.newBuilder().setUpdatePlayerList(
+                CbUpdatePlayerList.newBuilder().addAllPlayers(players)
+        ).build();
     }
 }
