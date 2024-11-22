@@ -10,6 +10,7 @@ import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
+import java.util.concurrent.ExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,14 +63,12 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
     private final Map<ClientSession, WebSocketSession> sessions = Collections.synchronizedMap(new LinkedHashMap<>());
 
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
     public List<ClientSession> getSessions() {
         return new LinkedList<>(sessions.keySet());
     }
 
     @Override
-    protected synchronized void handleBinaryMessage(WebSocketSession socketSession, BinaryMessage message) {
+    protected void handleBinaryMessage(WebSocketSession socketSession, BinaryMessage message) {
         String rawClientId = getHeader(socketSession, SharedConstants.CLIENT_ID_HTTP_HEADER);
         try {
             UUID clientId = sessionValidator.parseClientId(rawClientId);
@@ -111,12 +110,14 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         sendCbMessage(targetSession, message);
     }
 
-    public synchronized void sendCbMessage(ClientSession targetSession, CbMessage message) {
+    public void sendCbMessage(ClientSession targetSession, CbMessage message) {
         try {
             WebSocketSession session = sessions.get(targetSession);
-            byte[] messageBytes = message.toByteArray();
-            session.sendMessage(new BinaryMessage(messageBytes));
-            logger.debug("Sending client {} message of type {}", targetSession.getClientId().toString(), message.getPayloadCase().name());
+            synchronized (session) {
+                byte[] messageBytes = message.toByteArray();
+                session.sendMessage(new BinaryMessage(messageBytes));
+                logger.debug("Sending client {} message of type {}", targetSession.getClientId().toString(), message.getPayloadCase().name());
+            }
         } catch (Exception exception) {
             logger.error("FATAL: Failed to send client {} packet of type {}", targetSession.getClientId().toString(), message.getPayloadCase().name(), exception);
         }
@@ -129,7 +130,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
     }
 
     @Override
-    public synchronized void afterConnectionEstablished(WebSocketSession socketSession) throws Exception {
+    public void afterConnectionEstablished(WebSocketSession socketSession) throws Exception {
         // Validate that the client has been assigned to us
         String rawClientId = getHeader(socketSession, SharedConstants.CLIENT_ID_HTTP_HEADER);
         UUID clientId = sessionValidator.parseClientId(rawClientId);
@@ -171,6 +172,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         // This is because some event listeners might want to immediately send the client a message
 
         AtomicBoolean socketOpened = new AtomicBoolean(false);
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
         // Poll the session state periodically until it is ready
         executor.scheduleAtFixedRate(() -> {
@@ -188,8 +190,9 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
                     socketSession.close();
                 } catch (Exception closeException) {
                     logger.error("FATAL: Failed to close client session {}", rawClientId, closeException);
+                } finally {
+                    executor.shutdown();
                 }
-                executor.shutdown();
             }
         }, 0, 10, TimeUnit.MILLISECONDS); // Check every 10 milliseconds
 
@@ -201,14 +204,17 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
                     socketSession.close();
                 } catch (Exception closeException) {
                     logger.error("FATAL: Failed to close client session {}", rawClientId, closeException);
+                } finally {
+                    executor.shutdown(); // Stop polling
                 }
-                executor.shutdown(); // Stop polling
             }
         }, 5000, TimeUnit.MILLISECONDS);
+
+        logger.debug("Registered scheduler for socket for client {}", rawClientId);
     }
 
     @Override
-    public synchronized void afterConnectionClosed(WebSocketSession socketSession, CloseStatus status) {
+    public void afterConnectionClosed(WebSocketSession socketSession, CloseStatus status) {
         // Validate that the client had a connection with us before deleting the socketSession
         String rawClientId = getHeader(socketSession, SharedConstants.CLIENT_ID_HTTP_HEADER);
         UUID clientId = sessionValidator.parseClientId(rawClientId);
