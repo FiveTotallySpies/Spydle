@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: totallyspies.dev  # Replace with your domain
+    - host: spydle.kailo.ca  # Replace with your domain
       http:
         paths: # Do not expose autoscale
           - path: /create-game
