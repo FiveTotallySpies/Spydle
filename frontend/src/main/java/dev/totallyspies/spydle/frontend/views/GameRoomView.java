@@ -99,8 +99,10 @@ public class GameRoomView extends JPanel {
         gamePanel.updateGame(); // Update game panel
 
         // check if the local player matches the player at the current turn
-        if (model.getCurrentTurnPlayer().getPlayerName()
-                .equals(model.getLocalPlayer().getPlayerName())){
+        if (model.getCurrentTurnPlayer() != null
+                && model.getLocalPlayer() != null
+                && model.getCurrentTurnPlayer().getPlayerName()
+                .equals(model.getLocalPlayer().getPlayerName())) {
             // Add the input panel to the bottom of the container
             container.add(inputPanel, BorderLayout.SOUTH);
         } else {
