@@ -47,25 +47,22 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     }
 
     public void open(String address, int port, UUID clientId, String playerName) {
+        /* Must be synchronized in order client/session to prevent deadlock */
         synchronized (client) {
             synchronized (session) {
-                logger.debug("clientSocketHandler open");
                 if (isOpen()) {
                     throw new IllegalStateException("Cannot open client socket when it is already open!");
                 }
-                logger.debug("clientSocketHandler open2");
                 this.clientId = clientId;
                 WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
                 headers.add(SharedConstants.CLIENT_ID_HTTP_HEADER, clientId.toString());
                 headers.add(SharedConstants.CLIENT_NAME_HTTP_HEADER, playerName);
-                logger.debug("clientSocketHandler open3");
                 try {
                     URI uri = new URI("ws://" + address + ":" + port + SharedConstants.GAME_SOCKET_ENDPOINT);
                     session.set(client.execute(this, headers, uri).get());
                 } catch (Exception exception) {
                     throw new RuntimeException("Failed to open client socket", exception);
                 }
-                logger.debug("clientSocketHandler open4");
             }
         }
     }

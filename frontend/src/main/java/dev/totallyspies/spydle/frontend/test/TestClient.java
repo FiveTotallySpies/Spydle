@@ -41,8 +41,6 @@ public class TestClient {
         this.player2 = new TestPlayer("player2",
                 UUID.fromString("22222222-2222-2222-2222-222222222222"),
                 config.createClient());
-
-        logger.debug("initPlayers() finished");
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -53,16 +51,18 @@ public class TestClient {
 
         this.player1.open(ip, port);
         logger.debug("player1 socket open");
+        waitMs(300);
         this.player2.open(ip, port);
 
         logger.debug("player sockets open");
-
+        waitMs(300);
         testStartNewGame(player1, 5);
-        testGuess(player2, "BBBBBB"); // right guess
-        waitMs(500);
-        testGuess(player1, "BBBBBB"); // wrong guess
-        waitMs(500);
-        testGuess(player1, "CCCCCCCCCC");
+        waitMs(300);
+        testGuess(player2, "AAAAAA"); // right guess
+        waitMs(300);
+        testGuess(player1, "AAAAAA"); // wrong guess
+        waitMs(300);
+        testGuess(player1, "BBBBBBBBBB");
 
         /*
         Expected logs (shortened):
@@ -130,7 +130,6 @@ public class TestClient {
         this.ip = in.next();
         System.out.println("Enter PORT:");
         this.port = in.nextInt();
-        logger.debug("ip and port set");
     }
 
     private void waitMs(long ms) {

@@ -26,6 +26,7 @@ public class GameLogic {
         this.playerMap = new ConcurrentHashMap<>();
     }
 
+    /* Assuming sessions are sorted */
     public void gameStart(Collection<ClientSession> sessions, int proposedGameTimeSeconds) {
         if (isValidTotalGameTime(proposedGameTimeSeconds)) {
             this.gameTimeSeconds.set(proposedGameTimeSeconds);
@@ -43,9 +44,9 @@ public class GameLogic {
     }
 
     public void newTurn() {
-        this.turn.incrementAndGet();
         String c = Character.toString((char) (turn.get() % 26 + 'A'));
         this.currentSubString.set(c.repeat(3));
+        this.turn.incrementAndGet();
     }
 
     public boolean isPlayerTurn(UUID playerId) {
@@ -114,7 +115,7 @@ public class GameLogic {
     }
 
     private int getCurrentPlayerIndex() {
-        return this.turn.get() % this.getPlayers().size(); // TODO: check for players that lost
+        return this.turn.get() % this.getPlayers().size();
     }
 
     public Player getCurrentPlayer() {

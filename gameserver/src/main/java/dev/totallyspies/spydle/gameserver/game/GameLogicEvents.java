@@ -5,20 +5,22 @@ import dev.totallyspies.spydle.gameserver.message.SbMessageListener;
 import dev.totallyspies.spydle.gameserver.message.session.SessionCloseEvent;
 import dev.totallyspies.spydle.gameserver.message.session.SessionOpenEvent;
 import dev.totallyspies.spydle.gameserver.storage.CurrentGameServerConfiguration;
+import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.*;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class GameLogicEvents {
+    private final Logger logger = LoggerFactory.getLogger(GameLogicEvents.class);
     private static final long TIMER_INTERVAL_MILLIS = 1000;
 
     private final Timer timer = new Timer();
@@ -31,17 +33,18 @@ public class GameLogicEvents {
     private GameSocketHandler gameSocketHandler;
 
     @Autowired
-    public CurrentGameServerConfiguration currentGameServerConfiguration;
+    public CurrentGameServerConfiguration gameServerConfiguration;
 
     @Autowired
-    public GameServer currentGameServer;
+    public GameServer gameServer;
 
     @EventListener(SessionOpenEvent.class)
     public void onSessionOpen() {
-        if (currentGameServer.getState() == GameServer.State.READY) { // This is our first client! Set us to WAITING
-            currentGameServer.setState(GameServer.State.WAITING);
-            currentGameServerConfiguration.updateInStorage();
+        if (gameServer.getState() == GameServer.State.READY) { // This is our first client! Set us to WAITING
+            gameServer.setState(GameServer.State.WAITING);
+            gameServerConfiguration.updateInStorage();
         }
+        broadcastPlayers();
     }
 
     @EventListener(SessionCloseEvent.class)
@@ -52,14 +55,15 @@ public class GameLogicEvents {
     @SbMessageListener
     public void onGameStart(SbStartGame event, UUID client) {
         /* 1. Change the game server state. */
-        if (currentGameServer.getState() != GameServer.State.WAITING) {
+        if (gameServer.getState() != GameServer.State.WAITING) {
             return;
         }
-        currentGameServer.setState(GameServer.State.PLAYING);
-        currentGameServerConfiguration.updateInStorage();
+        gameServer.setState(GameServer.State.PLAYING);
+        gameServerConfiguration.updateInStorage();
 
         /* 2. Update the game logic state, send the game start message to every player. */
-        gameLogic.gameStart(gameSocketHandler.getSessions(), event.getTotalGameTimeSeconds());
+        /* Sessions should be sorted */
+        gameLogic.gameStart(getSessionsSorted(), event.getTotalGameTimeSeconds());
         gameSocketHandler.broadcastCbMessage(gameStartMessage());
 
         /* 3. Start the game timer. */
@@ -87,6 +91,7 @@ public class GameLogicEvents {
     @SbMessageListener
     public void onGuess(SbGuess event, UUID client) {
         if (!gameLogic.isPlayerTurn(client)) {
+            logger.info("A player made a guess when it's not their turn! client that made a guess: {}", client);
             return;
         }
 
@@ -99,7 +104,7 @@ public class GameLogicEvents {
         if (guessCorrect) {
             /* .guess() updated a turn and a score */
             gameSocketHandler.broadcastCbMessage(newTurnMessage());
-            gameSocketHandler.broadcastCbMessage(updatePlayerListMessage());
+            broadcastPlayers();
         }
     }
 
@@ -127,7 +132,32 @@ public class GameLogicEvents {
     }
 
     private void broadcastPlayers() {
-        gameSocketHandler.broadcastCbMessage(updatePlayerListMessage());
+        if (gameServer.getState().equals(GameServer.State.PLAYING)) {
+            /* If the game has started, use the player list from the game logic */
+            var players = gameLogic.getPlayers()
+                    .stream()
+                    .map(this::playerMessage)
+                    .toList();
+
+            gameSocketHandler.broadcastCbMessage(updatePlayerListMessage(players));
+        } else {
+            /* Otherwise send a list of connected sessions */
+            var players = getSessionsSorted()
+                            .stream().map(
+                                    clientSession ->
+                                            Player.newBuilder()
+                                                    .setPlayerName(clientSession.getPlayerName())
+                                                    .setScore(0)
+                                                    .build()
+                            ).toList();
+            gameSocketHandler.broadcastCbMessage(updatePlayerListMessage(players));
+        }
+    }
+
+    private List<ClientSession> getSessionsSorted() {
+        var sessions = gameSocketHandler.getSessions();
+        sessions.sort(Comparator.comparing(ClientSession::getPlayerName));
+        return sessions;
     }
 
     private CbMessage gameStartMessage()
@@ -189,13 +219,7 @@ public class GameLogicEvents {
                 .build();
     }
 
-    private CbMessage updatePlayerListMessage() {
-        var players = gameLogic
-                .getPlayers()
-                .stream()
-                .map(this::playerMessage)
-                .toList();
-
+    private CbMessage updatePlayerListMessage(List<Player> players) {
         return CbMessage.newBuilder().setUpdatePlayerList(
                 CbUpdatePlayerList.newBuilder().addAllPlayers(players)
         ).build();
