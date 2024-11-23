@@ -129,7 +129,7 @@ public class GameLogicEvents {
     private void onGameEnd() {
         /* The game timer has ended, we can use the players list from the game logic*/
         this.timer.cancel();
-        var players = gameLogic.getPlayers()
+        var players = gameLogic.getPlayersScoreSorted()
                 .stream()
                 .map(this::playerMessage)
                 .toList();

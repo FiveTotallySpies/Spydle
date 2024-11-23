@@ -125,4 +125,11 @@ public class GameLogic {
     public List<Player> getPlayers() {
         return this.players.get();
     }
+
+    public List<Player> getPlayersScoreSorted() {
+        var players = this.players.get();
+        /* sorting by descending order, -score is intentional */
+        players.sort(Comparator.comparingInt(player -> -player.getScore()));
+        return players;
+    }
 }
