@@ -62,10 +62,10 @@ public class TestClient {
             * player2 joins the game, both players get an UPDATE_PLAYER_LIST message
             * player1 starts the game, duration is 5 seconds
             * both players get a GAME_START message with all players
-            * both players get NEW_TURN message, assigned string: "AAA", player2 makes a turn
+            * both players get NEW_TURN message, assigned string: "gis", player2 makes a turn
             * player2 is the first player to make a turn
-            * player2 makes a right guess, gets 6 points; both players get GUESS_RESULT message, guess is correct
-            * both players get NEW_TURN message, player1 makes a new turn, assigned string: "BBB"
+            * player2 makes a right guess, gets 4 points; both players get GUESS_RESULT message, guess is correct
+            * both players get NEW_TURN message, player1 makes a new turn, assigned string: "igh"
             * player1 makes a wrong guess "QWERTY"; both players get a GUESS_RESULT message, guess is wrong
             * By this time, player1 has 0 points, player2 has 6 points, player2 wins
             * when the game ends, both players get the list of players sorted by score, descending
@@ -73,7 +73,7 @@ public class TestClient {
         this.player1.open(ip, port);
         waitMs(300); this.player2.open(ip, port);
         waitMs(300); testStartNewGame(player1, 5);
-        waitMs(300); testGuess(player2, "AAAAAA"); // right guess
+        waitMs(300); testGuess(player2, "gist"); // right guess
         waitMs(300); testGuess(player1, "QWERTY"); // wrong guess
         /*
         Expected logs (shortened):

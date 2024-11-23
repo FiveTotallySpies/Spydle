@@ -1,8 +1,11 @@
 package dev.totallyspies.spydle.gameserver.game;
 
 import dev.totallyspies.spydle.shared.model.ClientSession;
+import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,12 +21,64 @@ public class GameLogic {
     private final AtomicInteger turn;
     private final AtomicReference<String> currentSubString;
     private final AtomicInteger gameTimeSeconds = new AtomicInteger(60); // length of 1 minute by default
+    private final AtomicReference<Set<String>> validWords;
+    private final AtomicReference<List<String>> substrings;
+
+    private final Random random = new Random(0);
+
+    private static final int MINIMUM_OCCURENCES = 1000;
 
     public GameLogic() {
         this.players = new AtomicReference<>(new ArrayList<>());
         this.currentSubString = new AtomicReference<>("");
         this.turn = new AtomicInteger(0);
         this.playerMap = new ConcurrentHashMap<>();
+        this.validWords = new AtomicReference<>(new TreeSet<>());
+        this.substrings = new AtomicReference<>(new ArrayList<>());
+    }
+
+    /* Takes a lot of memory, meant to be called once */
+    public void parseWords() throws IOException {
+        if (!this.validWords.get().isEmpty()) {
+            return;
+        }
+
+        var words = new TreeSet<String>();
+        File file = ResourceUtils.getFile("classpath:words.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = br.readLine()) != null) {
+            if (!line.isEmpty()) {
+                words.add(line.trim().toLowerCase());
+            }
+        }
+        this.validWords.set(words);
+    }
+
+    /* Takes a lot of memory, meant to be called once */
+    public void parseSubstrings() throws IOException {
+        if (!this.substrings.get().isEmpty()) {
+            return;
+        }
+
+        var substrings = new ArrayList<String>();
+        File file = ResourceUtils.getFile("classpath:substrings.csv");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line;
+        br.readLine(); // skip the first line
+        while ((line = br.readLine()) != null) {
+            if (!line.isEmpty()) {
+                line = line.trim().toLowerCase();
+
+                String[] split = line.split(",");
+                String substr = split[0];
+                int occ = Integer.parseInt(split[1]);
+                if (occ >= MINIMUM_OCCURENCES) {
+                    substrings.add(substr);
+                }
+            }
+        }
+        this.substrings.set(substrings);
     }
 
     /* Assuming sessions are sorted by name of the player, increasing */
@@ -41,11 +96,18 @@ public class GameLogic {
         for (Player player : players) {
             this.playerMap.put(player.getId(), player);
         }
+
+        try {
+            parseWords();
+            parseSubstrings();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void newTurn() {
-        String c = Character.toString((char) (turn.get() % 26 + 'A'));
-        this.currentSubString.set(c.repeat(3));
+        var randomIndex = this.random.nextInt(this.substrings.get().size());
+        this.currentSubString.set(this.substrings.get().get(randomIndex));
         this.turn.incrementAndGet();
     }
 
@@ -59,7 +121,12 @@ public class GameLogic {
 
     /* Validates a guess from a user and makes a new turn if it is correct. */
     public boolean guess(String input) {
-        if (input.contains(currentSubString.get())) {
+        if (input.length() > 50) {
+            return false;
+        }
+        input = input.trim();
+        input = input.toLowerCase();
+        if (input.contains(currentSubString.get()) && validWords.get().contains(input)) {
             addScore(input);
             newTurn();
             return true;
