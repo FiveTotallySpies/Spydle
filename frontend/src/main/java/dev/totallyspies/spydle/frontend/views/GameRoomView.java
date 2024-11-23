@@ -31,6 +31,7 @@ public class GameRoomView extends JPanel {
         JPanel container = new JPanel(new BorderLayout());
         container.setOpaque(false); // Make container transparent to show the GameRoomView background
         this.gameRoomViewModel.setPlayerList(new ArrayList<>());
+        
         // Initialize the Game Panel with 4 players (adjust the number of players as needed)
         gamePanel = new GamePanel(this.gameRoomViewModel.getPlayerList().size());
 
