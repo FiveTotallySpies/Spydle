@@ -41,7 +41,7 @@ message CbGameStart {
 }
 
 message CbGameEnd {
-  Player winner = 1;
+  repeated Player players = 1;
 }
 
 message CbUpdatePlayerList {

@@ -127,8 +127,14 @@ public class GameLogicEvents {
     }
 
     private void onGameEnd() {
+        /* The game timer has ended, we can use the players list from the game logic*/
         this.timer.cancel();
-        gameSocketHandler.broadcastCbMessage(gameEndMessage());
+        var players = gameLogic.getPlayers()
+                .stream()
+                .map(this::playerMessage)
+                .toList();
+
+        gameSocketHandler.broadcastCbMessage(gameEndMessage(players));
     }
 
     private void broadcastPlayers() {
@@ -199,15 +205,12 @@ public class GameLogicEvents {
                 .build();
     }
 
-    private CbMessage gameEndMessage() {
-        var winner = gameLogic.getWinner();
+    private CbMessage gameEndMessage(List<Player> players) {
         return CbMessage
                 .newBuilder()
                 .setGameEnd(
                         CbGameEnd.newBuilder()
-                                .setWinner(
-                                        playerMessage(winner)
-                                )
+                                .addAllPlayers(players)
                 )
                 .build();
     }

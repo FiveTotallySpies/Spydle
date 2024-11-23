@@ -26,7 +26,7 @@ public class GameLogic {
         this.playerMap = new ConcurrentHashMap<>();
     }
 
-    /* Assuming sessions are sorted */
+    /* Assuming sessions are sorted by name of the player, increasing */
     public void gameStart(Collection<ClientSession> sessions, int proposedGameTimeSeconds) {
         if (isValidTotalGameTime(proposedGameTimeSeconds)) {
             this.gameTimeSeconds.set(proposedGameTimeSeconds);
