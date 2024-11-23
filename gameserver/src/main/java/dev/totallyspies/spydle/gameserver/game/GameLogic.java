@@ -26,7 +26,7 @@ public class GameLogic {
 
     private final Random random = new Random(0);
 
-    private static final int MINIMUM_OCCURENCES = 1000;
+    private static final int MINIMUM_OCCURRENCES = 1000;
 
     public GameLogic() {
         this.players = new AtomicReference<>(new ArrayList<>());
@@ -73,7 +73,7 @@ public class GameLogic {
                 String[] split = line.split(",");
                 String substr = split[0];
                 int occ = Integer.parseInt(split[1]);
-                if (occ >= MINIMUM_OCCURENCES) {
+                if (occ >= MINIMUM_OCCURRENCES) {
                     substrings.add(substr);
                 }
             }

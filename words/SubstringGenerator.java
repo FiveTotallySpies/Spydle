@@ -28,12 +28,12 @@ public class SubstringGenerator {
         return words;
     }
 
-    private record Substring(String s, int occurences) {}
+    private record Substring(String s, int occurrences) {}
 
     /* Writes to a file substrings.csv */
     public void writeSubstrings() throws IOException {
-        int[][] occurences2 = new int[26][26];
-        int[][][] occurences3 = new int[26][26][26];
+        int[][] occurrences2 = new int[26][26];
+        int[][][] occurrences3 = new int[26][26][26];
         List<Substring> substrings = new ArrayList<>();
 
         var words = getWords();
@@ -42,10 +42,10 @@ public class SubstringGenerator {
                 String s = new StringBuilder().append(c1).append(c2).toString();
                 for (var word : words) {
                     if (word.contains(s)) {
-                        occurences2[c1 - 'a'][c2 - 'a']++;
+                        occurrences2[c1 - 'a'][c2 - 'a']++;
                     }
                 }
-                substrings.add(new Substring(s, occurences2[c1 - 'a'][c2 - 'a']));
+                substrings.add(new Substring(s, occurrences2[c1 - 'a'][c2 - 'a']));
             }
         }
 
@@ -55,20 +55,20 @@ public class SubstringGenerator {
                     String s = new StringBuilder().append(c1).append(c2).append(c3).toString();
                     for (var word : words) {
                         if (word.contains(s)) {
-                            occurences3[c1 - 'a'][c2 - 'a'][c3 - 'a']++;
+                            occurrences3[c1 - 'a'][c2 - 'a'][c3 - 'a']++;
                         }
                     }
-                    substrings.add(new Substring(s, occurences3[c1 - 'a'][c2 - 'a'][c3 - 'a']));
+                    substrings.add(new Substring(s, occurrences3[c1 - 'a'][c2 - 'a'][c3 - 'a']));
                 }
             }
         }
 
-        substrings.sort(Comparator.comparing(Substring::occurences));
+        substrings.sort(Comparator.comparing(Substring::occurrences));
 
-        System.out.println("substring, occurences");
+        System.out.println("substring, occurrences");
         for (var x : substrings) {
-            if (x.occurences() > 0) {
-                System.out.println(x.s() + "," + x.occurences());
+            if (x.occurrences() > 0) {
+                System.out.println(x.s() + "," + x.occurrences());
             }
         }
     }
