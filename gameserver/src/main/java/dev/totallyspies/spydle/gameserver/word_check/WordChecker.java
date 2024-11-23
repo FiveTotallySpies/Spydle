@@ -2,8 +2,12 @@ package dev.totallyspies.spydle.gameserver.word_check;
 
 import org.springframework.stereotype.Component;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -40,6 +44,13 @@ public class WordChecker {
             System.err.println("Error reading the file: " + e.getMessage());
         }
         return words;
+    }
+
+    public static void main(String[] args) {
+        Set<String> words = loadWordsFromCSV("words.csv");
+        for (String word: words) {
+            System.out.println(word);
+        }
     }
 }
 
