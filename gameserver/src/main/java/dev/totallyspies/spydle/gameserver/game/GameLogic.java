@@ -85,19 +85,6 @@ public class GameLogic {
         }
     }
 
-    public Player getWinner() {
-        var players = this.players.get();
-
-        var maxPlayer = players.get(0);
-        for (var player : players) {
-            if (player.getScore() > maxPlayer.getScore()) {
-                maxPlayer = player;
-            }
-        }
-
-        return maxPlayer;
-    }
-
     public int getTotalGameTimeSeconds() {
         return this.gameTimeSeconds.get();
     }
