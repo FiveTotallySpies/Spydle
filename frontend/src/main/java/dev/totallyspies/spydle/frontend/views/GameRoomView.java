@@ -22,6 +22,7 @@ public class GameRoomView extends JPanel {
     private final JPanel container;
     private final JTextField substringInputField;
     private final JPanel inputPanel;
+    private final JLabel roomCodeLabel;
 
     public GameRoomView(GameRoomViewModel model, GameRoomViewController controller) {
         this.model = model;
@@ -66,11 +67,16 @@ public class GameRoomView extends JPanel {
             controller.startGame(); // Starts the game
         });
 
+        roomCodeLabel = new JLabel("Room Code: ???");
+        roomCodeLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        roomCodeLabel.setPreferredSize(new Dimension(170, 40));
+
         // Top panel to hold the back button on the left
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false); // Transparent background to show main background color
         topPanel.add(backButton, BorderLayout.WEST); // Add back button to the left side
         topPanel.add(startGameButton, BorderLayout.EAST);
+        topPanel.add(roomCodeLabel, BorderLayout.CENTER);
 
         // Add the top panel to the top (NORTH) of the main container
         container.add(topPanel, BorderLayout.NORTH);
@@ -97,6 +103,8 @@ public class GameRoomView extends JPanel {
 
     public void updateGame() {
         gamePanel.updateGame(); // Update game panel
+
+        roomCodeLabel.setText("Room Code: " + model.getRoomCode());
 
         // check if the local player matches the player at the current turn
         if (model.getCurrentTurnPlayer() != null

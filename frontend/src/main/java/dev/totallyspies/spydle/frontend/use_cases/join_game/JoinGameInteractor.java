@@ -36,7 +36,8 @@ public class JoinGameInteractor implements JoinGameInputBoundary {
                     ip,
                     responseModel.getGameServer().getPort(),
                     UUID.fromString(responseModel.getClientId()),
-                    responseModel.getPlayerName()
+                    responseModel.getPlayerName(),
+                    responseModel.getGameServer().getRoomCode()
             );
         } else if (response instanceof ClientErrorResponse clientErrorModel) {
             return new JoinGameOutputDataFail(clientErrorModel.getMessage());

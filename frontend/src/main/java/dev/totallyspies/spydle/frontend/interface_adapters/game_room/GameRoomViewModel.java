@@ -24,4 +24,6 @@ public class GameRoomViewModel {
 
     private String currentSubstring; // Current substring
 
+    private String roomCode = "???";
+
 }

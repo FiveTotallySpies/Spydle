@@ -35,7 +35,8 @@ public class CreateGameInteractor implements CreateGameInputBoundary {
                     ip,
                     responseModel.getGameServer().getPort(),
                     UUID.fromString(responseModel.getClientId()),
-                    responseModel.getPlayerName()
+                    responseModel.getPlayerName(),
+                    responseModel.getGameServer().getRoomCode()
             );
         } else if (response instanceof ClientErrorResponse clientErrorModel) {
             return new CreateGameOutputDataFail(clientErrorModel.getMessage());
