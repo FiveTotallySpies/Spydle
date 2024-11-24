@@ -27,11 +27,11 @@ public class MatchmakingService {
         this.gameServerRepository = gameServerRepository;
     }
 
-    public GameServer createGame(UUID clientId, String playerName) {
+    public GameServer createGame(UUID clientId, String playerName, int timeoutMillis) {
         validateSession(clientId);
 
         // Await allocation for a new gameserver
-        GameServer allocated = allocator.awaitAllocation(5000);
+        GameServer allocated = allocator.awaitAllocation(timeoutMillis);
 
         // Save client session
         ClientSession session = new ClientSession(clientId, allocated, playerName, ClientSession.State.ASSIGNED);
