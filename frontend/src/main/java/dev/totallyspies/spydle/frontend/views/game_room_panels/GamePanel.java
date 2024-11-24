@@ -97,66 +97,53 @@ public class GamePanel extends JPanel {
             playerPanels.get(player).updateScore(player.getScore());
         }
 
-        // TODO: make arrow change to model.turnPlayer
+        // Update the arrow for the current turn player
+        Player currentTurnPlayer = model.getCurrentTurnPlayer();
+        if (currentTurnPlayer != null) {
+            moveArrowToPlayer(currentTurnPlayer);
+        }
 
         substringLabel.setText(model.getCurrentSubstring());
         timerLabel.setText("Timer: " + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
-
-        if (model.getCurrentTurnPlayer() != null) {
-            int index = 0;
-            for (Player player : model.getPlayerList()) {
-                if (player.getPlayerName().equals(model.getCurrentTurnPlayer().getPlayerName())) {
-                    break;
-                }
-                index++;
-            }
-            if (index >= model.getPlayerList().size()) {
-                logger.error("Could not find player in player list with current turn player name!");
-            } else {
-                updateArrow(index);
-            }
-        }
 
         revalidate();
         repaint();
     }
 
     // Move the arrow to point to the current player
-    private void updateArrow(int playerIndex) {
-        int centerX = 400;
-        int centerY = 250;
-        int radius = 150;
+    private void moveArrowToPlayer(Player currentTurnPlayer) {
+        // Find the index of the current turn player in the player list
+        int playerIndex = this.model.getPlayerList().indexOf(currentTurnPlayer);
 
-        // Calculate the position of the current player in the circle
+        int centerX = 400; // Center of the circle (horizontal)
+        int centerY = 250; // Center of the circle (vertical)
+        int radius = 150;  // Radius of the player circle
+
+        // Calculate the angle of the current player in the circle
         double angle = 2 * Math.PI * playerIndex / playerPanels.size();
-        int x = (int) (centerX + radius * Math.cos(angle) - 10);  // Adjust for arrow positioning
-        int y = (int) (centerY + radius * Math.sin(angle) - 50);  // Adjust for arrow positioning
 
-        // Set the new position of the arrow
-        arrowPanel.setBounds(x, y, 20, 50);  // Adjust the arrow size and position
+        // Calculate the arrow's base position, slightly offset from the circle
+        int arrowX = (int) (centerX + (radius + 20) * Math.cos(angle)); // 20 pixels outward
+        int arrowY = (int) (centerY + (radius + 20) * Math.sin(angle));
+
+        // Rotate the arrow to point towards the center
+        Graphics2D g2d = (Graphics2D) arrowPanel.getGraphics();
+        if (g2d != null) {
+            g2d.clearRect(0, 0, arrowPanel.getWidth(), arrowPanel.getHeight());
+            double arrowAngle = angle; // Arrow angle matches the player's position angle
+            g2d.rotate(arrowAngle, arrowPanel.getWidth() / 2.0, arrowPanel.getHeight() / 2.0);
+
+            // Draw the arrow
+            g2d.setColor(Color.RED); // Example arrow color
+            Polygon arrowShape = new Polygon();
+            arrowShape.addPoint(10, 0); // Arrow tip
+            arrowShape.addPoint(-10, -20); // Left wing
+            arrowShape.addPoint(-10, 20); // Right wing
+            g2d.fill(arrowShape);
+        }
+
+        // Set the new position of the arrow panel
+        arrowPanel.setBounds(arrowX - 10, arrowY - 10, 20, 20); // Adjust bounds to center arrow
     }
-
-
-
-//    public static void main(String[] args) {
-//        // Create a frame to test the GamePanel
-//        JFrame frame = new JFrame("Game Test");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setSize(800, 600);
-//
-//        // Create GamePanel with 4 players
-//        GamePanel gamePanel = new GamePanel(4);
-//
-//        // Add the panel to the frame
-//        frame.add(gamePanel);
-//
-//        // Show the frame
-//        frame.setVisible(true);
-//
-//        // Simulate a game loop or user interaction to update the game
-//        new Timer(2000, e -> {
-//            gamePanel.updateGame("New Substring", 30, (gamePanel.currentPlayerIndex + 1) % 4);
-//        }).start();
-//    }
 
 }
