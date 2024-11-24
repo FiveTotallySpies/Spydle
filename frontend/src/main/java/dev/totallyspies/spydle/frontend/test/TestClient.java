@@ -2,12 +2,10 @@ package dev.totallyspies.spydle.frontend.test;
 
 import dev.totallyspies.spydle.frontend.client.ClientSocketConfig;
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
-import dev.totallyspies.spydle.frontend.client.message.CbMessageListener;
-import dev.totallyspies.spydle.shared.proto.messages.CbGameStart;
-import dev.totallyspies.spydle.shared.proto.messages.CbNewTurn;
 import dev.totallyspies.spydle.shared.proto.messages.SbGuess;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
@@ -21,6 +19,8 @@ import java.util.concurrent.Semaphore;
 @Component
 @Profile("local")
 public class TestClient {
+
+    private final Logger logger = LoggerFactory.getLogger(TestClient.class);
 
     private final ClientSocketConfig config;
 
@@ -36,35 +36,88 @@ public class TestClient {
 
     public void initPlayers() {
         this.player1 = new TestPlayer("player1",
-                UUID.fromString("04f01a02-11b7-4c64-ab25-2f02c6cab409"),
+                UUID.fromString("11111111-1111-1111-1111-111111111111"),
                 config.createClient());
-
         this.player2 = new TestPlayer("player2",
-                UUID.fromString("f754601e-47f3-4b15-b9fd-3517a232dd31"),
+                UUID.fromString("22222222-2222-2222-2222-222222222222"),
                 config.createClient());
     }
 
-    // Executed on application startup, but could be instead on the press of a button?
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         setIpPort();
 
         initPlayers();
 
-        this.player1.open(ip, port);
-        this.player2.open(ip, port);
-
-        testStartNewGame(player1);
-        testGuess(player2, "BBBBBB");
-        testGuess(player1, "CCCCCC");
+        testTurnsAndGuesses();
 
         waitForever();
         // Close the websocket
         //handler.close();
     }
 
-    public void testStartNewGame(TestPlayer player) {
-        var message = SbMessage.newBuilder().setStartGame(SbStartGame.newBuilder()).build();
+    public void testTurnsAndGuesses() {
+        /* Test scenario:
+            * player1 joins the game, gets an UPDATE_PLAYER_LIST message
+            * player2 joins the game, both players get an UPDATE_PLAYER_LIST message
+            * player1 starts the game, duration is 5 seconds
+            * both players get a GAME_START message with all players
+            * both players get NEW_TURN message, assigned string: "gis", player2 makes a turn
+            * player2 is the first player to make a turn
+            * player2 makes a right guess, gets 4 points; both players get GUESS_RESULT message, guess is correct
+            * both players get NEW_TURN message, player1 makes a new turn, assigned string: "igh"
+            * player1 makes a wrong guess "QWERTY"; both players get a GUESS_RESULT message, guess is wrong
+            * By this time, player1 has 0 points, player2 has 6 points, player2 wins
+            * when the game ends, both players get the list of players sorted by score, descending
+         */
+        this.player1.open(ip, port);
+        waitMs(300); this.player2.open(ip, port);
+        waitMs(300); testStartNewGame(player1, 5);
+        waitMs(300); testGuess(player2, "gist"); // right guess
+        waitMs(300); testGuess(player1, "QWERTY"); // wrong guess
+        /*
+        Expected logs (shortened):
+        */
+        /*
+        Established connection to websocket
+        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 1....1, message: update_player_list {  players {    player_name: "player1"  }}
+        Established connection to websocket
+        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 1....1, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"  }}
+        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 2....2, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"  }}
+        Sending server message start_game{total_game_time_seconds:5}
+        Fired message with PayloadCase GAME_START with client 1....1, message: game_start {  players {    player_name: "player1"  }  players {    player_name: "player2"  }  total_game_time_seconds: 5}
+        Fired message with PayloadCase GAME_START with client 2....2, message: game_start {  players {    player_name: "player1"  }  players {    player_name: "player2"  }  total_game_time_seconds: 5}
+        Fired message with PayloadCase NEW_TURN with client 1....1, message: new_turn {  assigned_string: "AAA"  current_player_name: "player2"}
+        Fired message with PayloadCase NEW_TURN with client 2....2, message: new_turn {  assigned_string: "AAA"  current_player_name: "player2"}
+        Sending server message guess{guessed_word:"AAAAAA"}
+        Fired message with PayloadCase GUESS_RESULT with client 2....2, message: guess_result {  player_name: "player2"  guess: "AAAAAA"  correct: true}
+        Fired message with PayloadCase GUESS_RESULT with client 1....1, message: guess_result {  player_name: "player2"  guess: "AAAAAA"  correct: true}
+        Fired message with PayloadCase NEW_TURN with client 2....2, message: new_turn {  assigned_string: "BBB"  current_player_name: "player1"}
+        Fired message with PayloadCase NEW_TURN with client 1....1, message: new_turn {  assigned_string: "BBB"  current_player_name: "player1"}
+        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 2....2, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"    score: 6  }}
+        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 1....1, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"    score: 6  }}
+        Sending server message guess{guessed_word:"QWERTY"}
+        Fired message with PayloadCase GUESS_RESULT with client 1....1, message: guess_result {  player_name: "player1"  guess: "QWERTY"}
+        Fired message with PayloadCase GUESS_RESULT with client 2....2, message: guess_result {  player_name: "player1"  guess: "QWERTY"}
+        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 4}
+        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 4}
+        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 3}
+        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 3}
+        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 2}
+        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 2}
+        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 1}
+        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 1}
+        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {}
+        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {}
+        Fired message with PayloadCase GAME_END with client 2....2, message: game_end {  players {    player_name: "player2"    score: 6  }  players {    player_name: "player1"  }}
+        Fired message with PayloadCase GAME_END with client 1....1, message: game_end {  players {    player_name: "player2"    score: 6  }  players {    player_name: "player1"  }}
+        */
+    }
+
+    public void testStartNewGame(TestPlayer player, int timeSeconds) {
+        var message = SbMessage.newBuilder().setStartGame(
+                SbStartGame.newBuilder().setTotalGameTimeSeconds(timeSeconds)
+        ).build();
 
         player.send(message);
     }
@@ -72,18 +125,6 @@ public class TestClient {
     public void testGuess(TestPlayer player, String guess) {
         var message = SbMessage.newBuilder().setGuess(SbGuess.newBuilder().setGuessedWord(guess)).build();
         player.send(message);
-    }
-
-    @CbMessageListener
-    public void gameStartListener(CbGameStart message, UUID clientId) {
-        TestPlayer player = determinePlayerByUUID(clientId);
-        System.out.println("Got a message CbGameStart for " + player.getName() + " message: " + message);
-    }
-
-    @CbMessageListener
-    public void newTurnListener(CbNewTurn message, UUID clientId) {
-        TestPlayer player = determinePlayerByUUID(clientId);
-        System.out.println("Got a message CbNewTurn for " + player.getName() + " message: " + message);
     }
 
     // Custom event fired after socket close
@@ -94,24 +135,20 @@ public class TestClient {
         // Close window, do other logic?
     }
 
-    private TestPlayer determinePlayerByUUID(UUID id) {
-        if (id.equals(player1.getUuid())) {
-            return player1;
-        }
-
-        if (id.equals(player2.getUuid())) {
-            return player2;
-        }
-
-        throw new RuntimeException("Couldn't determine player by uuid: " + id.toString());
-    }
-
     private void setIpPort() {
         Scanner in = new Scanner(System.in);
         System.out.println("Enter IP:");
         this.ip = in.next();
         System.out.println("Enter PORT:");
         this.port = in.nextInt();
+    }
+
+    private void waitMs(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void waitForever() {

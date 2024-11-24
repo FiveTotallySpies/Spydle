@@ -19,7 +19,7 @@ public class ClientSocketConfig {
 
     @Bean
     @Profile("!local")
-    public ClientSocketHandler clientSocketHandler() {
+    public ClientSocketHandler globalClientSocketHandler() {
         return createClient();
     }
 

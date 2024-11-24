@@ -2,21 +2,26 @@ package dev.totallyspies.spydle.frontend.views.game_room_panels;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.swing.*;
 import java.awt.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-// Main Game Panel
 public class GamePanel extends JPanel {
+
+    private final Logger logger = LoggerFactory.getLogger(GamePanel.class);
 
     private final GameRoomViewModel model;
 
-    private final Map<Player, PlayerPanel> playerPanels = new ConcurrentHashMap<>();
+    private final Map<Player, PlayerPanel> playerPanels = new LinkedHashMap<>();
     private final JLabel substringLabel;
     private final JLabel timerLabel;
+    private final ArrowPanel arrowPanel;  // Reference to the arrow panel
 
     public GamePanel(GameRoomViewModel model) {
         this.model = model;
@@ -39,8 +44,8 @@ public class GamePanel extends JPanel {
         createPlayerPanels();
 
         // Add arrow pointing to the current player
-        ArrowPanel arrowPanel = new ArrowPanel();
-        arrowPanel.setBounds(390, 220, 20, 50);
+        arrowPanel = new ArrowPanel();
+        arrowPanel.setBounds(390, 220, 20, 50);  // Initial position
         add(arrowPanel);
     }
 
@@ -97,8 +102,61 @@ public class GamePanel extends JPanel {
         substringLabel.setText(model.getCurrentSubstring());
         timerLabel.setText("Timer: " + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
 
+        if (model.getCurrentTurnPlayer() != null) {
+            int index = 0;
+            for (Player player : model.getPlayerList()) {
+                if (player.getPlayerName().equals(model.getCurrentTurnPlayer().getPlayerName())) {
+                    break;
+                }
+                index++;
+            }
+            if (index >= model.getPlayerList().size()) {
+                logger.error("Could not find player in player list with current turn player name!");
+            } else {
+                updateArrow(index);
+            }
+        }
+
         revalidate();
         repaint();
     }
+
+    // Move the arrow to point to the current player
+    private void updateArrow(int playerIndex) {
+        int centerX = 400;
+        int centerY = 250;
+        int radius = 150;
+
+        // Calculate the position of the current player in the circle
+        double angle = 2 * Math.PI * playerIndex / playerPanels.size();
+        int x = (int) (centerX + radius * Math.cos(angle) - 10);  // Adjust for arrow positioning
+        int y = (int) (centerY + radius * Math.sin(angle) - 50);  // Adjust for arrow positioning
+
+        // Set the new position of the arrow
+        arrowPanel.setBounds(x, y, 20, 50);  // Adjust the arrow size and position
+    }
+
+
+
+//    public static void main(String[] args) {
+//        // Create a frame to test the GamePanel
+//        JFrame frame = new JFrame("Game Test");
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.setSize(800, 600);
+//
+//        // Create GamePanel with 4 players
+//        GamePanel gamePanel = new GamePanel(4);
+//
+//        // Add the panel to the frame
+//        frame.add(gamePanel);
+//
+//        // Show the frame
+//        frame.setVisible(true);
+//
+//        // Simulate a game loop or user interaction to update the game
+//        new Timer(2000, e -> {
+//            gamePanel.updateGame("New Substring", 30, (gamePanel.currentPlayerIndex + 1) % 4);
+//        }).start();
+//    }
 
 }
