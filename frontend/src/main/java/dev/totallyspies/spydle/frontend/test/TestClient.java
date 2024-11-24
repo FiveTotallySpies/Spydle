@@ -7,7 +7,6 @@ import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
@@ -24,8 +23,11 @@ public class TestClient {
 
     private final Logger logger = LoggerFactory.getLogger(TestClient.class);
 
-    @Autowired
-    private ClientSocketConfig config;
+    private final ClientSocketConfig config;
+
+    public TestClient(ClientSocketConfig config) {
+        this.config = config;
+    }
 
     private TestPlayer player1;
     private TestPlayer player2;
@@ -37,7 +39,6 @@ public class TestClient {
         this.player1 = new TestPlayer("player1",
                 UUID.fromString("11111111-1111-1111-1111-111111111111"),
                 config.createClient());
-
         this.player2 = new TestPlayer("player2",
                 UUID.fromString("22222222-2222-2222-2222-222222222222"),
                 config.createClient());

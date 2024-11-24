@@ -10,11 +10,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHttpHeaders;
@@ -86,9 +83,9 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         this.session.set(null);
-        this.clientId = null;
         logger.info("Closed connection to websocket, status: {}", status);
         eventPublisher.publishEvent(new CloseEvent(this, clientId, status));
+        this.clientId = null;
     }
 
     public void sendSbMessage(SbMessage message) {
@@ -114,7 +111,7 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
             throw new IllegalStateException("Cannot close non-open session!");
         }
         try {
-            session.get().close(CloseStatus.GOING_AWAY);
+            session.get().close(new CloseStatus(CloseStatus.GOING_AWAY.getCode(), "Client prompted session termination"));
         } catch (IOException exception) {
             throw new RuntimeException("Failed to close socket handler", exception);
         }

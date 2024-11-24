@@ -4,7 +4,6 @@ import dev.totallyspies.spydle.frontend.client.rest.WebClientService;
 import dev.totallyspies.spydle.matchmaker.generated.model.ClientErrorResponse;
 import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.JoinGameResponseModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +12,13 @@ import java.util.UUID;
 @Component
 public class JoinGameInteractor implements JoinGameInputBoundary {
 
-    @Value("${server.backend.gameserver-overwrite}")
-    private String gameServerOverwrite;
+    private final String gameServerOverwrite;
+    private final WebClientService webClient;
 
-    @Autowired
-    private WebClientService webClient;
+    public JoinGameInteractor(@Value("${server.backend.gameserver-overwrite}") String gameServerOverwrite, WebClientService webClient) {
+        this.gameServerOverwrite = gameServerOverwrite;
+        this.webClient = webClient;
+    }
 
     @Override
     public JoinGameOutputData execute(JoinGameInputData data) {
@@ -35,7 +36,8 @@ public class JoinGameInteractor implements JoinGameInputBoundary {
                     ip,
                     responseModel.getGameServer().getPort(),
                     UUID.fromString(responseModel.getClientId()),
-                    responseModel.getPlayerName()
+                    responseModel.getPlayerName(),
+                    responseModel.getGameServer().getRoomCode()
             );
         } else if (response instanceof ClientErrorResponse clientErrorModel) {
             return new JoinGameOutputDataFail(clientErrorModel.getMessage());

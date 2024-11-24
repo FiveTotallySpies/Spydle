@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.welcome;
 
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
+import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.ErrorViewEvent;
 import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameInputData;
@@ -15,7 +16,6 @@ import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataFa
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataSuccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -24,20 +24,28 @@ public class WelcomeViewController {
 
     private final Logger logger = LoggerFactory.getLogger(WelcomeViewController.class);
 
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisher publisher;
+    private final WelcomeViewModel welcomeModel;
+    private final GameRoomViewModel gameRoomModel;
+    private final CreateGameInteractor createGameInteractor;
+    private final JoinGameInteractor joinGameInteractor;
+    private final ClientSocketHandler socketHandler;
 
-    @Autowired
-    private WelcomeViewModel model;
-
-    @Autowired
-    private CreateGameInteractor createGameInteractor;
-
-    @Autowired
-    private JoinGameInteractor joinGameInteractor;
-
-    @Autowired
-    private ClientSocketHandler socketHandler;
+    public WelcomeViewController(
+            ApplicationEventPublisher publisher,
+            WelcomeViewModel welcomeModel,
+            GameRoomViewModel gameRoomModel,
+            CreateGameInteractor createGameInteractor,
+            JoinGameInteractor joinGameInteractor,
+            ClientSocketHandler socketHandler
+    ) {
+        this.publisher = publisher;
+        this.welcomeModel = welcomeModel;
+        this.gameRoomModel = gameRoomModel;
+        this.createGameInteractor = createGameInteractor;
+        this.joinGameInteractor = joinGameInteractor;
+        this.socketHandler = socketHandler;
+    }
 
     /*
     Method called when View All Rooms Button is Pressed
@@ -47,11 +55,11 @@ public class WelcomeViewController {
     }
 
     public void createGame() {
-        if (model.getPlayerName().isBlank() || model.getPlayerName().length() > 32) {
-            fireError("Invalid player name: \"" + model.getPlayerName() + "\"");
+        if (welcomeModel.getPlayerName().isBlank() || welcomeModel.getPlayerName().length() > 32) {
+            fireError("Invalid player name: \"" + welcomeModel.getPlayerName() + "\"");
             return;
         }
-        CreateGameInputData input = new CreateGameInputData(model.getPlayerName());
+        CreateGameInputData input = new CreateGameInputData(welcomeModel.getPlayerName());
         CreateGameOutputData output = createGameInteractor.execute(input);
         if (output instanceof CreateGameOutputDataSuccess successOutput) {
             try {
@@ -61,6 +69,7 @@ public class WelcomeViewController {
                         successOutput.getClientId(),
                         successOutput.getPlayerName()
                 );
+                gameRoomModel.setRoomCode(successOutput.getRoomCode());
                 publisher.publishEvent(new SwitchViewEvent(this, "GameRoomView"));
             } catch (Exception exception) {
                 fireError("Failed to connect to game server: " + exception.getMessage());
@@ -73,15 +82,15 @@ public class WelcomeViewController {
     }
 
     public void joinGame() {
-        if (model.getPlayerName().isBlank() || model.getPlayerName().length() > 32) {
-            fireError("Invalid player name: \"" + model.getPlayerName() + "\"");
+        if (welcomeModel.getPlayerName().isBlank() || welcomeModel.getPlayerName().length() > 32) {
+            fireError("Invalid player name: \"" + welcomeModel.getPlayerName() + "\"");
             return;
         }
-        if (model.getRoomCode().isBlank() || model.getRoomCode().length() != 5) {
-            fireError("Invalid room code: \"" + model.getRoomCode() + "\"");
+        if (welcomeModel.getRoomCode().isBlank() || welcomeModel.getRoomCode().length() != 5) {
+            fireError("Invalid room code: \"" + welcomeModel.getRoomCode() + "\"");
             return;
         }
-        JoinGameInputData input = new JoinGameInputData(model.getPlayerName(), model.getRoomCode());
+        JoinGameInputData input = new JoinGameInputData(welcomeModel.getPlayerName(), welcomeModel.getRoomCode());
         JoinGameOutputData output = joinGameInteractor.execute(input);
         if (output instanceof JoinGameOutputDataSuccess successOutput) {
             try {
@@ -91,6 +100,7 @@ public class WelcomeViewController {
                         successOutput.getClientId(),
                         successOutput.getPlayerName()
                 );
+                gameRoomModel.setRoomCode(successOutput.getRoomCode());
                 publisher.publishEvent(new SwitchViewEvent(this, "GameRoomView"));
             } catch (Exception exception) {
                 fireError("Failed to connect to game server: " + exception.getMessage());

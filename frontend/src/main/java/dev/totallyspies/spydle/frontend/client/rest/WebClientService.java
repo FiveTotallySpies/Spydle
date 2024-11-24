@@ -3,7 +3,6 @@ package dev.totallyspies.spydle.frontend.client.rest;
 import dev.totallyspies.spydle.matchmaker.generated.model.ClientErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,8 +13,11 @@ public class WebClientService {
 
     private final Logger logger = LoggerFactory.getLogger(WebClientService.class);
 
-    @Autowired
-    private WebClient webClient;
+    private final WebClient webClient;
+
+    public WebClientService(WebClient webClient) {
+        this.webClient = webClient;
+    }
 
     public <T> Object postEndpoint(String path, Object data, Class<T> responseModel) throws ClientErrorException {
         Object response = handleResponse(webClient.post().uri(formatPath(path)).bodyValue(data).retrieve(), responseModel);

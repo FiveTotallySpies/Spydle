@@ -10,7 +10,6 @@ import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
-import java.util.concurrent.ExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -86,8 +84,8 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
             // Validate that session is allowed to communicate with this gameserver
             if (!sessionValidator.validateClientSession(clientId, clientName)) {
-                socketSession.close(CloseStatus.NOT_ACCEPTABLE);
                 logger.warn("Received message from unconfirmed session {}", rawClientId);
+                socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Message from unconfirmed session client ID!"));
                 return;
             }
 
@@ -136,29 +134,30 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         UUID clientId = sessionValidator.parseClientId(rawClientId);
         String clientName = getHeader(socketSession, SharedConstants.CLIENT_NAME_HTTP_HEADER);
         if (clientName == null) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
             logger.warn("Client attempted to open session {} with no name, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "No name provided!"));
             return;
         }
         if (clientId == null || !sessionValidator.validateClientSession(clientId, clientName)) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
             logger.warn("Client attempted to open unconfirmed session {}, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unconfirmed session client ID!"));
             return;
         }
         if (hasSessionWithPlayerName(clientName)) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE); // TODO: have some way to notify the player that their name is taken already
+            // TODO: have some way to notify the player that their name is taken already
             logger.warn("Client attempted to open session {} but their name already exists, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Name already exists!"));
             return;
         }
         ClientSession storedSession = storage.getClientSession(clientId);
         if (storedSession == null) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
             logger.warn("Client attempted to open session {} with no stored client session for this UUID, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Unknown client session!"));
             return;
         }
         if (storedSession.getState() != ClientSession.State.ASSIGNED) {
-            socketSession.close(CloseStatus.NOT_ACCEPTABLE);
             logger.warn("Client attempt to open session {} but they are already connected, closing...", rawClientId);
+            socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Already connected!"));
             return;
         }
         // Update client session to CONNECTED
@@ -230,11 +229,7 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         if (clientId != null) {
             ClientSession session = getSessionFromClientId(clientId);
             if (session != null) {
-                try {
-                    sessions.remove(session).close();
-                } catch (IOException exception) {
-                    logger.error("Failed to close session {}", clientId, exception);
-                }
+                sessions.remove(session);
                 publisher.publishEvent(new SessionCloseEvent(this, session, socketSession));
             }
         }

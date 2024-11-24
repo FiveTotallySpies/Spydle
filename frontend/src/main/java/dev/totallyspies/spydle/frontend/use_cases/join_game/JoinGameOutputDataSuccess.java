@@ -13,5 +13,6 @@ public final class JoinGameOutputDataSuccess implements JoinGameOutputData {
     private int gamePort;
     private UUID clientId;
     private String playerName;
+    private String roomCode;
 
 }

@@ -1,7 +1,6 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.list_rooms;
 
 import dev.totallyspies.spydle.frontend.views.ListRoomsView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -10,11 +9,13 @@ import java.util.List;
 @Component
 public class ListRoomsPresenter {
 
-    @Autowired
-    private ListRoomsView view;
+    private final ListRoomsView view;
+    private final ListRoomsViewModel model;
 
-    @Autowired
-    private ListRoomsViewModel model;
+    public ListRoomsPresenter(ListRoomsView view, ListRoomsViewModel model) {
+        this.view = view;
+        this.model = model;
+    }
 
     @EventListener
     public void onListRoomsUpdate(ListRoomsUpdateEvent event) {
