@@ -1,33 +1,38 @@
 package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 @Component
 public class GameRoomView extends JPanel {
 
-    public GamePanel gamePanel;
-
-    @Autowired
+    private GameRoomViewModel gameRoomViewModel;
     private GameRoomViewController controller;
 
-    public GameRoomView() {
+    public GamePanel gamePanel;
+
+
+    public GameRoomView(GameRoomViewModel gameRoomViewModel, GameRoomViewController controller) {
+        this.gameRoomViewModel = gameRoomViewModel;
+        this.controller = controller;
+
         setLayout(new BorderLayout()); // Set layout to BorderLayout for GameRoomView
         setBackground(new Color(195, 217, 255)); // Set light blue background for entire view
 
         // Create a container panel for the game screen
         JPanel container = new JPanel(new BorderLayout());
         container.setOpaque(false); // Make container transparent to show the GameRoomView background
-
+        this.gameRoomViewModel.setPlayerList(new ArrayList<>());
         // Initialize the Game Panel with 4 players (adjust the number of players as needed)
-        gamePanel = new GamePanel(4);
+        gamePanel = new GamePanel(this.gameRoomViewModel.getPlayerList().size());
 
         // Add the game panel to the center of the container
         container.add(gamePanel, BorderLayout.CENTER);
@@ -57,20 +62,46 @@ public class GameRoomView extends JPanel {
         // Add the top panel to the top (NORTH) of the main container
         container.add(topPanel, BorderLayout.NORTH);
 
-        // Add the container to the center of GameRoomView
-        add(container, BorderLayout.CENTER);
+        // Create a panel for the substring input field and submit button
+        JPanel inputPanel = new JPanel();
+        inputPanel.setOpaque(false); // Transparent background
+        JTextField substringField = new JTextField(20); // Text field for substring input
+        JButton submitButton = new JButton("Submit");
 
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Spydle - Game Over");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(500, 500); // Full-screen dimensions
-            frame.setLocationRelativeTo(null);
-            frame.add(new GameRoomView());
-            frame.setVisible(true);
+        // Action listener for submit button
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameRoomViewModel.setStringEntered(substringField.getText());
+                // Handle the entered substring as needed
+                System.out.println("Entered substring: " + gameRoomViewModel.getStringEntered());
+            }
         });
+
+
+        // check if the local player matches the player at the current turn
+        if (this.gameRoomViewModel.getLocalPlayerUUID().equals(this.gameRoomViewModel.getCurrentPlayerTurnUUID())){
+            inputPanel.add(substringField); // Add text field to input panel
+            inputPanel.add(submitButton); // Add submit button to input panel
+
+            // Add the input panel to the bottom of the container
+            container.add(inputPanel, BorderLayout.SOUTH);
+
+            // Add the container to the center of GameRoomView
+        }
+
+        add(container, BorderLayout.CENTER);
     }
+
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            JFrame frame = new JFrame("Spydle - Game Over");
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.setSize(800, 600); // Full-screen dimensions
+//            frame.setLocationRelativeTo(null);
+//            frame.add(new GameRoomView());
+//            frame.setVisible(true);
+//        });
+//    }
 
 }

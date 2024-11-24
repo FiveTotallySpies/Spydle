@@ -1,6 +1,8 @@
 package dev.totallyspies.spydle.frontend.client.rest;
 
 import dev.totallyspies.spydle.matchmaker.generated.model.ClientErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -10,19 +12,24 @@ import reactor.core.publisher.Mono;
 @Service
 public class WebClientService {
 
+    private final Logger logger = LoggerFactory.getLogger(WebClientService.class);
+
     @Autowired
     private WebClient webClient;
 
-    public <T> T postEndpoint(String path, Object data, Class<T> responseModel) throws ClientErrorException {
-        return handleResponse(webClient.post().uri(formatPath(path)).bodyValue(data).retrieve(), responseModel);
-
+    public <T> Object postEndpoint(String path, Object data, Class<T> responseModel) throws ClientErrorException {
+        Object response = handleResponse(webClient.post().uri(formatPath(path)).bodyValue(data).retrieve(), responseModel);
+        logger.info("Made POST request to {} path with {} data, got response {}", path, data, response);
+        return response;
     }
 
-    public <T> T getEndpoint(String path, Class<T> responseModel) {
-        return handleResponse(webClient.get().uri(formatPath(path)).retrieve(), responseModel);
+    public <T> Object getEndpoint(String path, Class<T> responseModel) {
+        Object response = handleResponse(webClient.get().uri(formatPath(path)).retrieve(), responseModel);
+        logger.info("Made GET request to {} path, got response {}", path, response);
+        return response;
     }
 
-    private <T> T handleResponse(WebClient.ResponseSpec responseSpec, Class<T> responseModel) throws ClientErrorException {
+    private <T> Object handleResponse(WebClient.ResponseSpec responseSpec, Class<T> responseModel) throws ClientErrorException {
         return responseSpec
                 .onStatus(
                         HttpStatusCode::is4xxClientError,
