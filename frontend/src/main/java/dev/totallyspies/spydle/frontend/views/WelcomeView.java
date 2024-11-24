@@ -16,17 +16,16 @@ import java.awt.event.FocusListener;
 @org.springframework.stereotype.Component
 public class WelcomeView extends JPanel {
 
-    @Autowired
-    private WelcomeViewController controller;
-
-    @Autowired
-    private WelcomeViewModel welcomeViewModel;
+    private final WelcomeViewController controller;
+    private final WelcomeViewModel welcomeViewModel;
 
     private JTextField nicknameField;
     private JTextField roomCodeField;
     private JLabel welcomeMessageLabel; // New label for welcome message
 
-    public WelcomeView() {
+    public WelcomeView(WelcomeViewController controller, WelcomeViewModel welcomeViewModel) {
+        this.controller = controller;
+        this.welcomeViewModel = welcomeViewModel;
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
@@ -47,7 +46,6 @@ public class WelcomeView extends JPanel {
 
             private void updateNickname() {
                 welcomeViewModel.setPlayerName(nicknameField.getText());
-                System.out.println("Nickname: " + welcomeViewModel.getPlayerName());
             }
         });
 
@@ -65,7 +63,6 @@ public class WelcomeView extends JPanel {
 
                 if (isEnter) {
                     welcomeMessageLabel.setText("Welcome " + welcomeViewModel.getPlayerName() + "!");
-                    System.out.println("Welcome " + welcomeViewModel.getPlayerName());
                     enterButton.setText("Cancel");
                     isEnter = false;
                 } else {
@@ -103,7 +100,7 @@ public class WelcomeView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 welcomeViewModel.setRoomCode(nicknameField.getText());
-                System.out.println("Create Room button clicked with nickname: " + welcomeViewModel.getPlayerName());
+                controller.createGame();
             }
         });
 
@@ -121,7 +118,6 @@ public class WelcomeView extends JPanel {
 
             private void updateRoomCode() {
                 welcomeViewModel.setRoomCode(roomCodeField.getText());
-                System.out.println("Room Code: " + welcomeViewModel.getRoomCode());
             }
         });
 
@@ -133,7 +129,7 @@ public class WelcomeView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 welcomeViewModel.setRoomCode(roomCodeField.getText());
-                System.out.println("Join Room button clicked with room code: " + welcomeViewModel.getRoomCode());
+                controller.joinGame();
             }
         });
 
@@ -148,7 +144,6 @@ public class WelcomeView extends JPanel {
         viewAllRoomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("View All Rooms button clicked");
                 controller.openListRoomsView();
             }
         });
@@ -221,16 +216,16 @@ public class WelcomeView extends JPanel {
         });
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame();
-            frame.setTitle("Welcome - Join or Create Room");
-            frame.setSize(800, 600); // Set frame size to 800x600
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setLocationRelativeTo(null);
-            // Add the WelcomeView panel with light blue background
-            frame.add(new WelcomeView());
-            frame.setVisible(true);
-        });
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            JFrame frame = new JFrame();
+//            frame.setTitle("Welcome - Join or Create Room");
+//            frame.setSize(800, 600); // Set frame size to 800x600
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.setLocationRelativeTo(null);
+//            // Add the WelcomeView panel with light blue background
+//            frame.add(new WelcomeView());
+//            frame.setVisible(true);
+//        });
+//    }
 }

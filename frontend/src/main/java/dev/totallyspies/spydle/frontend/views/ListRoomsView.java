@@ -1,20 +1,29 @@
 package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.list_rooms.ListRoomsViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.list_rooms.ListRoomsViewModel;
+import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 
 @org.springframework.stereotype.Component
 public class ListRoomsView extends JPanel {
 
-    @Autowired
-    private ListRoomsViewController controller;
+    private final ListRoomsViewController controller;
+    private final ListRoomsViewModel model;
 
-    public ListRoomsView() {
+    private JList<String> roomList;
+
+    public ListRoomsView(ListRoomsViewModel model, ListRoomsViewController controller) {
+        this.controller = controller;
+        this.model = model;
+
         setLayout(new GridBagLayout()); // Center the container in the middle of the screen
         setBackground(new Color(195, 217, 255)); // Light blue background for the entire panel
 
@@ -30,16 +39,15 @@ public class ListRoomsView extends JPanel {
         titleLabel.setForeground(new Color(139, 0, 0)); // Dark red color
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Fake room data with the format "Room 1: Name"
+        // Fake room data
         String[] roomData = {
-                "Room 1: When you wake up",
-                "Room 2: Next to him",
-                "Room 3: In the middle",
-                "Room 4: Of the night"
+                "Loading..."
         };
 
+        model.setLinesInRoomList(roomData);
+
         // Create JList with fake data
-        JList<String> roomList = new JList<>(roomData);
+        roomList = new JList<>(roomData);
         roomList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         roomList.setFont(new Font("Arial", Font.PLAIN, 16));
 
@@ -72,6 +80,18 @@ public class ListRoomsView extends JPanel {
         add(container, gbc);
     }
 
+    @EventListener
+    public void onApplicationReady(ApplicationReadyEvent event) {
+        controller.updateRoomList();
+    }
+
+    @EventListener
+    public void onSwitchView(SwitchViewEvent event) {
+        if (event.getViewName().equals("ListRoomsView")) {
+            controller.updateRoomList();
+        }
+    }
+
     private void styleButton(JButton button) {
         button.setBackground(new Color(138, 43, 226)); // blueviolet
         button.setForeground(Color.WHITE);
@@ -100,16 +120,20 @@ public class ListRoomsView extends JPanel {
         });
     }
 
-    // Test the JPanel in a JFrame with size 500x500
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Spydle - All Rooms");
-            frame.setSize(800, 600);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setLocationRelativeTo(null);
-            frame.add(new ListRoomsView());
-            frame.setVisible(true);
-        });
+    public void updateRoomList() {
+        roomList.setListData(model.getLinesInRoomList());
     }
+
+//    // Test the JPanel in a JFrame with size 500x500
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            JFrame frame = new JFrame("Spydle - All Rooms");
+//            frame.setSize(800, 600);
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.setLocationRelativeTo(null);
+//            frame.add(new ListRoomsView());
+//            frame.setVisible(true);
+//        });
+//    }
 
 }

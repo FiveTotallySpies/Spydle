@@ -57,8 +57,9 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
             URI uri = new URI("ws://" + address + ":" + port + SharedConstants.GAME_SOCKET_ENDPOINT);
             session = client.execute(this, headers, uri).get();
         } catch (Exception exception) {
-            throw new RuntimeException("Failed to open client socket", exception);
+            throw new RuntimeException("Failed to open client socket " + exception.getMessage(), exception);
         }
+        logger.info("Opened socket connection with gameserver at {}:{}, with client ID {} and name {}", address, port, clientId, playerName);
     }
 
     @Override

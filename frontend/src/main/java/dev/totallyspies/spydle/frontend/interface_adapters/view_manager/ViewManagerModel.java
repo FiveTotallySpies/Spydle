@@ -64,6 +64,11 @@ public class ViewManagerModel extends JFrame {
         cardLayout.show(panelContainer, event.getViewName());
     }
 
+    @EventListener
+    public void handleViewError(ErrorViewEvent event) {
+        JOptionPane.showMessageDialog(this, event.getMessage());
+    }
+
 //    public static void launchGameView(String[] args) {
 //        // Run the GameWindowFrame
 //        SwingUtilities.invokeLater(() -> {
