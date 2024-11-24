@@ -5,13 +5,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// Main Game Panel
 public class GamePanel extends JPanel {
 
     private final List<PlayerPanel> playerPanels;
     private final JLabel substringLabel;
     private final JLabel timerLabel;
     private int currentPlayerIndex = 0;
+    private ArrowPanel arrowPanel;  // Reference to the arrow panel
 
     public GamePanel(int playerCount) {
         setLayout(null);
@@ -33,8 +33,8 @@ public class GamePanel extends JPanel {
         positionPlayersInCircle();
 
         // Add arrow pointing to the current player
-        ArrowPanel arrowPanel = new ArrowPanel();
-        arrowPanel.setBounds(390, 220, 20, 50);
+        arrowPanel = new ArrowPanel();
+        arrowPanel.setBounds(390, 220, 20, 50);  // Initial position
         add(arrowPanel);
     }
 
@@ -58,20 +58,72 @@ public class GamePanel extends JPanel {
         substringLabel.setText(substring);
         timerLabel.setText("Timer: " + timer / 60 + ":" + String.format("%02d", timer % 60));
         currentPlayerIndex = activePlayerIndex;
+        moveArrowToPlayer(currentPlayerIndex);  // Move arrow to current player
         repaint();
     }
 
-    // Paint the arrow to point to the current player
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (currentPlayerIndex < playerPanels.size()) {
-            PlayerPanel activePlayer = playerPanels.get(currentPlayerIndex);
-            Point arrowPoint = new Point(400, 275); // Center point for arrow
+    // Move the arrow to point to the current player
+    private void moveArrowToPlayer(int playerIndex) {
+        int centerX = 400;
+        int centerY = 250;
+        int radius = 150;
 
+<<<<<<< HEAD
             int targetX = activePlayer.getX() + activePlayer.getWidth() / 2;
             int targetY = activePlayer.getY() + activePlayer.getHeight() / 2;
         }
+=======
+        // Calculate the position of the current player in the circle
+        double angle = 2 * Math.PI * playerIndex / playerPanels.size();
+        int x = (int) (centerX + radius * Math.cos(angle) - 10);  // Adjust for arrow positioning
+        int y = (int) (centerY + radius * Math.sin(angle) - 50);  // Adjust for arrow positioning
+
+        // Set the new position of the arrow
+        arrowPanel.setBounds(x, y, 20, 50);  // Adjust the arrow size and position
+>>>>>>> swing
     }
 
+    // Set new players list and reposition them in a circle
+    public void setPlayers(List<String> playerNames) {
+        // Clear existing player panels
+        for (PlayerPanel panel : playerPanels) {
+            remove(panel); // Remove panel from the GamePanel
+        }
+        playerPanels.clear(); // Clear the list of player panels
+
+        // Create and add new player panels
+        for (String playerName : playerNames) {
+            PlayerPanel playerPanel = new PlayerPanel(playerName);
+            playerPanels.add(playerPanel);
+            add(playerPanel);
+        }
+
+        // Reposition the players in a circular layout
+        positionPlayersInCircle();
+
+        // Refresh the panel to reflect changes
+        revalidate();
+        repaint();
+    }
+
+//    public static void main(String[] args) {
+//        // Create a frame to test the GamePanel
+//        JFrame frame = new JFrame("Game Test");
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.setSize(800, 600);
+//
+//        // Create GamePanel with 4 players
+//        GamePanel gamePanel = new GamePanel(4);
+//
+//        // Add the panel to the frame
+//        frame.add(gamePanel);
+//
+//        // Show the frame
+//        frame.setVisible(true);
+//
+//        // Simulate a game loop or user interaction to update the game
+//        new Timer(2000, e -> {
+//            gamePanel.updateGame("New Substring", 30, (gamePanel.currentPlayerIndex + 1) % 4);
+//        }).start();
+//    }
 }

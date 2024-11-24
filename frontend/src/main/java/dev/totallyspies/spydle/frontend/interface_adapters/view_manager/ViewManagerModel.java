@@ -54,7 +54,8 @@ public class ViewManagerModel extends JFrame {
         add(panelContainer);
 
         // Show the initial panel (WelcomeView)
-        cardLayout.show(panelContainer, "WelcomeView");
+        // this is the first page that will run!
+        cardLayout.show(panelContainer, "GameRoomView");
     }
 
     // Method to switch between panels
@@ -63,12 +64,12 @@ public class ViewManagerModel extends JFrame {
         cardLayout.show(panelContainer, event.getViewName());
     }
 
-    public static void launchGameView(String[] args) {
-        // Run the GameWindowFrame
-        SwingUtilities.invokeLater(() -> {
-            ViewManagerModel frame = new ViewManagerModel(new WelcomeView(), new GameRoomView(), new ListRoomsView(), new GameEndView());
-            frame.setVisible(true);
-        });
-    }
+//    public static void launchGameView(String[] args) {
+//        // Run the GameWindowFrame
+//        SwingUtilities.invokeLater(() -> {
+//            ViewManagerModel frame = new ViewManagerModel(new WelcomeView(), new GameRoomView(), new ListRoomsView(), new GameEndView());
+//            frame.setVisible(true);
+//        });
+//    }
 
 }

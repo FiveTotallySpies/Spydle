@@ -28,6 +28,7 @@ public class AgonesHook {
     @Getter
     private final GameServer currentGameServer;
 
+    @Getter
     private final Agones agones;
 
     public AgonesHook(@Value("${agones.host-port}") int agonesPort) throws ExecutionException, InterruptedException {

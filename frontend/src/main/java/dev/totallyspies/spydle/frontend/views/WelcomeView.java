@@ -1,9 +1,12 @@
 package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.welcome.WelcomeViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.welcome.WelcomeViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,55 +19,128 @@ public class WelcomeView extends JPanel {
     @Autowired
     private WelcomeViewController controller;
 
+    @Autowired
+    private WelcomeViewModel welcomeViewModel;
+
+    private JTextField nicknameField;
+    private JTextField roomCodeField;
+    private JLabel welcomeMessageLabel; // New label for welcome message
+
     public WelcomeView() {
-        // Main container panel styling
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         container.setBackground(new Color(195, 217, 255)); // Light blue background for the container
-        container.setPreferredSize(new Dimension(800, 567)); // Adjusted container size for optimal height
+        container.setPreferredSize(new Dimension(800, 600)); // Adjusted container size for optimal height
 
-        // Title styling
         JLabel titleLabel = new JLabel("Spydle");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 40)); // Adjusted font size for larger window
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 40));
         titleLabel.setForeground(new Color(139, 0, 0));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Nickname input field
-        JTextField nicknameField = createPlaceholderTextField("Enter your nickname");
+        nicknameField = createPlaceholderTextField("Enter your nickname");
         nicknameField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        nicknameField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { updateNickname(); }
+            public void removeUpdate(DocumentEvent e) { updateNickname(); }
+            public void changedUpdate(DocumentEvent e) { updateNickname(); }
 
-        // Add horizontal line separator with increased thickness
+            private void updateNickname() {
+                welcomeViewModel.setPlayerName(nicknameField.getText());
+                System.out.println("Nickname: " + welcomeViewModel.getPlayerName());
+            }
+        });
+
+        JButton enterButton = new JButton("Enter");
+        styleButton(enterButton);
+        enterButton.setMaximumSize(new Dimension(120, 40));
+        enterButton.setPreferredSize(new Dimension(120, 40));
+
+        enterButton.addActionListener(new ActionListener() {
+            private boolean isEnter = true;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                welcomeViewModel.setPlayerName(nicknameField.getText());
+
+                if (isEnter) {
+                    welcomeMessageLabel.setText("Welcome " + welcomeViewModel.getPlayerName() + "!");
+                    System.out.println("Welcome " + welcomeViewModel.getPlayerName());
+                    enterButton.setText("Cancel");
+                    isEnter = false;
+                } else {
+                    welcomeMessageLabel.setText(""); // Clear the welcome message
+                    enterButton.setText("Enter");
+                    nicknameField.setText("Enter your nickname");
+                    isEnter = true;
+                }
+            }
+        });
+
+        JPanel nicknamePanel = new JPanel();
+        nicknamePanel.setLayout(new BoxLayout(nicknamePanel, BoxLayout.X_AXIS));
+        nicknamePanel.setBackground(new Color(195, 217, 255));
+        nicknamePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        nicknamePanel.add(nicknameField);
+        nicknamePanel.add(Box.createHorizontalStrut(10));
+        nicknamePanel.add(enterButton);
+
+        welcomeMessageLabel = new JLabel(""); // Initialize welcome message label
+        welcomeMessageLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        welcomeMessageLabel.setForeground(new Color(75, 0, 130)); // Purple color
+        welcomeMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-        separator.setMaximumSize(new Dimension(500, 2)); // Adjusted width for the larger container
-        separator.setForeground(new Color(75, 0, 130)); // Darker purple
+        separator.setMaximumSize(new Dimension(500, 2));
+        separator.setForeground(new Color(75, 0, 130));
 
-        // Create room button centered
         JButton createRoomButton = new JButton("Create Room");
         styleButton(createRoomButton);
-        createRoomButton.setAlignmentX(Component.CENTER_ALIGNMENT); // Center alignment
-        createRoomButton.setMaximumSize(new Dimension(500, 40)); // Adjusted size for the new layout
+        createRoomButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        createRoomButton.setMaximumSize(new Dimension(500, 40));
+        createRoomButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                welcomeViewModel.setRoomCode(nicknameField.getText());
+                System.out.println("Create Room button clicked with nickname: " + welcomeViewModel.getPlayerName());
+            }
+        });
 
-        // Room code field and join button panel
         JPanel joinPanel = new JPanel();
         joinPanel.setLayout(new BoxLayout(joinPanel, BoxLayout.X_AXIS));
-        joinPanel.setBackground(new Color(195, 217, 255)); // Same background color as the container
+        joinPanel.setBackground(new Color(195, 217, 255));
         joinPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JTextField roomCodeField = createPlaceholderTextField("Enter existing room code");
-        roomCodeField.setMaximumSize(new Dimension(300, 30)); // Adjusted width for new layout
+        roomCodeField = createPlaceholderTextField("Enter existing room code");
+        roomCodeField.setMaximumSize(new Dimension(300, 30));
+        roomCodeField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { updateRoomCode(); }
+            public void removeUpdate(DocumentEvent e) { updateRoomCode(); }
+            public void changedUpdate(DocumentEvent e) { updateRoomCode(); }
+
+            private void updateRoomCode() {
+                welcomeViewModel.setRoomCode(roomCodeField.getText());
+                System.out.println("Room Code: " + welcomeViewModel.getRoomCode());
+            }
+        });
 
         JButton joinRoomButton = new JButton("Join");
         styleButton(joinRoomButton);
-        joinRoomButton.setMaximumSize(new Dimension(120, 40)); // Adjusted size for the button
+        joinRoomButton.setMaximumSize(new Dimension(120, 40));
         joinRoomButton.setPreferredSize(new Dimension(120, 40));
+        joinRoomButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                welcomeViewModel.setRoomCode(roomCodeField.getText());
+                System.out.println("Join Room button clicked with room code: " + welcomeViewModel.getRoomCode());
+            }
+        });
 
-        // Add components to the join panel
         joinPanel.add(roomCodeField);
         joinPanel.add(Box.createHorizontalStrut(10));
         joinPanel.add(joinRoomButton);
 
-        // View All Rooms button
         JButton viewAllRoomsButton = new JButton("View All Rooms");
         styleButton(viewAllRoomsButton);
         viewAllRoomsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -72,27 +148,23 @@ public class WelcomeView extends JPanel {
         viewAllRoomsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.openListRoomsView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+                System.out.println("View All Rooms button clicked");
+                controller.openListRoomsView();
             }
         });
-//        JButton listRoomsButton = new JButton("List of Rooms");
-//        styleButton(listRoomsButton);
-//        listRoomsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-//        listRoomsButton.setMaximumSize(new Dimension(500, 40)); // Adjusted size for the new layout
 
-        // Adding components to the main container
         container.add(titleLabel);
-        container.add(Box.createVerticalStrut(40)); // Space below the title
-        container.add(nicknameField);
-        container.add(Box.createVerticalStrut(40)); // Increased space between nickname and separator
+        container.add(Box.createVerticalStrut(40));
+        container.add(nicknamePanel);
+        container.add(welcomeMessageLabel); // Add welcome message label here
+        container.add(Box.createVerticalStrut(40));
         container.add(separator);
-        container.add(Box.createVerticalStrut(40)); // Reduced space between separator and create button
-        container.add(createRoomButton); // Centered create button
-
-        container.add(Box.createVerticalStrut(20)); // Space before join panel
-        container.add(joinPanel); // Join panel just below the create room button
-        container.add(Box.createVerticalStrut(20)); // Reduced space before the List Rooms button
-        container.add(viewAllRoomsButton); // List Rooms button right after join section
+        container.add(Box.createVerticalStrut(40));
+        container.add(createRoomButton);
+        container.add(Box.createVerticalStrut(20));
+        container.add(joinPanel);
+        container.add(Box.createVerticalStrut(20));
+        container.add(viewAllRoomsButton);
 
         add(container);
         setVisible(true);
