@@ -83,10 +83,9 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         this.session.set(null);
-        this.clientId = null;
         logger.info("Closed connection to websocket, status: {}", status);
         eventPublisher.publishEvent(new CloseEvent(this, clientId, status));
-
+        this.clientId = null;
     }
 
     public void sendSbMessage(SbMessage message) {
