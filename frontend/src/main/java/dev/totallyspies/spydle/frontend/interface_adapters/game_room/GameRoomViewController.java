@@ -26,6 +26,9 @@ public class GameRoomViewController {
     Method called when View All Rooms Button is Pressed
      */
     public void openWelcomeView() {
+        if (handler.isOpen()) {
+            handler.close();
+        }
         publisher.publishEvent(new SwitchViewEvent(this, "WelcomeView"));
     }
 
