@@ -1,7 +1,6 @@
 package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.game_end.GameEndViewController;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,10 +10,10 @@ import java.awt.event.ActionListener;
 @org.springframework.stereotype.Component
 public class GameEndView extends JPanel {
 
-    @Autowired
-    private GameEndViewController controller;
+    private final GameEndViewController controller;
 
-    public GameEndView() {
+    public GameEndView(GameEndViewController controller) {
+        this.controller = controller;
 
         setLayout(new GridBagLayout()); // Center the container panel in the middle of the screen
         setBackground(new Color(195, 217, 255)); // Light blue background for the entire panel

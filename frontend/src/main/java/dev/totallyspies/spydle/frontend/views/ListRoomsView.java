@@ -3,7 +3,6 @@ package dev.totallyspies.spydle.frontend.views;
 import dev.totallyspies.spydle.frontend.interface_adapters.list_rooms.ListRoomsViewController;
 import dev.totallyspies.spydle.frontend.interface_adapters.list_rooms.ListRoomsViewModel;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;

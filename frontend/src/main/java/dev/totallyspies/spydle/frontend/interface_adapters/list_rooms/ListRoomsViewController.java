@@ -3,18 +3,19 @@ package dev.totallyspies.spydle.frontend.interface_adapters.list_rooms;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.use_cases.list_games.ListGamesInteractor;
 import dev.totallyspies.spydle.frontend.use_cases.list_games.ListGamesOutputData;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ListRoomsViewController {
 
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisher publisher;
+    private final ListGamesInteractor listGamesInteractor;
 
-    @Autowired
-    private ListGamesInteractor listGamesInteractor;
+    public ListRoomsViewController(ApplicationEventPublisher publisher, ListGamesInteractor listGamesInteractor) {
+        this.publisher = publisher;
+        this.listGamesInteractor = listGamesInteractor;
+    }
 
     /*
     Method called when View All Rooms Button is Pressed

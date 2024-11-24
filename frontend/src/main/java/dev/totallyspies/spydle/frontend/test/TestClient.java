@@ -3,23 +3,30 @@ package dev.totallyspies.spydle.frontend.test;
 import dev.totallyspies.spydle.frontend.client.ClientSocketConfig;
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
 import dev.totallyspies.spydle.frontend.client.message.CbMessageListener;
-import dev.totallyspies.spydle.shared.proto.messages.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import dev.totallyspies.spydle.shared.proto.messages.CbGameStart;
+import dev.totallyspies.spydle.shared.proto.messages.CbNewTurn;
+import dev.totallyspies.spydle.shared.proto.messages.SbGuess;
+import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
+import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
-//@Component
+@Component
+@Profile("local")
 public class TestClient {
-    @Autowired
-    private ClientSocketConfig config1;
 
-    @Autowired
-    private ClientSocketConfig config2;
+    private final ClientSocketConfig config;
+
+    public TestClient(ClientSocketConfig config) {
+        this.config = config;
+    }
 
     private TestPlayer player1;
     private TestPlayer player2;
@@ -30,11 +37,11 @@ public class TestClient {
     public void initPlayers() {
         this.player1 = new TestPlayer("player1",
                 UUID.fromString("04f01a02-11b7-4c64-ab25-2f02c6cab409"),
-                config1.createClient());
+                config.createClient());
 
         this.player2 = new TestPlayer("player2",
                 UUID.fromString("f754601e-47f3-4b15-b9fd-3517a232dd31"),
-                config2.createClient());
+                config.createClient());
     }
 
     // Executed on application startup, but could be instead on the press of a button?

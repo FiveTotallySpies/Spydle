@@ -5,7 +5,6 @@ import dev.totallyspies.spydle.frontend.views.GameEndView;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.frontend.views.ListRoomsView;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;

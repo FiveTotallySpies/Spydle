@@ -6,7 +6,6 @@ import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +14,13 @@ public class GameRoomViewController {
 
     private final Logger logger = LoggerFactory.getLogger(GameRoomViewController.class);
 
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisher publisher;
+    private final ClientSocketHandler handler;
 
-    @Autowired
-    private ClientSocketHandler handler;
+    public GameRoomViewController(ApplicationEventPublisher publisher, ClientSocketHandler handler) {
+        this.publisher = publisher;
+        this.handler = handler;
+    }
 
     /*
     Method called when View All Rooms Button is Pressed

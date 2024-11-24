@@ -1,5 +1,6 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.welcome;
 
+import dev.totallyspies.spydle.frontend.client.ClientSocketConfig;
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.ErrorViewEvent;
@@ -15,7 +16,6 @@ import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataFa
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataSuccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -24,20 +24,25 @@ public class WelcomeViewController {
 
     private final Logger logger = LoggerFactory.getLogger(WelcomeViewController.class);
 
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisher publisher;
+    private final WelcomeViewModel model;
+    private final CreateGameInteractor createGameInteractor;
+    private final JoinGameInteractor joinGameInteractor;
+    private final ClientSocketHandler socketHandler;
 
-    @Autowired
-    private WelcomeViewModel model;
-
-    @Autowired
-    private CreateGameInteractor createGameInteractor;
-
-    @Autowired
-    private JoinGameInteractor joinGameInteractor;
-
-    @Autowired
-    private ClientSocketHandler socketHandler;
+    public WelcomeViewController(
+            ApplicationEventPublisher publisher,
+            WelcomeViewModel model,
+            CreateGameInteractor createGameInteractor,
+            JoinGameInteractor joinGameInteractor,
+            ClientSocketHandler socketHandler
+    ) {
+        this.publisher = publisher;
+        this.model = model;
+        this.createGameInteractor = createGameInteractor;
+        this.joinGameInteractor = joinGameInteractor;
+        this.socketHandler = socketHandler;
+    }
 
     /*
     Method called when View All Rooms Button is Pressed
