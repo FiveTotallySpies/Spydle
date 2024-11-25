@@ -34,6 +34,7 @@ public class GameRoomPresenter {
     public void onNewTurn(CbNewTurn newTurn) {
         model.setCurrentTurnPlayer(newTurn.getCurrentPlayer());
         model.setCurrentSubstring(newTurn.getAssignedString());
+        view.updateGame();
     }
 
 }
