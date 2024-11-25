@@ -6,13 +6,14 @@ import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import jakarta.annotation.Nullable;
-import jakarta.annotation.PreDestroy;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHttpHeaders;
@@ -81,9 +82,11 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         logger.info("Established connection to websocket");
     }
 
-    @PreDestroy
-    public void onShutdown() {
-        close(new CloseStatus(CloseStatus.NORMAL.getCode(), "Client shutdown"));
+    @EventListener
+    public void onShutdown(ContextClosedEvent event) {
+        if (isOpen()) {
+            close(new CloseStatus(CloseStatus.NORMAL.getCode(), "Client shutdown"));
+        }
     }
 
     @Override
