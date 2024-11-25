@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-@Profile("!local")
+@Profile("!test & !local")
 public class CreateGameInteractor implements CreateGameInputBoundary {
 
     private final String gameServerOverwrite;

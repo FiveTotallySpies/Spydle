@@ -11,7 +11,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 @Component
-@Profile("!local")
+@Profile("!test")
 public class GameRoomView extends JPanel {
 
     private final GameRoomViewModel model;

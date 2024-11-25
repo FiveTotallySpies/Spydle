@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!local")
+@Profile("!test")
 public class GameRoomPresenter {
 
     private final GameRoomViewModel model;
