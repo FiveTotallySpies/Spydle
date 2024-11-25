@@ -2,15 +2,15 @@ package dev.totallyspies.spydle.frontend.interface_adapters.welcome;
 
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
-import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.ErrorViewEvent;
+import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
+import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameInputBoundary;
 import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameInputData;
-import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameInteractor;
 import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameOutputData;
 import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameOutputDataFail;
 import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameOutputDataSuccess;
+import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameInputBoundary;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameInputData;
-import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameInteractor;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputData;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataFail;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataSuccess;
@@ -30,16 +30,16 @@ public class WelcomeViewController {
     private final ApplicationEventPublisher publisher;
     private final WelcomeViewModel welcomeModel;
     private final GameRoomViewModel gameRoomModel;
-    private final CreateGameInteractor createGameInteractor;
-    private final JoinGameInteractor joinGameInteractor;
+    private final CreateGameInputBoundary createGameInteractor;
+    private final JoinGameInputBoundary joinGameInteractor;
     private final ClientSocketHandler socketHandler;
 
     public WelcomeViewController(
             ApplicationEventPublisher publisher,
             WelcomeViewModel welcomeModel,
             GameRoomViewModel gameRoomModel,
-            CreateGameInteractor createGameInteractor,
-            JoinGameInteractor joinGameInteractor,
+            CreateGameInputBoundary createGameInteractor,
+            JoinGameInputBoundary joinGameInteractor,
             ClientSocketHandler socketHandler
     ) {
         this.publisher = publisher;
