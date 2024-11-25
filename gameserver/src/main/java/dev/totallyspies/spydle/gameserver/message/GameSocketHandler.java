@@ -249,10 +249,8 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
     public void closeAllSessions(CloseStatus status) {
         synchronized (sessions) {
-            // Needs to be a while loop to avoid CME
-            Iterator<WebSocketSession> sessionIterator = sessions.values().iterator();
-            while (sessionIterator.hasNext()) {
-                WebSocketSession session = sessionIterator.next();
+            // New list to avoid CME
+            for (WebSocketSession session : new LinkedList<>(sessions.values())) {
                 try {
                     session.close(status);
                 } catch (Exception exception) {
