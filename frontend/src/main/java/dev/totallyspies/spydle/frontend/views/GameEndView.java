@@ -11,7 +11,7 @@ import java.util.List;
 
 @org.springframework.stereotype.Component
 @Profile("!local")
-public class GameEndView extends JPanel {
+public class GameEndView extends JPanel implements CardView {
 
     private final GameEndViewController controller;
 
@@ -105,7 +105,7 @@ public class GameEndView extends JPanel {
         rankingsPanel.removeAll();
         int i = 1;
         for (Player player : model.getPlayers()) {
-            JLabel placement = new JLabel("#" + (i++) + ": 🥇 " + player.getPlayerName() + " - " + player.getScore() + " points");
+            JLabel placement = new JLabel("#" + (i++) + ": " + player.getPlayerName() + " - " + player.getScore() + " points");
             placement.setFont(new Font("Arial", Font.PLAIN, 18));
             placement.setForeground(new Color(212, 175, 55)); // Darker gold color
             placement.setAlignmentX(Component.CENTER_ALIGNMENT);

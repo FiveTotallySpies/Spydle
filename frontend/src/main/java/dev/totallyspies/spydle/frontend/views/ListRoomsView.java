@@ -14,7 +14,7 @@ import org.springframework.context.event.EventListener;
 
 @org.springframework.stereotype.Component
 @Profile("!local")
-public class ListRoomsView extends JPanel {
+public class ListRoomsView extends JPanel implements CardView {
 
     private final ListRoomsViewController controller;
     private final ListRoomsViewModel model;

@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.frontend.interface_adapters.list_rooms;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.use_cases.list_games.ListGamesInteractor;
 import dev.totallyspies.spydle.frontend.use_cases.list_games.ListGamesOutputData;
+import dev.totallyspies.spydle.frontend.views.WelcomeView;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

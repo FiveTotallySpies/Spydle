@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 @Component
 @Profile("!local")
-public class GameRoomView extends JPanel {
+public class GameRoomView extends JPanel implements CardView {
 
     private final GameRoomViewModel model;
     private final GameRoomViewController controller;

@@ -1,11 +1,13 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.game_room;
 
 import dev.totallyspies.spydle.frontend.client.message.CbMessageListener;
+import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.shared.proto.messages.CbNewTurn;
 import dev.totallyspies.spydle.shared.proto.messages.CbTimerTick;
 import dev.totallyspies.spydle.shared.proto.messages.CbUpdatePlayerList;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,6 +39,13 @@ public class GameRoomPresenter {
         model.setCurrentTurnPlayer(newTurn.getCurrentPlayer());
         model.setCurrentSubstring(newTurn.getAssignedString());
         view.updateGame();
+    }
+
+    @EventListener
+    public void onSwitchView(SwitchViewEvent event) {
+        if (!event.getViewClass().equals(GameRoomView.class)) {
+            model.reset();
+        }
     }
 
 }

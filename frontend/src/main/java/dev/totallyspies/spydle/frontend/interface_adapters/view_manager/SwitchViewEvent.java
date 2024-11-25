@@ -1,5 +1,6 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.view_manager;
 
+import dev.totallyspies.spydle.frontend.views.CardView;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
@@ -9,9 +10,9 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class SwitchViewEvent extends ApplicationEvent {
 
-    private final Class<?> viewClass;
+    private final Class<? extends CardView> viewClass;
 
-    public SwitchViewEvent(Object source, Class<?> viewClass) {
+    public SwitchViewEvent(Object source, Class<? extends CardView> viewClass) {
         super(source);
         this.viewClass = viewClass;
     }
