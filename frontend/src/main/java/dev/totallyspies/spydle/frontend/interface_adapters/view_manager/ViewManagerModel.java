@@ -5,6 +5,9 @@ import dev.totallyspies.spydle.frontend.views.GameEndView;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.frontend.views.ListRoomsView;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import lombok.Getter;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
@@ -22,6 +25,7 @@ public class ViewManagerModel extends JFrame {
 
     // Define the CardLayout and panel container
     private final CardLayout cardLayout;
+    @Getter
     private String currentCard;
     private final JPanel panelContainer;
 

@@ -28,8 +28,8 @@ public class JoinGameInteractor implements JoinGameInputBoundary {
         JoinGameRequestModel request = new JoinGameRequestModel()
                 .clientId(clientId.toString())
                 .playerName(data.getPlayerName())
-                .roomCode(data.getRoomCode());
-        Object response = webClient.postEndpoint("/create-game", request, JoinGameResponseModel.class);
+                .roomCode(data.getRoomCode().toUpperCase());
+        Object response = webClient.postEndpoint("/join-game", request, JoinGameResponseModel.class);
         if (response instanceof JoinGameResponseModel responseModel) {
             String ip = gameServerOverwrite == null || gameServerOverwrite.isBlank()
                     ? responseModel.getGameServer().getAddress()

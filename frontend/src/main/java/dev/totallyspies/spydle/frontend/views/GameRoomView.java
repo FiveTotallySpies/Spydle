@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 @Component
@@ -93,7 +91,13 @@ public class GameRoomView extends JPanel {
         submitButton.addActionListener(event -> {
             model.setStringEntered(substringInputField.getText());
             // Handle the entered substring as needed
-            System.out.println("Entered substring: " + model.getStringEntered());
+            controller.guessWord();
+        });
+        // Occurs when you hit the enter button with the input field in focus
+        substringInputField.addActionListener(event -> {
+            model.setStringEntered(substringInputField.getText());
+            // Handle the entered substring as needed
+            controller.guessWord();
         });
 
         // Note that we only add the inputPanel to the container if it is our turn during updateGame()
@@ -115,6 +119,7 @@ public class GameRoomView extends JPanel {
                 .equals(model.getLocalPlayer().getPlayerName())) {
             // Add the input panel to the bottom of the container
             container.add(inputPanel, BorderLayout.SOUTH);
+            substringInputField.requestFocus();
         } else {
             container.remove(inputPanel);
         }
