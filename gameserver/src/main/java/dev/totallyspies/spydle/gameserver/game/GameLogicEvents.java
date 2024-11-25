@@ -16,7 +16,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class GameLogicEvents {
@@ -24,7 +23,6 @@ public class GameLogicEvents {
     private static final long TIMER_INTERVAL_MILLIS = 1000;
 
     private final Timer timer = new Timer();
-    private final AtomicLong gameStartMillis = new AtomicLong(0);
 
     @Autowired
     private GameLogic gameLogic;
@@ -63,25 +61,16 @@ public class GameLogicEvents {
 
         /* 2. Update the game logic state, send the game start message to every player. */
         /* Sessions should be sorted */
-        gameLogic.gameStart(getSessionsSorted(), event.getTotalGameTimeSeconds());
+        gameLogic.gameStart(getSessionsSorted(), event.getTotalGameTimeSeconds(), event.getTurnTimeSeconds());
         gameSocketHandler.broadcastCbMessage(gameStartMessage());
 
         /* 3. Start the game timer. */
-        gameStartMillis.set(System.currentTimeMillis());
-
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                GameLogicEvents.this.onTimerTick(this);
+                GameLogicEvents.this.onTimerTick();
             }
         }, TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
-
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                GameLogicEvents.this.onGameEnd();
-            }
-        }, gameLogic.getTotalGameTimeMillis());
 
         /* 4. Make a new turn. */
         gameLogic.newTurn();
@@ -108,19 +97,36 @@ public class GameLogicEvents {
         }
     }
 
-    private void onTimerTick(TimerTask task) {
-        long millisPassed = System.currentTimeMillis() - gameStartMillis.get();
-        long millisLeft = gameLogic.getTotalGameTimeMillis() - millisPassed;
-        if (millisLeft < 0) {
-            task.cancel();
+    private void onTimerTick() {
+        long curMillis = System.currentTimeMillis();
+        long gamePassedMillis = curMillis - gameLogic.getGameStartMillis();
+        long turnPassedMillis = curMillis - gameLogic.getLastTurnStartMillis();
+
+        long gameMillisLeft = gameLogic.getTotalGameTimeMillis() - gamePassedMillis;
+
+        /* Using Math.min to consider the case when there is less time left of the game then the usual game time */
+        long turnMillisLeft = Math.min(gameLogic.getTurnTimeMillis() - turnPassedMillis, gameMillisLeft);
+
+        if (gameMillisLeft <= 0) {
+            this.onGameEnd();
+            this.timer.cancel();
             return;
         }
 
-        var secondsLeft = (int) Math.round(millisLeft / 1000.0);
+        if (turnMillisLeft <= 0) {
+            gameLogic.newTurn();
+            gameSocketHandler.broadcastCbMessage(newTurnMessage());
+        }
+
+        var gameSecondsLeft = (int) Math.round(gameMillisLeft / 1000.0);
+        var turnSecondsLeft = (int) Math.round(turnMillisLeft / 1000.0);
 
         var cbMessage = CbMessage
                 .newBuilder()
-                .setTimerTick(CbTimerTick.newBuilder().setTimeLeftSeconds(secondsLeft))
+                .setTimerTick(CbTimerTick
+                                .newBuilder()
+                                .setGameTimeLeftSeconds(gameSecondsLeft)
+                                .setTurnTimeLeftSeconds(turnSecondsLeft))
                 .build();
 
         gameSocketHandler.broadcastCbMessage(cbMessage);
@@ -128,7 +134,6 @@ public class GameLogicEvents {
 
     private void onGameEnd() {
         /* The game timer has ended, we can use the players list from the game logic*/
-        this.timer.cancel();
         var players = gameLogic.getPlayersScoreSorted()
                 .stream()
                 .map(this::playerMessage)
@@ -149,13 +154,13 @@ public class GameLogicEvents {
         } else {
             /* Otherwise send a list of connected sessions */
             var players = getSessionsSorted()
-                            .stream().map(
-                                    clientSession ->
-                                            Player.newBuilder()
-                                                    .setPlayerName(clientSession.getPlayerName())
-                                                    .setScore(0)
-                                                    .build()
-                            ).toList();
+                    .stream().map(
+                            clientSession ->
+                                    Player.newBuilder()
+                                            .setPlayerName(clientSession.getPlayerName())
+                                            .setScore(0)
+                                            .build()
+                    ).toList();
             gameSocketHandler.broadcastCbMessage(updatePlayerListMessage(players));
         }
     }
@@ -177,6 +182,7 @@ public class GameLogicEvents {
                 .setGameStart(
                         CbGameStart.newBuilder()
                                 .setTotalGameTimeSeconds(gameLogic.getTotalGameTimeSeconds())
+                                .setTurnTimeSeconds(gameLogic.getTurnTimeSeconds())
                                 .addAllPlayers(msgPlayers)
                 ).build();
     }

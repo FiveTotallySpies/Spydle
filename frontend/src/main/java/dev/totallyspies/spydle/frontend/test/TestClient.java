@@ -73,7 +73,7 @@ public class TestClient {
          */
         this.player1.open(ip, port);
         waitMs(500); this.player2.open(ip, port);
-        waitMs(500); testStartNewGame(player1, 5);
+        waitMs(500); testStartNewGame(player1, 12, 3);
         waitMs(1500); testGuess(player2, "gist"); // right guess // need to wait more here
         waitMs(500); testGuess(player1, "QWERTY"); // wrong guess
         /*
@@ -115,9 +115,10 @@ public class TestClient {
         */
     }
 
-    public void testStartNewGame(TestPlayer player, int timeSeconds) {
+    public void testStartNewGame(TestPlayer player, int gameTimeSeconds, int turnTimeSeconds) {
         var message = SbMessage.newBuilder().setStartGame(
-                SbStartGame.newBuilder().setTotalGameTimeSeconds(timeSeconds)
+                SbStartGame.newBuilder().setTotalGameTimeSeconds(gameTimeSeconds)
+                                        .setTurnTimeSeconds(turnTimeSeconds)
         ).build();
 
         player.send(message);

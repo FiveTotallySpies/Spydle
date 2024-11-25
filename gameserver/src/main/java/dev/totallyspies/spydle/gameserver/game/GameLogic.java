@@ -3,15 +3,14 @@ package dev.totallyspies.spydle.gameserver.game;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Component
@@ -26,9 +25,12 @@ public class GameLogic {
 
     private final AtomicInteger turn;
     private final AtomicReference<String> currentSubString;
+    private final AtomicInteger turnTimeSeconds = new AtomicInteger(15); // length of 15 seconds by default
     private final AtomicInteger gameTimeSeconds = new AtomicInteger(60); // length of 1 minute by default
     private final AtomicReference<Set<String>> validWords;
     private final AtomicReference<List<String>> substrings;
+    private final AtomicLong lastTurnStartMillis = new AtomicLong(0);
+    private final AtomicLong gameStartMillis = new AtomicLong(0);
 
     private final Random random = new Random(0);
 
@@ -94,10 +96,15 @@ public class GameLogic {
     }
 
     /* Assuming sessions are sorted by name of the player, increasing */
-    public void gameStart(Collection<ClientSession> sessions, int proposedGameTimeSeconds) {
+    public void gameStart(Collection<ClientSession> sessions, int proposedGameTimeSeconds, int proposedTurnTimeSeconds) {
         if (isValidTotalGameTime(proposedGameTimeSeconds)) {
             this.gameTimeSeconds.set(proposedGameTimeSeconds);
         }
+
+        if (isValidTurnTime(proposedTurnTimeSeconds)) {
+            this.turnTimeSeconds.set(proposedTurnTimeSeconds);
+        }
+
         List<Player> players = new ArrayList<>();
         for (ClientSession session : sessions) {
             var player = new Player(session.getClientId(), session.getPlayerName(), 0);
@@ -115,12 +122,14 @@ public class GameLogic {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        this.gameStartMillis.set(System.currentTimeMillis());
     }
 
     public void newTurn() {
         var randomIndex = this.random.nextInt(this.substrings.get().size());
         this.currentSubString.set(this.substrings.get().get(randomIndex));
         this.turn.incrementAndGet();
+        this.lastTurnStartMillis.set(System.currentTimeMillis());
     }
 
     public boolean isPlayerTurn(UUID playerId) {
@@ -164,6 +173,15 @@ public class GameLogic {
         }
     }
 
+
+    public long getGameStartMillis() { return this.gameStartMillis.get(); }
+
+    public long getLastTurnStartMillis() { return this.lastTurnStartMillis.get(); }
+
+    public int getTurnTimeSeconds() { return this.turnTimeSeconds.get(); }
+
+    public long getTurnTimeMillis() { return this.turnTimeSeconds.get() * 1000L; }
+
     public int getTotalGameTimeSeconds() {
         return this.gameTimeSeconds.get();
     }
@@ -174,6 +192,10 @@ public class GameLogic {
 
     public boolean isValidTotalGameTime(int seconds) {
         return (seconds >= 5 && seconds <= 1000);
+    }
+
+    public boolean isValidTurnTime(int seconds) {
+        return (seconds >= 3 && seconds <= 30);
     }
 
     public String getCurrentSubString() {
