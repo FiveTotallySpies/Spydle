@@ -65,7 +65,7 @@ public class GameEndView extends JPanel {
         container.add(Box.createVerticalStrut(20));
         container.add(backButton);
 
-        // Add container to the center of the GameOverView using GridBagConstraints
+        // Add container to the center of the GameEndView using GridBagConstraints
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;

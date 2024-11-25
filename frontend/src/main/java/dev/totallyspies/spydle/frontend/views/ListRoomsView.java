@@ -88,7 +88,7 @@ public class ListRoomsView extends JPanel {
 
     @EventListener
     public void onSwitchView(SwitchViewEvent event) {
-        if (event.getViewName().equals("ListRoomsView")) {
+        if (event.getViewClass().equals(ListRoomsView.class)) {
             controller.updateRoomList();
         }
     }

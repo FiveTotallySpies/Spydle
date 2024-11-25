@@ -9,11 +9,11 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class SwitchViewEvent extends ApplicationEvent {
 
-    private final String viewName;
+    private final Class<?> viewClass;
 
-    public SwitchViewEvent(Object source, String viewName) {
+    public SwitchViewEvent(Object source, Class<?> viewClass) {
         super(source);
-        this.viewName = viewName;
+        this.viewClass = viewClass;
     }
 
 }

@@ -6,6 +6,7 @@ import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import jakarta.annotation.Nullable;
+import jakarta.annotation.PreDestroy;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -80,6 +81,11 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         logger.info("Established connection to websocket");
     }
 
+    @PreDestroy
+    public void onShutdown() {
+        close(new CloseStatus(CloseStatus.NORMAL.getCode(), "Client shutdown"));
+    }
+
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         this.session.set(null);
@@ -106,12 +112,12 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         return socketSession != null && socketSession.isOpen();
     }
 
-    public void close() {
+    public void close(CloseStatus status) {
         if (!isOpen()) {
             throw new IllegalStateException("Cannot close non-open session!");
         }
         try {
-            session.get().close(new CloseStatus(CloseStatus.GOING_AWAY.getCode(), "Client prompted session termination"));
+            session.get().close(status);
         } catch (IOException exception) {
             throw new RuntimeException("Failed to close socket handler", exception);
         }

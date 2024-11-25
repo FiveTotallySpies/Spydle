@@ -1,5 +1,6 @@
 package dev.totallyspies.spydle.gameserver.game;
 
+import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
 import dev.totallyspies.spydle.gameserver.message.GameSocketHandler;
 import dev.totallyspies.spydle.gameserver.message.SbMessageListener;
 import dev.totallyspies.spydle.gameserver.message.session.SessionCloseEvent;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.web.socket.CloseStatus;
 
 @Component
 public class GameLogicEvents {
@@ -37,6 +39,9 @@ public class GameLogicEvents {
 
     @Autowired
     public GameServer gameServer;
+
+    @Autowired
+    private AgonesHook agonesHook;
 
     @EventListener(SessionOpenEvent.class)
     public void onSessionOpen() {
@@ -135,6 +140,10 @@ public class GameLogicEvents {
                 .toList();
 
         gameSocketHandler.broadcastCbMessage(gameEndMessage(players));
+
+        // Shutdown
+        gameSocketHandler.closeAllSessions(new CloseStatus(CloseStatus.NORMAL.getCode(), "Game over"));
+        agonesHook.getAgones().shutdown(); // Shutdown server
     }
 
     private void broadcastPlayers() {

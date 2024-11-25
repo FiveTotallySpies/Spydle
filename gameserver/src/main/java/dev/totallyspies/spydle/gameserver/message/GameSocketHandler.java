@@ -246,6 +246,18 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         }
     }
 
+    public void closeAllSessions(CloseStatus status) {
+        synchronized (sessions) {
+            for (WebSocketSession socketSession : sessions.values()) {
+                try {
+                    socketSession.close(status);
+                } catch (Exception exception) {
+                    logger.error("FATAL: Failed to close session {}", socketSession, exception);
+                }
+            }
+        }
+    }
+
     @Nullable
     private static String getHeader(WebSocketSession session, String headerName) {
         List<String> headerValues = session.getHandshakeHeaders().get(headerName);

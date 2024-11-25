@@ -23,7 +23,7 @@ public class ListRoomsViewController {
     Method called when View All Rooms Button is Pressed
      */
     public void openWelcomeView() {
-        publisher.publishEvent(new SwitchViewEvent(this, "WelcomeView"));
+        publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
     }
 
     public void updateRoomList() {

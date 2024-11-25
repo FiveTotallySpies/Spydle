@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import org.springframework.web.socket.CloseStatus;
 
 /*
 Game View, which also acts as the window Frame
@@ -25,7 +26,6 @@ public class ViewManagerModel extends JFrame {
 
     // Define the CardLayout and panel container
     private final CardLayout cardLayout;
-    @Getter
     private String currentCard;
     private final JPanel panelContainer;
 
@@ -60,7 +60,7 @@ public class ViewManagerModel extends JFrame {
         panelContainer.add(this.welcomeView, "WelcomeView");
         panelContainer.add(this.listRoomsView, "ListRoomsView");
         panelContainer.add(this.gameRoomView, "GameRoomView");
-        panelContainer.add(this.gameEndView, "GameOverView");
+        panelContainer.add(this.gameEndView, "GameEndView");
 
         // Add the panel container to the frame
         add(panelContainer);
@@ -74,7 +74,7 @@ public class ViewManagerModel extends JFrame {
     // Method to switch between panels
     @EventListener
     public void handleViewSwitch(SwitchViewEvent event) {
-        currentCard = event.getViewName();
+        currentCard = event.getViewClass().getName();
         cardLayout.show(panelContainer, currentCard);
     }
 
@@ -85,8 +85,8 @@ public class ViewManagerModel extends JFrame {
 
     @EventListener
     public void onSocketFail(ClientSocketHandler.CloseEvent event) {
-        if (currentCard.equals("GameRoomView")) {
-            publisher.publishEvent(new SwitchViewEvent(this, "WelcomeView"));
+        if (currentCard.equals("GameRoomView") && event.getStatus().getCode() != CloseStatus.NORMAL.getCode()) {
+            publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
             JOptionPane.showMessageDialog(this, "Client socket failed: status " + event.getStatus());
         }
     }

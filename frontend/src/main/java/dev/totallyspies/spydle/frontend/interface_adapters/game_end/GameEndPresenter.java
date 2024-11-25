@@ -26,7 +26,7 @@ public class GameEndPresenter {
     public void onGameEnd(CbGameEnd gameEnd) {
         model.setPlayers(gameEnd.getPlayersList());
         view.setPlacements();
-        publisher.publishEvent(new SwitchViewEvent(this, "GameEndView"));
+        publisher.publishEvent(new SwitchViewEvent(this, GameEndView.class));
     }
 
 }
