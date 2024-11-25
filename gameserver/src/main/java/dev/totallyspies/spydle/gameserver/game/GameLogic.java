@@ -73,12 +73,18 @@ public class GameLogic {
         var substrings = new ArrayList<String>();
         ClassPathResource resource = new ClassPathResource("substrings.csv");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+            reader.readLine(); // skip the first line
             String line;
             while ((line = reader.readLine()) != null) {
-                // Split the line by commas and add each part to the list
-                String[] parts = line.split(",");
-                for (String part : parts) {
-                    substrings.add(part.trim()); // Use trim() to clean up whitespace
+                if (!line.isEmpty()) {
+                    line = line.trim().toLowerCase();
+
+                    String[] split = line.split(",");
+                    String substr = split[0];
+                    int occ = Integer.parseInt(split[1]);
+                    if (occ >= MINIMUM_OCCURRENCES) {
+                        substrings.add(substr);
+                    }
                 }
             }
         } catch (Exception exception) {
