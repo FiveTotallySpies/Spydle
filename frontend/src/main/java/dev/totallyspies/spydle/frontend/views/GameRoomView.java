@@ -2,10 +2,8 @@ package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewController;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
-import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
-import lombok.Getter;
-import org.springframework.context.event.EventListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -13,6 +11,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 @Component
+@Profile("!local")
 public class GameRoomView extends JPanel {
 
     private final GameRoomViewModel model;

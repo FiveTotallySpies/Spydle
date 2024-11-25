@@ -5,9 +5,11 @@ import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.shared.proto.messages.CbNewTurn;
 import dev.totallyspies.spydle.shared.proto.messages.CbTimerTick;
 import dev.totallyspies.spydle.shared.proto.messages.CbUpdatePlayerList;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!local")
 public class GameRoomPresenter {
 
     private final GameRoomViewModel model;

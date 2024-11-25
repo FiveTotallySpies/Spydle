@@ -5,10 +5,12 @@ import jakarta.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.Data;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
 @Data
+@Profile("!local")
 public class GameRoomViewModel {
 
     private List<Player> playerList = new LinkedList<>(); // List of all players in order

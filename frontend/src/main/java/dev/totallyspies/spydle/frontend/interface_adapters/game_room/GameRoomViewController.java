@@ -9,9 +9,11 @@ import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!local")
 public class GameRoomViewController {
 
     private final Logger logger = LoggerFactory.getLogger(GameRoomViewController.class);

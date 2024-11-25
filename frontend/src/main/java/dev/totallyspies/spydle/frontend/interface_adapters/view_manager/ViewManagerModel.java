@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import lombok.Getter;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.awt.*;
 Game View, which also acts as the window Frame
  */
 @Component
+@Profile("!local")
 public class ViewManagerModel extends JFrame {
 
     // Define the CardLayout and panel container

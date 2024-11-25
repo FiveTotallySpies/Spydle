@@ -2,6 +2,7 @@ package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.welcome.WelcomeViewController;
 import dev.totallyspies.spydle.frontend.interface_adapters.welcome.WelcomeViewModel;
+import org.springframework.context.annotation.Profile;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -13,6 +14,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 @org.springframework.stereotype.Component
+@Profile("!local")
 public class WelcomeView extends JPanel {
 
     private final WelcomeViewController controller;
