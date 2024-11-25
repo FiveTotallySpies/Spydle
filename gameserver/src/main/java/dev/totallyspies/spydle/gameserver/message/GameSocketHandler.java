@@ -10,6 +10,7 @@ import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
+import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -248,11 +249,14 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
     public void closeAllSessions(CloseStatus status) {
         synchronized (sessions) {
-            for (WebSocketSession socketSession : sessions.values()) {
+            // Needs to be a while loop to avoid CME
+            Iterator<WebSocketSession> sessionIterator = sessions.values().iterator();
+            while (sessionIterator.hasNext()) {
+                WebSocketSession session = sessionIterator.next();
                 try {
-                    socketSession.close(status);
+                    session.close(status);
                 } catch (Exception exception) {
-                    logger.error("FATAL: Failed to close session {}", socketSession, exception);
+                    logger.error("FATAL: Failed to close session {}", session, exception);
                 }
             }
         }
