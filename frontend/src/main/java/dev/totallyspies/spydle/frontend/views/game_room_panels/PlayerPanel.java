@@ -27,5 +27,7 @@ class PlayerPanel extends JPanel {
     public void updateScore(int points) {
         pointsLabel.setText("Score: " + points);
     }
-
+    public void setPlayerBorder(Color color, int thickness) {
+        setBorder(BorderFactory.createLineBorder(color, thickness));
+    }
 }
