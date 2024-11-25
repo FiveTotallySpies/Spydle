@@ -102,17 +102,26 @@ public class GameRoomView extends JPanel {
     }
 
     public void updateGame() {
+        final JLabel timerLabel;
+
         gamePanel.updateGame(); // Update game panel
 
         roomCodeLabel.setText("Room Code: " + model.getRoomCode());
 
         // check if the local player matches the player at the current turn
-        if (model.getCurrentTurnPlayer() != null
+        if (true || model.getCurrentTurnPlayer() != null
                 && model.getLocalPlayer() != null
                 && model.getCurrentTurnPlayer().getPlayerName()
                 .equals(model.getLocalPlayer().getPlayerName())) {
             // Add the input panel to the bottom of the container
+
+            timerLabel = new JLabel("Timer: 0:00", SwingConstants.CENTER);
+            timerLabel.setText("Timer: " + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
+
+
+            container.add(timerLabel, BorderLayout.SOUTH);
             container.add(inputPanel, BorderLayout.SOUTH);
+
         } else {
             container.remove(inputPanel);
         }
