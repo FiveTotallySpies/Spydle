@@ -57,6 +57,7 @@ public class GameRoomViewController {
 
     public void guessWord() {
         guessWordInteractor.execute(new GuessWordInputData(model.getStringEntered()));
+        publisher.publishEvent(new GuessWordEvent(this, model.getStringEntered()));
     }
 
 }

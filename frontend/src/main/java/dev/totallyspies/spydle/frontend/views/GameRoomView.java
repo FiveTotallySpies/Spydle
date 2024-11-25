@@ -109,7 +109,11 @@ public class GameRoomView extends JPanel implements CardView {
         add(container, BorderLayout.CENTER);
     }
 
-    public void updateGame() {
+    public void clearSubstringInputField() {
+        substringInputField.setText("");
+    }
+
+    public synchronized void updateGame() {
         gamePanel.updateGame(); // Update game panel
 
         roomCodeLabel.setText("Room Code: " + model.getRoomCode());
