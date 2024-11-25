@@ -148,8 +148,8 @@ public class GameLogicEvents {
         gameSocketHandler.broadcastCbMessage(gameEndMessage(players));
 
         // Shutdown
+        gameSocketHandler.closeAllSessions(new CloseStatus(CloseStatus.NORMAL.getCode(), "Game over"));
         if (agonesHook != null) {
-            gameSocketHandler.closeAllSessions(new CloseStatus(CloseStatus.NORMAL.getCode(), "Game over"));
             agonesHook.getAgones().shutdown(); // Shutdown server
         } else {
             context.close(); // Shutdown
