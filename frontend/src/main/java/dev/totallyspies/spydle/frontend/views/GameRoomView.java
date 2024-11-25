@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.frontend.views;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewController;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 @Component
+@Profile("!local")
 public class GameRoomView extends JPanel {
 
     private final GameRoomViewModel model;
