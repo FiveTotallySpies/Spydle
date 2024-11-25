@@ -5,7 +5,6 @@ import dev.totallyspies.spydle.shared.proto.messages.Player;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +17,7 @@ public class GamePanel extends JPanel {
 
     private final GameRoomViewModel model;
 
-    private final Map<Player, PlayerPanel> playerPanels = new LinkedHashMap<>();
+    private final Map<String, PlayerPanel> playerPanels = new LinkedHashMap<>();
     private final JLabel substringLabel;
     private final JLabel timerLabel;
     private final ArrowPanel arrowPanel;  // Reference to the arrow panel
@@ -55,10 +54,9 @@ public class GamePanel extends JPanel {
             remove(panel); // Remove panel from the GamePanel
         }
         playerPanels.clear();
-        int i = 1;
         for (Player player : model.getPlayerList()) {
-            PlayerPanel playerPanel = new PlayerPanel("Player " + (i++));
-            playerPanels.put(player, playerPanel);
+            PlayerPanel playerPanel = new PlayerPanel(player.getPlayerName(), player.getScore());
+            playerPanels.put(player.getPlayerName(), playerPanel);
             add(playerPanel);
         }
 
@@ -77,11 +75,7 @@ public class GamePanel extends JPanel {
 
     public void updateGame() {
         // Update list of players
-        Set<String> currentPlayerNames = playerPanels
-                .keySet()
-                .stream()
-                .map(Player::getPlayerName)
-                .collect(Collectors.toSet());
+        Set<String> currentPlayerNames = playerPanels.keySet();
         Set<String> modelPlayerNames = model.getPlayerList()
                 .stream()
                 .map(Player::getPlayerName)
@@ -94,7 +88,7 @@ public class GamePanel extends JPanel {
 
         // Update points
         for (Player player : model.getPlayerList()) {
-            playerPanels.get(player).updateScore(player.getScore());
+            playerPanels.get(player.getPlayerName()).updateScore(player.getScore());
         }
 
         // Update the arrow for the current turn player

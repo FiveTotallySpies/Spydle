@@ -5,11 +5,13 @@ import dev.totallyspies.spydle.matchmaker.generated.model.ClientErrorResponse;
 import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameRequestModel;
 import dev.totallyspies.spydle.matchmaker.generated.model.CreateGameResponseModel;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
+@Profile("!local")
 public class CreateGameInteractor implements CreateGameInputBoundary {
 
     private final String gameServerOverwrite;

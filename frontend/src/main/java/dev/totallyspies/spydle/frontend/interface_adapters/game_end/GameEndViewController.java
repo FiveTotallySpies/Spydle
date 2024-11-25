@@ -2,9 +2,11 @@ package dev.totallyspies.spydle.frontend.interface_adapters.game_end;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!local")
 public class GameEndViewController {
 
     private final ApplicationEventPublisher publisher;

@@ -1,12 +1,14 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.list_rooms;
 
 import dev.totallyspies.spydle.frontend.views.ListRoomsView;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@Profile("!local")
 public class ListRoomsPresenter {
 
     private final ListRoomsView view;
