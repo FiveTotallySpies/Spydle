@@ -14,6 +14,7 @@ import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameInteractor;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputData;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataFail;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataSuccess;
+import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -70,6 +71,7 @@ public class WelcomeViewController {
                         successOutput.getPlayerName()
                 );
                 gameRoomModel.setRoomCode(successOutput.getRoomCode());
+                gameRoomModel.setLocalPlayer(Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
                 publisher.publishEvent(new SwitchViewEvent(this, "GameRoomView"));
             } catch (Exception exception) {
                 fireError("Failed to connect to game server: " + exception.getMessage());
@@ -101,6 +103,7 @@ public class WelcomeViewController {
                         successOutput.getPlayerName()
                 );
                 gameRoomModel.setRoomCode(successOutput.getRoomCode());
+                gameRoomModel.setLocalPlayer(Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
                 publisher.publishEvent(new SwitchViewEvent(this, "GameRoomView"));
             } catch (Exception exception) {
                 fireError("Failed to connect to game server: " + exception.getMessage());
