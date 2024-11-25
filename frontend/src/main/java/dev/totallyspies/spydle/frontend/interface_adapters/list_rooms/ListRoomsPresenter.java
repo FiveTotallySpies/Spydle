@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Profile("!local")
+@Profile("!test")
 public class ListRoomsPresenter {
 
     private final ListRoomsView view;

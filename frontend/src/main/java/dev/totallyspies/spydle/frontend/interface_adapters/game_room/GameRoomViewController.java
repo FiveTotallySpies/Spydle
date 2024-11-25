@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!local")
+@Profile("!test")
 public class GameRoomViewController {
 
     private final Logger logger = LoggerFactory.getLogger(GameRoomViewController.class);

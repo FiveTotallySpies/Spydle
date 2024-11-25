@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-@Profile("!local")
+@Profile("!test")
 public class JoinGameInteractor implements JoinGameInputBoundary {
 
     private final String gameServerOverwrite;

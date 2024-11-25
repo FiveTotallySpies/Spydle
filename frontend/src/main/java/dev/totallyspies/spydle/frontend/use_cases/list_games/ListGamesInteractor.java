@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedList;
 
 @Component
-@Profile("!local")
+@Profile("!test")
 public class ListGamesInteractor implements ListGamesInputBoundary {
 
     public final WebClientService webClient;

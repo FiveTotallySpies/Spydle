@@ -20,7 +20,7 @@ import java.awt.*;
 Game View, which also acts as the window Frame
  */
 @Component
-@Profile("!local")
+@Profile("!test")
 public class ViewManagerModel extends JFrame {
 
     // Define the CardLayout and panel container

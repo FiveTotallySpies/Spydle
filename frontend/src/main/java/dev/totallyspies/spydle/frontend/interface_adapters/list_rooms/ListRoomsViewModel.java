@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
-@Profile("!local")
+@Profile("!test")
 public class ListRoomsViewModel {
 
     private String[] linesInRoomList;

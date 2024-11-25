@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 @org.springframework.stereotype.Component
-@Profile("!local")
+@Profile("!test")
 public class GameEndView extends JPanel {
 
     private final GameEndViewController controller;
