@@ -5,7 +5,6 @@ import dev.totallyspies.spydle.shared.proto.messages.Player;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.swing.*;
 import java.awt.*;
@@ -18,10 +17,9 @@ public class GamePanel extends JPanel {
 
     private final GameRoomViewModel model;
 
-    private final Map<Player, PlayerPanel> playerPanels = new LinkedHashMap<>();
+    private final Map<String, PlayerPanel> playerPanels = new LinkedHashMap<>();
     private final JLabel substringLabel;
     private final JLabel timerLabel;
-    private final ArrowPanel arrowPanel;  // Reference to the arrow panel
 
     public GamePanel(GameRoomViewModel model) {
         this.model = model;
@@ -43,10 +41,6 @@ public class GamePanel extends JPanel {
         // Create player panels in a circle layout
         createPlayerPanels();
 
-        // Add arrow pointing to the current player
-        arrowPanel = new ArrowPanel();
-        arrowPanel.setBounds(390, 220, 20, 50);  // Initial position
-        add(arrowPanel);
     }
 
     // Position players in a circular layout
@@ -55,10 +49,9 @@ public class GamePanel extends JPanel {
             remove(panel); // Remove panel from the GamePanel
         }
         playerPanels.clear();
-        int i = 1;
         for (Player player : model.getPlayerList()) {
-            PlayerPanel playerPanel = new PlayerPanel("Player " + (i++));
-            playerPanels.put(player, playerPanel);
+            PlayerPanel playerPanel = new PlayerPanel(player.getPlayerName(), player.getScore());
+            playerPanels.put(player.getPlayerName(), playerPanel);
             add(playerPanel);
         }
 
@@ -77,11 +70,7 @@ public class GamePanel extends JPanel {
 
     public void updateGame() {
         // Update list of players
-        Set<String> currentPlayerNames = playerPanels
-                .keySet()
-                .stream()
-                .map(Player::getPlayerName)
-                .collect(Collectors.toSet());
+        Set<String> currentPlayerNames = playerPanels.keySet();
         Set<String> modelPlayerNames = model.getPlayerList()
                 .stream()
                 .map(Player::getPlayerName)
@@ -94,48 +83,35 @@ public class GamePanel extends JPanel {
 
         // Update points
         for (Player player : model.getPlayerList()) {
-            playerPanels.get(player).updateScore(player.getScore());
+            playerPanels.get(player.getPlayerName()).updateScore(player.getScore());
         }
 
-        // TODO: make arrow change to model.turnPlayer
+        // Highlight the current turn player's panel with a red border
+        Player currentTurnPlayer = model.getCurrentTurnPlayer();
+        if (currentTurnPlayer != null) {
+            highlightPlayerPanel(currentTurnPlayer);  // Highlight current player
+        }
 
         substringLabel.setText(model.getCurrentSubstring());
         timerLabel.setText("Timer: " + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
-
-        if (model.getCurrentTurnPlayer() != null) {
-            int index = 0;
-            for (Player player : model.getPlayerList()) {
-                if (player.getPlayerName().equals(model.getCurrentTurnPlayer().getPlayerName())) {
-                    break;
-                }
-                index++;
-            }
-            if (index >= model.getPlayerList().size()) {
-                logger.error("Could not find player in player list with current turn player name!");
-            } else {
-                updateArrow(index);
-            }
-        }
 
         revalidate();
         repaint();
     }
 
-    // Move the arrow to point to the current player
-    private void updateArrow(int playerIndex) {
-        int centerX = 400;
-        int centerY = 250;
-        int radius = 150;
-
-        // Calculate the position of the current player in the circle
-        double angle = 2 * Math.PI * playerIndex / playerPanels.size();
-        int x = (int) (centerX + radius * Math.cos(angle) - 10);  // Adjust for arrow positioning
-        int y = (int) (centerY + radius * Math.sin(angle) - 50);  // Adjust for arrow positioning
-
-        // Set the new position of the arrow
-        arrowPanel.setBounds(x, y, 20, 50);  // Adjust the arrow size and position
+    private void highlightPlayerPanel(Player currentTurnPlayer) {
+        // Loop through all player panels and set the border accordingly
+        for (Map.Entry<String, PlayerPanel> entry : playerPanels.entrySet()) {
+            Player player = model.getPlayerList().stream()
+                    .filter(p -> p.getPlayerName().equals(entry.getKey()))
+                    .findFirst().orElse(null);
+            if (player != null && player.equals(currentTurnPlayer)) {
+                entry.getValue().setPlayerBorder(Color.RED, 5);  // Set red border for current player
+            } else {
+                entry.getValue().setPlayerBorder(Color.GRAY, 2);  // Set default gray border for others
+            }
+        }
     }
-
 
 
 //    public static void main(String[] args) {

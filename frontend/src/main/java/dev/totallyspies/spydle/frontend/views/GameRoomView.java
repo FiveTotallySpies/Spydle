@@ -3,15 +3,15 @@ package dev.totallyspies.spydle.frontend.views;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewController;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 @Component
+@Profile("!local")
 public class GameRoomView extends JPanel {
 
     private final GameRoomViewModel model;
@@ -91,7 +91,13 @@ public class GameRoomView extends JPanel {
         submitButton.addActionListener(event -> {
             model.setStringEntered(substringInputField.getText());
             // Handle the entered substring as needed
-            System.out.println("Entered substring: " + model.getStringEntered());
+            controller.guessWord();
+        });
+        // Occurs when you hit the enter button with the input field in focus
+        substringInputField.addActionListener(event -> {
+            model.setStringEntered(substringInputField.getText());
+            // Handle the entered substring as needed
+            controller.guessWord();
         });
 
         // Note that we only add the inputPanel to the container if it is our turn during updateGame()
@@ -102,26 +108,18 @@ public class GameRoomView extends JPanel {
     }
 
     public void updateGame() {
-        final JLabel timerLabel;
-
         gamePanel.updateGame(); // Update game panel
 
         roomCodeLabel.setText("Room Code: " + model.getRoomCode());
 
         // check if the local player matches the player at the current turn
-        if (true || model.getCurrentTurnPlayer() != null
+        if (model.getCurrentTurnPlayer() != null
                 && model.getLocalPlayer() != null
                 && model.getCurrentTurnPlayer().getPlayerName()
                 .equals(model.getLocalPlayer().getPlayerName())) {
             // Add the input panel to the bottom of the container
-
-            timerLabel = new JLabel("Timer: 0:00", SwingConstants.CENTER);
-            timerLabel.setText("Timer: " + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
-
-
-            container.add(timerLabel, BorderLayout.SOUTH);
             container.add(inputPanel, BorderLayout.SOUTH);
-
+            substringInputField.requestFocus();
         } else {
             container.remove(inputPanel);
         }

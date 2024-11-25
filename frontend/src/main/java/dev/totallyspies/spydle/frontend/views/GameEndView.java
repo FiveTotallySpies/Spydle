@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.game_end.GameEndViewController;
+import org.springframework.context.annotation.Profile;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 @org.springframework.stereotype.Component
+@Profile("!local")
 public class GameEndView extends JPanel {
 
     private final GameEndViewController controller;

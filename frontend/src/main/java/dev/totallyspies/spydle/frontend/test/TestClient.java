@@ -68,50 +68,50 @@ public class TestClient {
             * player2 makes a right guess, gets 4 points; both players get GUESS_RESULT message, guess is correct
             * both players get NEW_TURN message, player1 makes a new turn, assigned string: "igh"
             * player1 makes a wrong guess "QWERTY"; both players get a GUESS_RESULT message, guess is wrong
-            * By this time, player1 has 0 points, player2 has 6 points, player2 wins
+            * By this time, player1 has 0 points, player2 has 4 points, player2 wins
             * when the game ends, both players get the list of players sorted by score, descending
          */
         this.player1.open(ip, port);
-        waitMs(300); this.player2.open(ip, port);
-        waitMs(300); testStartNewGame(player1, 5);
-        waitMs(300); testGuess(player2, "gist"); // right guess
-        waitMs(300); testGuess(player1, "QWERTY"); // wrong guess
+        waitMs(500); this.player2.open(ip, port);
+        waitMs(500); testStartNewGame(player1, 5);
+        waitMs(1500); testGuess(player2, "gist"); // right guess // need to wait more here
+        waitMs(500); testGuess(player1, "QWERTY"); // wrong guess
         /*
         Expected logs (shortened):
         */
         /*
-        Established connection to websocket
-        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 1....1, message: update_player_list {  players {    player_name: "player1"  }}
-        Established connection to websocket
-        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 1....1, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"  }}
-        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 2....2, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"  }}
-        Sending server message start_game{total_game_time_seconds:5}
-        Fired message with PayloadCase GAME_START with client 1....1, message: game_start {  players {    player_name: "player1"  }  players {    player_name: "player2"  }  total_game_time_seconds: 5}
-        Fired message with PayloadCase GAME_START with client 2....2, message: game_start {  players {    player_name: "player1"  }  players {    player_name: "player2"  }  total_game_time_seconds: 5}
-        Fired message with PayloadCase NEW_TURN with client 1....1, message: new_turn {  assigned_string: "AAA"  current_player_name: "player2"}
-        Fired message with PayloadCase NEW_TURN with client 2....2, message: new_turn {  assigned_string: "AAA"  current_player_name: "player2"}
-        Sending server message guess{guessed_word:"AAAAAA"}
-        Fired message with PayloadCase GUESS_RESULT with client 2....2, message: guess_result {  player_name: "player2"  guess: "AAAAAA"  correct: true}
-        Fired message with PayloadCase GUESS_RESULT with client 1....1, message: guess_result {  player_name: "player2"  guess: "AAAAAA"  correct: true}
-        Fired message with PayloadCase NEW_TURN with client 2....2, message: new_turn {  assigned_string: "BBB"  current_player_name: "player1"}
-        Fired message with PayloadCase NEW_TURN with client 1....1, message: new_turn {  assigned_string: "BBB"  current_player_name: "player1"}
-        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 2....2, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"    score: 6  }}
-        Fired message with PayloadCase UPDATE_PLAYER_LIST with client 1....1, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"    score: 6  }}
-        Sending server message guess{guessed_word:"QWERTY"}
-        Fired message with PayloadCase GUESS_RESULT with client 1....1, message: guess_result {  player_name: "player1"  guess: "QWERTY"}
-        Fired message with PayloadCase GUESS_RESULT with client 2....2, message: guess_result {  player_name: "player1"  guess: "QWERTY"}
-        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 4}
-        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 4}
-        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 3}
-        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 3}
-        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 2}
-        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 2}
-        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 1}
-        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 1}
-        Fired message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {}
-        Fired message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {}
-        Fired message with PayloadCase GAME_END with client 2....2, message: game_end {  players {    player_name: "player2"    score: 6  }  players {    player_name: "player1"  }}
-        Fired message with PayloadCase GAME_END with client 1....1, message: game_end {  players {    player_name: "player2"    score: 6  }  players {    player_name: "player1"  }}
+         Established connection to websocket
+         Opened socket connection with gameserver at localhost:7654, with client ID 1....1 and name player1
+         Firing message with PayloadCase UPDATE_PLAYER_LIST with client 1....1, message: update_player_list {  players {    player_name: "player1"  }}
+         Established connection to websocket
+         Opened socket connection with gameserver at localhost:7654, with client ID 2....2 and name player2
+         Firing message with PayloadCase UPDATE_PLAYER_LIST with client 1....1, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"  }}
+         Firing message with PayloadCase UPDATE_PLAYER_LIST with client 2....2, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"  }}
+         Sending server message start_game{total_game_time_seconds:5}
+         Firing message with PayloadCase GAME_START with client 2....2, message: game_start {  players {    player_name: "player1"  }  players {    player_name: "player2"  }  total_game_time_seconds: 5}
+         Firing message with PayloadCase GAME_START with client 1....1, message: game_start {  players {    player_name: "player1"  }  players {    player_name: "player2"  }  total_game_time_seconds: 5}
+         Firing message with PayloadCase NEW_TURN with client 2....2, message: new_turn {  assigned_string: "gis"  current_player {    player_name: "player2"  }}
+         Firing message with PayloadCase NEW_TURN with client 1....1, message: new_turn {  assigned_string: "gis"  current_player {    player_name: "player2"  }}
+         Sending server message guess{guessed_word:"gist"}
+         Firing message with PayloadCase GUESS_RESULT with client 2....2, message: guess_result {  player_name: "player2"  guess: "gist"  correct: true}
+         Firing message with PayloadCase GUESS_RESULT with client 1....1, message: guess_result {  player_name: "player2"  guess: "gist"  correct: true}
+         Firing message with PayloadCase NEW_TURN with client 2....2, message: new_turn {  assigned_string: "igh"  current_player {    player_name: "player1"  }}
+         Firing message with PayloadCase NEW_TURN with client 1....1, message: new_turn {  assigned_string: "igh"  current_player {    player_name: "player1"  }}
+         Firing message with PayloadCase UPDATE_PLAYER_LIST with client 1....1, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"    score: 4  }}
+         Firing message with PayloadCase UPDATE_PLAYER_LIST with client 2....2, message: update_player_list {  players {    player_name: "player1"  }  players {    player_name: "player2"    score: 4  }}
+         Sending server message guess{guessed_word:"QWERTY"}
+         Firing message with PayloadCase GUESS_RESULT with client 1....1, message: guess_result {  player_name: "player1"  guess: "QWERTY"}
+         Firing message with PayloadCase GUESS_RESULT with client 2....2, message: guess_result {  player_name: "player1"  guess: "QWERTY"}
+         Firing message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 4}
+         Firing message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 4}
+         Firing message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 3}
+         Firing message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 3}
+         Firing message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 2}
+         Firing message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 2}
+         Firing message with PayloadCase TIMER_TICK with client 1....1, message: timer_tick {  time_left_seconds: 1}
+         Firing message with PayloadCase TIMER_TICK with client 2....2, message: timer_tick {  time_left_seconds: 1}
+         Firing message with PayloadCase GAME_END with client 2....2, message: game_end {  players {    player_name: "player2"    score: 4  }  players {    player_name: "player1"  }}
+         Firing message with PayloadCase GAME_END with client 1....1, message: game_end {  players {    player_name: "player2"    score: 4  }  players {    player_name: "player1"  }}
         */
     }
 
