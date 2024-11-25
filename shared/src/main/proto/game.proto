@@ -60,7 +60,7 @@ message CbGuessResult {
 
 message CbNewTurn {
   string assigned_string = 1;
-  string current_player_name = 2;
+  Player current_player = 2;
 }
 
 // Player information for tracking in the game

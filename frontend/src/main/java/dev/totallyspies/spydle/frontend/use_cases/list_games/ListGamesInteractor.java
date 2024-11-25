@@ -3,16 +3,20 @@ package dev.totallyspies.spydle.frontend.use_cases.list_games;
 import dev.totallyspies.spydle.frontend.client.rest.WebClientService;
 import dev.totallyspies.spydle.matchmaker.generated.model.ClientErrorResponse;
 import dev.totallyspies.spydle.matchmaker.generated.model.ListGamesResponseModel;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 
 @Component
+@Profile("!local")
 public class ListGamesInteractor implements ListGamesInputBoundary {
 
-    @Autowired
-    public WebClientService webClient;
+    public final WebClientService webClient;
+
+    public ListGamesInteractor(WebClientService webClient) {
+        this.webClient = webClient;
+    }
 
     @Override
     public ListGamesOutputData execute() {

@@ -1,10 +1,15 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.view_manager;
 
+import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
 import dev.totallyspies.spydle.frontend.views.GameEndView;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.frontend.views.ListRoomsView;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import lombok.Getter;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +20,13 @@ import java.awt.*;
 Game View, which also acts as the window Frame
  */
 @Component
+@Profile("!local")
 public class ViewManagerModel extends JFrame {
 
     // Define the CardLayout and panel container
     private final CardLayout cardLayout;
+    @Getter
+    private String currentCard;
     private final JPanel panelContainer;
 
     private final WelcomeView welcomeView;
@@ -26,13 +34,17 @@ public class ViewManagerModel extends JFrame {
     private final ListRoomsView listRoomsView;
     private final GameEndView gameEndView;
 
-    @Autowired // dependency injection
+    private final ApplicationEventPublisher publisher;
+
     public ViewManagerModel(WelcomeView welcomeView, GameRoomView gameRoomView,
-                            ListRoomsView listRoomsView, GameEndView gameEndView) {
+                            ListRoomsView listRoomsView, GameEndView gameEndView,
+                            ApplicationEventPublisher publisher) {
         this.welcomeView = welcomeView;
         this.gameRoomView = gameRoomView;
         this.listRoomsView = listRoomsView;
         this.gameEndView = gameEndView;
+
+        this.publisher = publisher;
 
         // Set up the frame properties
         setTitle("Spydle");
@@ -55,18 +67,28 @@ public class ViewManagerModel extends JFrame {
 
         // Show the initial panel (WelcomeView)
         // this is the first page that will run!
-        cardLayout.show(panelContainer, "GameRoomView");
+        currentCard = "WelcomeView";
+        cardLayout.show(panelContainer, currentCard);
     }
 
     // Method to switch between panels
     @EventListener
     public void handleViewSwitch(SwitchViewEvent event) {
-        cardLayout.show(panelContainer, event.getViewName());
+        currentCard = event.getViewName();
+        cardLayout.show(panelContainer, currentCard);
     }
 
     @EventListener
     public void handleViewError(ErrorViewEvent event) {
         JOptionPane.showMessageDialog(this, event.getMessage());
+    }
+
+    @EventListener
+    public void onSocketFail(ClientSocketHandler.CloseEvent event) {
+        if (currentCard.equals("GameRoomView")) {
+            publisher.publishEvent(new SwitchViewEvent(this, "WelcomeView"));
+            JOptionPane.showMessageDialog(this, "Client socket failed: status " + event.getStatus());
+        }
     }
 
 //    public static void launchGameView(String[] args) {

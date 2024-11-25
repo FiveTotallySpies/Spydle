@@ -54,7 +54,14 @@ public class AutoscaleControllerTest {
     @Test
     public void testAutoscale_Exception() {
         AutoscaleRequestModel request = new AutoscaleRequestModel();
-
+        AutoscaleRequestModelRequest requestInner = new AutoscaleRequestModelRequest();
+        requestInner.setUid("unique-id");
+        AutoscaleRequestModelRequestStatus status = new AutoscaleRequestModelRequestStatus();
+        status.setAllocatedReplicas(5);
+        status.setReplicas(10);
+        status.setReadyReplicas(5);
+        requestInner.setStatus(status);
+        request.setRequest(requestInner);
         when(autoscalerService.autoscale(any())).thenThrow(new RuntimeException("Error"));
 
         ResponseEntity<?> response = autoscaleController.autoscale(request);

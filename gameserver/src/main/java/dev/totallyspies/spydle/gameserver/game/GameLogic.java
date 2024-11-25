@@ -1,7 +1,10 @@
 package dev.totallyspies.spydle.gameserver.game;
 
 import dev.totallyspies.spydle.shared.model.ClientSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
@@ -13,6 +16,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class GameLogic {
+
+    private final Logger logger = LoggerFactory.getLogger(GameLogic.class);
+
     // List of Players is set once when the game starts and doesn't change for the whole game.
     // Before the game starts the list of players is empty.
     private final AtomicReference<List<Player>> players;
@@ -44,13 +50,16 @@ public class GameLogic {
         }
 
         var words = new TreeSet<String>();
-        File file = ResourceUtils.getFile("classpath:words.txt");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line;
-        while ((line = br.readLine()) != null) {
-            if (!line.isEmpty()) {
-                words.add(line.trim().toLowerCase());
+        ClassPathResource resource = new ClassPathResource("words.txt");
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.isEmpty()) {
+                    words.add(line.trim().toLowerCase());
+                }
             }
+        } catch (Exception exception) {
+            logger.error("Failed to read words.txt", exception);
         }
         this.validWords.set(words);
     }
@@ -62,21 +71,24 @@ public class GameLogic {
         }
 
         var substrings = new ArrayList<String>();
-        File file = ResourceUtils.getFile("classpath:substrings.csv");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line;
-        br.readLine(); // skip the first line
-        while ((line = br.readLine()) != null) {
-            if (!line.isEmpty()) {
-                line = line.trim().toLowerCase();
+        ClassPathResource resource = new ClassPathResource("substrings.csv");
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+            reader.readLine(); // skip the first line
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.isEmpty()) {
+                    line = line.trim().toLowerCase();
 
-                String[] split = line.split(",");
-                String substr = split[0];
-                int occ = Integer.parseInt(split[1]);
-                if (occ >= MINIMUM_OCCURRENCES) {
-                    substrings.add(substr);
+                    String[] split = line.split(",");
+                    String substr = split[0];
+                    int occ = Integer.parseInt(split[1]);
+                    if (occ >= MINIMUM_OCCURRENCES) {
+                        substrings.add(substr);
+                    }
                 }
             }
+        } catch (Exception exception) {
+            logger.error("Failed to read substrings.csv", exception);
         }
         this.substrings.set(substrings);
     }

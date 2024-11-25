@@ -44,7 +44,7 @@ public class MatchmakingServiceTest {
         when(allocator.awaitAllocation(anyInt())).thenReturn(fakeGameServer);
 
         // Call method
-        GameServer result = matchmakingService.createGame(clientId, playerName);
+        GameServer result = matchmakingService.createGame(clientId, playerName, 1);
 
         // Verify
         assertEquals(fakeGameServer, result);
@@ -68,7 +68,7 @@ public class MatchmakingServiceTest {
 
         // Call method and expect exception
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            matchmakingService.createGame(clientId, playerName);
+            matchmakingService.createGame(clientId, playerName, 1);
         });
 
         assertEquals("Client is already connected to a game.", exception.getMessage());
@@ -87,7 +87,7 @@ public class MatchmakingServiceTest {
         when(allocator.awaitAllocation(anyInt())).thenReturn(fakeGameServer);
 
         // Call method
-        GameServer result = matchmakingService.createGame(clientId, playerName);
+        GameServer result = matchmakingService.createGame(clientId, playerName, 1);
 
         // Verify
         assertEquals(fakeGameServer, result);
