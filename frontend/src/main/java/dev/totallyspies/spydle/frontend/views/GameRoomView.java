@@ -21,13 +21,9 @@ public class GameRoomView extends JPanel {
     private final GamePanel gamePanel;
 
     private final JPanel container;
-    @Getter
     private final JTextField substringInputField;
-    @Getter
     private final JPanel inputPanel;
     private final JLabel roomCodeLabel;
-
-    private boolean isOpened = false;
 
     public GameRoomView(GameRoomViewModel model, GameRoomViewController controller) {
         this.model = model;
@@ -128,11 +124,6 @@ public class GameRoomView extends JPanel {
         } else {
             container.remove(inputPanel);
         }
-    }
-
-    @EventListener
-    public void onSwitchView(SwitchViewEvent event) {
-        isOpened = event.getViewName().equals("GameRoomView");
     }
 
 //    public static void main(String[] args) {
