@@ -45,6 +45,7 @@ public class GameRoomPresenter {
     public void onSwitchView(SwitchViewEvent event) {
         if (!event.getViewClass().equals(GameRoomView.class)) {
             model.reset();
+            view.updateGame();
         }
     }
 
