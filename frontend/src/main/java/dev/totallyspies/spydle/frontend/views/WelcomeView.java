@@ -52,8 +52,8 @@ public class WelcomeView extends JPanel {
 
         JButton enterButton = new JButton("Enter");
         styleButton(enterButton);
-        enterButton.setMaximumSize(new Dimension(120, 40));
-        enterButton.setPreferredSize(new Dimension(120, 40));
+        enterButton.setMaximumSize(new Dimension(120, 30));
+        enterButton.setPreferredSize(new Dimension(120, 30));
 
         enterButton.addActionListener(new ActionListener() {
             private boolean isEnter = true;
@@ -96,7 +96,7 @@ public class WelcomeView extends JPanel {
         JButton createRoomButton = new JButton("Create Room");
         styleButton(createRoomButton);
         createRoomButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        createRoomButton.setMaximumSize(new Dimension(500, 40));
+        createRoomButton.setMaximumSize(new Dimension(500, 30));
         createRoomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -193,25 +193,25 @@ public class WelcomeView extends JPanel {
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(75, 0, 130)); // Darker purple color
+        button.setBackground(new Color(165, 195, 255)); // Darker purple color
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setFont(new Font("Arial", Font.BOLD, 14)); // Slightly smaller font for a compact layout
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(75, 0, 130), 1), // Dark purple border
+                BorderFactory.createLineBorder(new Color(165, 195, 255), 1), // Dark purple border
                 BorderFactory.createEmptyBorder(10, 10, 10, 10) // Inner padding for button
         ));
 
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
-                button.setForeground(new Color(75, 0, 130)); // Dark purple on hover
+                button.setForeground(new Color(165, 195, 255)); // Dark purple on hover
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(75, 0, 130));
+                button.setBackground(new Color(165, 195, 255));
                 button.setForeground(Color.WHITE);
             }
         });
