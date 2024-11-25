@@ -51,7 +51,7 @@ public class GameRoomPresenter {
 
     @EventListener
     public void onGuessWord(GuessWordEvent event) {
-        model.setCurrentSubstring("");
+        model.setStringEntered("");
         view.clearSubstringInputField();
     }
 
