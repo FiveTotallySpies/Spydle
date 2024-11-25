@@ -81,7 +81,7 @@ public class GameRoomView extends JPanel {
 //        });
 
         roomCodeLabel = new JLabel("Room Code: ???", SwingConstants.CENTER);
-        roomCodeLabel.setFont(new Font("Arial", Font.BOLD, 17));
+        roomCodeLabel.setFont(new Font("Arial", Font.BOLD, 18));
         roomCodeLabel.setForeground(new Color(139, 0, 0));
         roomCodeLabel.setPreferredSize(new Dimension(170, 40));
 
@@ -141,7 +141,7 @@ public class GameRoomView extends JPanel {
 
     private JButton createStyledButton(String text, Color backgroundColor, Color textColor, Runnable action) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFont(new Font("Arial", Font.BOLD, 16));
         button.setBackground(backgroundColor);
         button.setForeground(textColor);
         button.setFocusPainted(false);

@@ -193,25 +193,25 @@ public class WelcomeView extends JPanel {
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(165, 195, 255)); // Darker purple color
+        button.setBackground(new Color(25, 25, 112)); // Darker purple color
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setFont(new Font("Arial", Font.BOLD, 14)); // Slightly smaller font for a compact layout
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(165, 195, 255), 1), // Dark purple border
+                BorderFactory.createLineBorder(new Color(25, 25, 112), 1), // Dark purple border
                 BorderFactory.createEmptyBorder(10, 10, 10, 10) // Inner padding for button
         ));
 
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
-                button.setForeground(new Color(165, 195, 255)); // Dark purple on hover
+                button.setForeground(new Color(25, 25, 112)); // Dark purple on hover
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(165, 195, 255));
+                button.setBackground(new Color(25, 25, 112));
                 button.setForeground(Color.WHITE);
             }
         });
