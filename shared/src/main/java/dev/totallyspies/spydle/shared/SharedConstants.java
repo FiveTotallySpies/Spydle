@@ -9,4 +9,6 @@ public class SharedConstants {
     public static final String STORAGE_REDIS_SESSION_PREFIX = "session:";
     public static final String STORAGE_REDIS_GAME_SERVER_PREFIX = "gameserver:";
 
+    public static final String LOCAL_SERVER_ROOM_CODE = "LOCAL";
+
 }

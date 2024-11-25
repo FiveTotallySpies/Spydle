@@ -14,7 +14,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 @org.springframework.stereotype.Component
-@Profile("!local")
+@Profile("!test")
 public class WelcomeView extends JPanel implements CardView {
 
     private final WelcomeViewController controller;

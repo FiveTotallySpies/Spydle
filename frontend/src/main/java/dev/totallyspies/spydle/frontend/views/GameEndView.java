@@ -10,7 +10,7 @@ import java.awt.*;
 import java.util.List;
 
 @org.springframework.stereotype.Component
-@Profile("!local")
+@Profile("!test")
 public class GameEndView extends JPanel implements CardView {
 
     private final GameEndViewController controller;

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Profile("!local")
+@Profile("!test")
 @Data
 public class GameEndViewModel {
 

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 
 @org.springframework.stereotype.Component
-@Profile("!local")
+@Profile("!test")
 public class ListRoomsView extends JPanel implements CardView {
 
     private final ListRoomsViewController controller;

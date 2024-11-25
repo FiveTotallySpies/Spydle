@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 
 @Component
-@Profile("!local")
+@Profile("!test")
 public class GameRoomViewController {
 
     private final Logger logger = LoggerFactory.getLogger(GameRoomViewController.class);

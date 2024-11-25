@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
-@Profile("!local")
+@Profile("!test")
 public class GameRoomViewModel {
 
     private List<Player> playerList = new LinkedList<>(); // List of all players in order

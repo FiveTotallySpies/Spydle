@@ -11,7 +11,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!local")
+@Profile("!test")
 public class GameRoomPresenter {
 
     private final GameRoomViewModel model;
