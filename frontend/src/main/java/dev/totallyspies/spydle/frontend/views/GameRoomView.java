@@ -155,6 +155,10 @@ public class GameRoomView extends JPanel implements CardView {
         substringInputField.setText("");
     }
 
+    public void updateStringDisplayed(){
+        gamePanel.updateStringDisplayed();
+    }
+
     public synchronized void updateGame() {
         gamePanel.updateGame(); // Update game panel
 

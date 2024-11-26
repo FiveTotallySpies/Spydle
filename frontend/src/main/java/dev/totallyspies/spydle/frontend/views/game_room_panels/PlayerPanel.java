@@ -26,6 +26,7 @@ class PlayerPanel extends JPanel {
         add(pointsLabel, BorderLayout.SOUTH);
     }
 
+
     public void updateScore(int points) {
         pointsLabel.setText("Score: " + points);
     }

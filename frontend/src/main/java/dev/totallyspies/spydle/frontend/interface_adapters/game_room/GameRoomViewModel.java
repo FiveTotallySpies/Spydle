@@ -22,6 +22,7 @@ public class GameRoomViewModel {
     private Player localPlayer; // This player
 
     private String stringEntered = ""; // String in the middle
+    private String stringCurrentPlayer = ""; // string entered by the player whose turn it currently is
 
     private int gameTimerSeconds = 0; // Time left
     private int turnTimerSeconds = 0;

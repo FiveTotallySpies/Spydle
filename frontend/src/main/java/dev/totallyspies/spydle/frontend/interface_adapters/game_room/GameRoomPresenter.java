@@ -54,4 +54,12 @@ public class GameRoomPresenter {
         view.clearSubstringInputField();
     }
 
+    // TODO KAI could you update the correct message
+    @CbMessageListener
+    public void onSubstringUpdate(CbNewTurn substringUpdate) {
+        // TODO KAI, update to get the correct string.
+        model.setStringCurrentPlayer(substringUpdate.getStringCurrentPlayer());
+        view.updateStringDisplayed();
+    }
+
 }

@@ -107,8 +107,9 @@ public class GamePanel extends JPanel {
         repaint();
     }
 
-    private void displayCurrentPlayerWord(Player player) {
-
+    // displays the string that the current player is typing
+    public void updateStringDisplayed(){
+        // TODO xin lei.
     }
 
     private void highlightPlayerPanel(Player currentTurnPlayer) {
