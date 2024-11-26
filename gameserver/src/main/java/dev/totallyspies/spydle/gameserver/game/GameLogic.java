@@ -25,7 +25,7 @@ public class GameLogic {
 
     private final AtomicInteger turn;
     private final AtomicReference<String> currentSubString;
-    private final AtomicInteger turnTimeSeconds = new AtomicInteger(15); // length of 15 seconds by default
+    private final AtomicInteger turnTimeSeconds = new AtomicInteger(10); // length of 10 seconds by default
     private final AtomicInteger gameTimeSeconds = new AtomicInteger(60); // length of 1 minute by default
     private final AtomicReference<Set<String>> validWords;
     private final AtomicReference<List<String>> substrings;
