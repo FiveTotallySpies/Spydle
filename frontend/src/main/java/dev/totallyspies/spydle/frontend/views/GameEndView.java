@@ -74,7 +74,7 @@ public class GameEndView extends JPanel implements CardView {
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(138, 43, 226)); // blueviolet
+        button.setBackground(new Color(25, 25, 112)); // blueviolet
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setFont(new Font("Arial", Font.BOLD, 12));
@@ -84,7 +84,7 @@ public class GameEndView extends JPanel implements CardView {
 
         // Set a consistent, fixed padding around the button content
         button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(138, 43, 226), 1), // Outer border color
+                BorderFactory.createLineBorder(new Color(25, 25, 112), 1), // Outer border color
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)  // Inner padding to avoid layout shift
         ));
 
@@ -92,10 +92,10 @@ public class GameEndView extends JPanel implements CardView {
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(Color.WHITE);
-                button.setForeground(new Color(138, 43, 226)); // blueviolet
+                button.setForeground(new Color(25, 25, 112)); // blueviolet
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(138, 43, 226));
+                button.setBackground(new Color(25, 25, 112));
                 button.setForeground(Color.WHITE);
             }
         });
