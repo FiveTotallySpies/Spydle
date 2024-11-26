@@ -31,7 +31,7 @@ public class WelcomeView extends JPanel implements CardView {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         container.setBackground(new Color(195, 217, 255)); // Light blue background for the container
-        container.setPreferredSize(new Dimension(800, 600)); // Adjusted container size for optimal height
+        container.setPreferredSize(new Dimension(800, 570)); // Adjusted container size for optimal height
 
         JLabel titleLabel = new JLabel("Spydle");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 40));

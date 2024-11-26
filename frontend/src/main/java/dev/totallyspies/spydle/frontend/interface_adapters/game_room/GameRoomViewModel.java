@@ -23,7 +23,8 @@ public class GameRoomViewModel {
 
     private String stringEntered = ""; // String in the middle
 
-    private int timerSeconds = 0; // Time left
+    private int gameTimerSeconds = 0; // Time left
+    private int turnTimerSeconds = 0;
 
     private String currentSubstring = ""; // Current substring
 
@@ -34,7 +35,8 @@ public class GameRoomViewModel {
         this.currentTurnPlayer = null;
         this.localPlayer = null;
         this.stringEntered = "";
-        this.timerSeconds = 0;
+        this.gameTimerSeconds = 0;
+        this.turnTimerSeconds = 0;
         this.currentSubstring = "";
         this.roomCode = "";
     }

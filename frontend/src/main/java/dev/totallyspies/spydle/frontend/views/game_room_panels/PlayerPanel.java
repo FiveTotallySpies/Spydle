@@ -11,8 +11,8 @@ class PlayerPanel extends JPanel {
 
     public PlayerPanel(String name, int score) {
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
-        setBorder(BorderFactory.createLineBorder(new Color(70, 110, 85)));
+        setBackground(new Color(255, 255, 255));
+        setBorder(BorderFactory.createLineBorder(new Color(25, 25, 112)));
 
         nameLabel = new JLabel(name, SwingConstants.CENTER);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 15));
@@ -21,7 +21,7 @@ class PlayerPanel extends JPanel {
 
         pointsLabel = new JLabel(name, SwingConstants.CENTER);
         pointsLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        pointsLabel.setForeground(Color.RED);
+        pointsLabel.setForeground(new Color(139, 0, 0));
         pointsLabel.setText("Score: " + score);
         add(pointsLabel, BorderLayout.SOUTH);
     }
