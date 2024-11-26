@@ -22,7 +22,9 @@ public class GameRoomViewModel {
     private Player localPlayer; // This player
 
     private String stringEntered = ""; // String in the middle
+
     private String stringCurrentPlayer = ""; // string entered by the player whose turn it currently is
+    private boolean currentStringVerdict = false; // determines whether the string entered is a word
 
     private int gameTimerSeconds = 0; // Time left
     private int turnTimerSeconds = 0;
@@ -42,4 +44,8 @@ public class GameRoomViewModel {
         this.roomCode = "";
     }
 
+
+    public boolean getCurrentStringVerdict() {
+        return currentStringVerdict;
+    }
 }

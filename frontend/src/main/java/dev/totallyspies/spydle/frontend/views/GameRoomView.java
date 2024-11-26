@@ -28,9 +28,8 @@ public class GameRoomView extends JPanel implements CardView {
     private final JButton startGameButton;
     private final JPanel topPanel;
     private final GameRoomViewModel gameRoomViewModel;
-    private final GameRoomViewController gameRoomViewController;
 
-    public GameRoomView(GameRoomViewModel model, GameRoomViewController controller, GameRoomViewModel gameRoomViewModel, GameRoomViewController gameRoomViewController) {
+    public GameRoomView(GameRoomViewModel model, GameRoomViewController controller, GameRoomViewModel gameRoomViewModel) {
         this.model = model;
         this.controller = controller;
 
@@ -124,21 +123,19 @@ public class GameRoomView extends JPanel implements CardView {
             }
 
             private void updateStringEntered() {
-                gameRoomViewModel.setStringEntered(substringInputField.getText());
-                gameRoomViewController.setUpdatedString();
+                model.setStringEntered(substringInputField.getText());
+                controller.updateGuess();
             }
         });
 
+        // Action listener for submit button
         submitButton.addActionListener(event -> {
             model.setStringEntered(substringInputField.getText());
-            // Handle the entered substring as needed
             controller.guessWord();
         });
         // Occurs when you hit the enter button with the input field in focus
         substringInputField.addActionListener(event -> {
-            // Handle the entered substring as
             model.setStringEntered(substringInputField.getText());
-
             controller.guessWord();
         });
 
@@ -148,7 +145,6 @@ public class GameRoomView extends JPanel implements CardView {
 
         add(container, BorderLayout.CENTER);
         this.gameRoomViewModel = gameRoomViewModel;
-        this.gameRoomViewController = gameRoomViewController;
     }
 
     public void clearSubstringInputField() {
@@ -156,7 +152,9 @@ public class GameRoomView extends JPanel implements CardView {
     }
 
     public void updateStringDisplayed(){
-        gamePanel.updateStringDisplayed();
+        gamePanel.updateStringDisplayed(gameRoomViewModel.getCurrentTurnPlayer(),
+                gameRoomViewModel.getStringCurrentPlayer(),
+                gameRoomViewModel.getCurrentStringVerdict());
     }
 
     public synchronized void updateGame() {

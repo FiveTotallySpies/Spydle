@@ -24,6 +24,8 @@ public class GameRoomPresenter {
 
     @CbMessageListener
     public void onTimerTick(CbTimerTick timerTick) {
+        model.setGameTimerSeconds(timerTick.getGameTimeLeftSeconds());
+        model.setTurnTimerSeconds(timerTick.getTurnTimeLeftSeconds());
         view.updateGame();
     }
 
@@ -59,6 +61,8 @@ public class GameRoomPresenter {
     public void onSubstringUpdate(CbNewTurn substringUpdate) {
         // TODO KAI, update to get the correct string.
         model.setStringCurrentPlayer(substringUpdate.getStringCurrentPlayer());
+        // determine if the guess is correct
+        model.setCurrentStringVerdict(substringUpdate.getStringCurrentPlayerVerdict());
         view.updateStringDisplayed();
     }
 

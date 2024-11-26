@@ -108,8 +108,18 @@ public class GamePanel extends JPanel {
     }
 
     // displays the string that the current player is typing
-    public void updateStringDisplayed(){
-        // TODO xin lei.
+    public void updateStringDisplayed(Player currentTurnPlayer, String stringCurrentPlayer, boolean stringVerdict){
+        // Loop through all player panels and set the string displayed accordingly
+        for (Map.Entry<String, PlayerPanel> entry : playerPanels.entrySet()) {
+            Player player = model.getPlayerList().stream()
+                    .filter(p -> p.getPlayerName().equals(entry.getKey()))
+                    .findFirst().orElse(null);
+            if (player != null && player.equals(currentTurnPlayer)) {
+//                entry.getValue().setPlayerBorder(Color.RED, 5);  // Set red border for current player
+            } else {
+//                entry.getValue().setPlayerBorder(Color.GRAY, 2);  // Set default gray border for others
+            }
+        }
     }
 
     private void highlightPlayerPanel(Player currentTurnPlayer) {

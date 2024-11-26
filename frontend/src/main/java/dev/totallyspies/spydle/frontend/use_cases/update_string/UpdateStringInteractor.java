@@ -1,8 +1,6 @@
 package dev.totallyspies.spydle.frontend.use_cases.update_string;
 
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
-import dev.totallyspies.spydle.shared.proto.messages.SbGuess;
-import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -21,7 +19,8 @@ public class UpdateStringInteractor implements UpdateStringInputBoundary{
             logger.error("Cannot send guess word when client socket is not open!");
             return;
         }
-        handler.sendSbMessage(SbMessage.newBuilder().setGuess(SbGuess.newBuilder().setGuessedWord(updateStringInputData.getGuess())).build());
-        logger.info("Sent guess {}", updateStringInputData.getGuess());
+        //KAI TODO
+//        handler.sendSbMessage(SbMessage.newBuilder().setGuess(SbGuess.newBuilder().setGuessedWord(updateStringInputData.getGuess())).build());
+        logger.info("Sent guess {}", updateStringInputData.getUpdateString());
     }
 }
