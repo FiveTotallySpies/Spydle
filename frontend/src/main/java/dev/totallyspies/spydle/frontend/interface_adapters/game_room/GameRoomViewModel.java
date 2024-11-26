@@ -2,12 +2,15 @@ package dev.totallyspies.spydle.frontend.interface_adapters.game_room;
 
 import dev.totallyspies.spydle.shared.proto.messages.Player;
 import jakarta.annotation.Nullable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Data
@@ -23,9 +26,6 @@ public class GameRoomViewModel {
 
     private String stringEntered = ""; // String in the middle
 
-    private String stringCurrentPlayer = ""; // string entered by the player whose turn it currently is
-    private boolean currentStringVerdict = false; // determines whether the string entered is a word
-
     private int gameTimerSeconds = 0; // Time left
     private int turnTimerSeconds = 0;
 
@@ -33,8 +33,11 @@ public class GameRoomViewModel {
 
     private String roomCode = "";
 
+    // The set of strings that appear above players as they type their guesses
+    private Map<Player, GuessInProgress> currentGuesses = new ConcurrentHashMap<>();
+
     public void reset() {
-        this.playerList = new LinkedList<>();
+        this.playerList.clear();
         this.currentTurnPlayer = null;
         this.localPlayer = null;
         this.stringEntered = "";
@@ -42,10 +45,15 @@ public class GameRoomViewModel {
         this.turnTimerSeconds = 0;
         this.currentSubstring = "";
         this.roomCode = "";
+        this.currentGuesses.clear();
     }
 
+    @Data
+    @AllArgsConstructor
+    public static class GuessInProgress {
 
-    public boolean getCurrentStringVerdict() {
-        return currentStringVerdict;
+        private String currentWord;
+        private boolean correct;
+
     }
 }

@@ -103,6 +103,8 @@ public class GamePanel extends JPanel {
         timerPlayer.setText("Guess in " + model.getTurnTimerSeconds());
         timerLabel.setText("Timer: " + model.getGameTimerSeconds() / 60 + ":" + String.format("%02d", model.getGameTimerSeconds() % 60));
 
+        // TODO Update player guess words from view model
+
         revalidate();
         repaint();
     }

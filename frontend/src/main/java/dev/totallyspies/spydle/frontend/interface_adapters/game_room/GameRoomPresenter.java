@@ -3,9 +3,12 @@ package dev.totallyspies.spydle.frontend.interface_adapters.game_room;
 import dev.totallyspies.spydle.frontend.client.message.CbMessageListener;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
+import dev.totallyspies.spydle.shared.proto.messages.CbGuessResult;
+import dev.totallyspies.spydle.shared.proto.messages.CbGuessUpdate;
 import dev.totallyspies.spydle.shared.proto.messages.CbNewTurn;
 import dev.totallyspies.spydle.shared.proto.messages.CbTimerTick;
 import dev.totallyspies.spydle.shared.proto.messages.CbUpdatePlayerList;
+import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -23,20 +26,24 @@ public class GameRoomPresenter {
     }
 
     @CbMessageListener
-    public void onTimerTick(CbTimerTick timerTick) {
+    public void onTimerTickMessage(CbTimerTick timerTick) {
         model.setGameTimerSeconds(timerTick.getGameTimeLeftSeconds());
         model.setTurnTimerSeconds(timerTick.getTurnTimeLeftSeconds());
         view.updateGame();
     }
 
     @CbMessageListener
-    public void onPlayerListUpdate(CbUpdatePlayerList updatePlayerList) {
+    public void onPlayerListUpdateMessage(CbUpdatePlayerList updatePlayerList) {
         model.setPlayerList(updatePlayerList.getPlayersList());
+        model.getCurrentGuesses().clear();
+        for (Player player : updatePlayerList.getPlayersList()) {
+            model.getCurrentGuesses().put(player, new GameRoomViewModel.GuessInProgress("", false));
+        }
         view.updateGame();
     }
 
     @CbMessageListener
-    public void onNewTurn(CbNewTurn newTurn) {
+    public void onNewTurnMessage(CbNewTurn newTurn) {
         model.setCurrentTurnPlayer(newTurn.getCurrentPlayer());
         model.setCurrentSubstring(newTurn.getAssignedString());
         view.updateGame();
@@ -51,18 +58,24 @@ public class GameRoomPresenter {
     }
 
     @EventListener
-    public void onGuessWord(GuessWordEvent event) {
+    public void onGuessWordEvent(GuessWordEvent event) {
         model.setStringEntered("");
         view.clearSubstringInputField();
     }
 
-    // TODO KAI could you update the correct message
     @CbMessageListener
-    public void onSubstringUpdate(CbNewTurn substringUpdate) {
-        // TODO KAI, update to get the correct string.
-        model.setStringCurrentPlayer(substringUpdate.getStringCurrentPlayer());
-        // determine if the guess is correct
-        model.setCurrentStringVerdict(substringUpdate.getStringCurrentPlayerVerdict());
+    public void onGuessUpdateMessage(CbGuessUpdate guessUpdate) {
+        GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(guessUpdate.getPlayer());
+        guess.setCurrentWord(guessUpdate.getGuess());
+        guess.setCorrect(false);
+        view.updateStringDisplayed();
+    }
+
+    @CbMessageListener
+    public void onGuessResultMessage(CbGuessResult guessResult) {
+        GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(guessResult.getPlayer());
+        guess.setCurrentWord(guessResult.getGuess());
+        guess.setCorrect(guessResult.getCorrect());
         view.updateStringDisplayed();
     }
 

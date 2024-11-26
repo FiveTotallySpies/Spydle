@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.frontend.views;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewController;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
+import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -27,9 +28,8 @@ public class GameRoomView extends JPanel implements CardView {
     private final JLabel roomCodeLabel;
     private final JButton startGameButton;
     private final JPanel topPanel;
-    private final GameRoomViewModel gameRoomViewModel;
 
-    public GameRoomView(GameRoomViewModel model, GameRoomViewController controller, GameRoomViewModel gameRoomViewModel) {
+    public GameRoomView(GameRoomViewModel model, GameRoomViewController controller) {
         this.model = model;
         this.controller = controller;
 
@@ -144,17 +144,17 @@ public class GameRoomView extends JPanel implements CardView {
         inputPanel.add(submitButton); // Add submit button to input panel
 
         add(container, BorderLayout.CENTER);
-        this.gameRoomViewModel = gameRoomViewModel;
     }
 
     public void clearSubstringInputField() {
         substringInputField.setText("");
     }
 
-    public void updateStringDisplayed(){
-        gamePanel.updateStringDisplayed(gameRoomViewModel.getCurrentTurnPlayer(),
-                gameRoomViewModel.getStringCurrentPlayer(),
-                gameRoomViewModel.getCurrentStringVerdict());
+    public void updateStringDisplayed() {
+        for (Player player : model.getCurrentGuesses().keySet()) {
+            GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(player);
+            gamePanel.updateStringDisplayed(player, guess.getCurrentWord(), guess.isCorrect());
+        }
     }
 
     public synchronized void updateGame() {
