@@ -18,7 +18,7 @@ public class ClientSocketConfig {
     }
 
     @Bean
-    @Profile("!local")
+    @Profile("!test")
     public ClientSocketHandler globalClientSocketHandler() {
         return createClient();
     }

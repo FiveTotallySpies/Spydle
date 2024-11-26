@@ -11,8 +11,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 @Component
-@Profile("!local")
-public class GameRoomView extends JPanel {
+@Profile("!test")
+public class GameRoomView extends JPanel implements CardView {
 
     private final GameRoomViewModel model;
     private final GameRoomViewController controller;
@@ -23,6 +23,8 @@ public class GameRoomView extends JPanel {
     private final JTextField substringInputField;
     private final JPanel inputPanel;
     private final JLabel roomCodeLabel;
+    private final JButton startGameButton;
+    private final JPanel topPanel;
 
     public GameRoomView(GameRoomViewModel model, GameRoomViewController controller) {
         this.model = model;
@@ -42,41 +44,54 @@ public class GameRoomView extends JPanel {
         container.add(gamePanel, BorderLayout.CENTER);
 
         // Back button styling
-        JButton backButton = new JButton("Back to Welcome");
-        backButton.setFont(new Font("Arial", Font.BOLD, 14));
-        backButton.setBackground(new Color(138, 43, 226)); // Blueviolet
-        backButton.setForeground(Color.BLACK); // Black text color
-        backButton.setFocusPainted(false);
-        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        backButton.setPreferredSize(new Dimension(170, 40));
+        JButton backButton = createStyledButton(
+                "Home",
+                new Color(165, 195, 255), // Background color
+                Color.WHITE,             // Text color
+                () -> controller.openWelcomeView() // Action on click
+        );
+//        JButton backButton = new JButton("Back to Welcome");
+//        backButton.setFont(new Font("Arial", Font.BOLD, 14));
+//        backButton.setBackground(new Color(165, 195, 255)); // Blueviolet
+//        backButton.setForeground(Color.WHITE); // Black text color
+//        backButton.setFocusPainted(false);
+//        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//        backButton.setPreferredSize(new Dimension(150, 40));
 
-        // Back button action listener
-        backButton.addActionListener(event -> {
-            controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
-        });
+//        // Back button action listener
+//        backButton.addActionListener(event -> {
+//            controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
+//        });
 
-        JButton startGameButton = new JButton("Start Game");
-        startGameButton.setFont(new Font("Arial", Font.BOLD, 14));
-        startGameButton.setBackground(new Color(138, 43, 226)); // Blueviolet
-        startGameButton.setForeground(Color.BLACK); // Black text color
-        startGameButton.setFocusPainted(false);
-        startGameButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        startGameButton.setPreferredSize(new Dimension(170, 40));
+        startGameButton = createStyledButton(
+                "Start Game",
+                new Color(165, 195, 255), // Background color
+                Color.WHITE,             // Text color
+                () -> controller.startGame() // Action on click
+        );
+//        JButton startGameButton = new JButton("Start Game");
+//        startGameButton.setFont(new Font("Arial", Font.BOLD, 14));
+//        startGameButton.setBackground(new Color(165, 195, 255)); // Blueviolet
+//        startGameButton.setForeground(Color.WHITE); // Black text color
+//        startGameButton.setFocusPainted(false);
+//        startGameButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//        startGameButton.setPreferredSize(new Dimension(150, 40));
+//
+//        startGameButton.addActionListener(event -> {
+//            controller.startGame(); // Starts the game
+//        });
 
-        startGameButton.addActionListener(event -> {
-            controller.startGame(); // Starts the game
-        });
-
-        roomCodeLabel = new JLabel("Room Code: ???");
-        roomCodeLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        roomCodeLabel = new JLabel("Room Code: ???", SwingConstants.CENTER);
+        roomCodeLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        roomCodeLabel.setForeground(new Color(139, 0, 0));
         roomCodeLabel.setPreferredSize(new Dimension(170, 40));
 
         // Top panel to hold the back button on the left
-        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false); // Transparent background to show main background color
         topPanel.add(backButton, BorderLayout.WEST); // Add back button to the left side
-        topPanel.add(startGameButton, BorderLayout.EAST);
         topPanel.add(roomCodeLabel, BorderLayout.CENTER);
+        topPanel.add(startGameButton, BorderLayout.EAST);
 
         // Add the top panel to the top (NORTH) of the main container
         container.add(topPanel, BorderLayout.NORTH);
@@ -107,7 +122,11 @@ public class GameRoomView extends JPanel {
         add(container, BorderLayout.CENTER);
     }
 
-    public void updateGame() {
+    public void clearSubstringInputField() {
+        substringInputField.setText("");
+    }
+
+    public synchronized void updateGame() {
         gamePanel.updateGame(); // Update game panel
 
         roomCodeLabel.setText("Room Code: " + model.getRoomCode());
@@ -123,7 +142,44 @@ public class GameRoomView extends JPanel {
         } else {
             container.remove(inputPanel);
         }
+
+        if (model.getCurrentTurnPlayer() == null) { // Game is running
+            topPanel.add(startGameButton, BorderLayout.EAST);
+        } else {
+            topPanel.remove(startGameButton);
+        }
     }
+
+    private JButton createStyledButton(String text, Color backgroundColor, Color textColor, Runnable action) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBackground(backgroundColor);
+        button.setForeground(textColor);
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setPreferredSize(new Dimension(150, 40));
+
+        // Add action listener
+        button.addActionListener(e -> action.run());
+
+        // Add hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                button.setBackground(textColor); // Swap to text color
+                button.setForeground(backgroundColor); // Swap to background color
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                button.setBackground(backgroundColor); // Revert to original background
+                button.setForeground(textColor); // Revert to original text color
+            }
+        });
+
+        return button;
+    }
+
 
 //    public static void main(String[] args) {
 //        SwingUtilities.invokeLater(() -> {

@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
 @Component
-@Profile("local")
+@Profile("test")
 public class TestClient {
 
     private final Logger logger = LoggerFactory.getLogger(TestClient.class);

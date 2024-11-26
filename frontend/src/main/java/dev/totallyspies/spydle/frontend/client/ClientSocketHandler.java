@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHttpHeaders;
@@ -80,6 +82,13 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         logger.info("Established connection to websocket");
     }
 
+    @EventListener
+    public void onShutdown(ContextClosedEvent event) {
+        if (isOpen()) {
+            close(new CloseStatus(CloseStatus.NORMAL.getCode(), "Client shutdown"));
+        }
+    }
+
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         this.session.set(null);
@@ -106,12 +115,12 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
         return socketSession != null && socketSession.isOpen();
     }
 
-    public void close() {
+    public void close(CloseStatus status) {
         if (!isOpen()) {
             throw new IllegalStateException("Cannot close non-open session!");
         }
         try {
-            session.get().close(new CloseStatus(CloseStatus.GOING_AWAY.getCode(), "Client prompted session termination"));
+            session.get().close(status);
         } catch (IOException exception) {
             throw new RuntimeException("Failed to close socket handler", exception);
         }

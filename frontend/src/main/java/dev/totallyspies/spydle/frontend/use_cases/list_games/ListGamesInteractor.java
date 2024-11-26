@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedList;
 
 @Component
-@Profile("!local")
+@Profile("!test & !local")
 public class ListGamesInteractor implements ListGamesInputBoundary {
 
     public final WebClientService webClient;
@@ -23,7 +23,7 @@ public class ListGamesInteractor implements ListGamesInputBoundary {
         Object response = webClient.getEndpoint("/list-games", ListGamesResponseModel.class);
         if (response instanceof ListGamesResponseModel responseModel) {
             return new ListGamesOutputData(responseModel.getRoomCodes());
-        } else if (response instanceof ClientErrorResponse clientErrorModel) {
+        } else if (response instanceof ClientErrorResponse) {
             return new ListGamesOutputData(new LinkedList<>());
         }
         return new ListGamesOutputData(new LinkedList<>());
