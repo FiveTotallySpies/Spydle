@@ -6,7 +6,6 @@ import java.awt.*;
 // Panel for each player
 class PlayerPanel extends JPanel {
 
-    // Coloured box where the player is
     private final JLabel pointsLabel;
     private final JLabel guessLabel;
 

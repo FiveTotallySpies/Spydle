@@ -111,7 +111,6 @@ public class GamePanel extends JPanel {
 
     // displays the string that the current player is typing
     public void updateStringDisplayed(String playerName, GameRoomViewModel.GuessInProgress guess) {
-        // Loop through all player panels and set the string displayed accordingly
         playerPanels.get(playerName).setPlayerGuess(guess.getCurrentWord(), guess.isCorrect());
     }
 
