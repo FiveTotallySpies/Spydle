@@ -1,21 +1,26 @@
 package dev.totallyspies.spydle.frontend.views;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.game_end.GameEndViewController;
+import dev.totallyspies.spydle.frontend.interface_adapters.game_end.GameEndViewModel;
+import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.springframework.context.annotation.Profile;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.List;
 
 @org.springframework.stereotype.Component
 @Profile("!test")
-public class GameEndView extends JPanel {
+public class GameEndView extends JPanel implements CardView {
 
     private final GameEndViewController controller;
 
-    public GameEndView(GameEndViewController controller) {
+    private final JPanel rankingsPanel;
+    private final GameEndViewModel model;
+
+    public GameEndView(GameEndViewController controller, GameEndViewModel model) {
         this.controller = controller;
+        this.model = model;
 
         setLayout(new GridBagLayout()); // Center the container panel in the middle of the screen
         setBackground(new Color(195, 217, 255)); // Light blue background for the entire panel
@@ -33,28 +38,9 @@ public class GameEndView extends JPanel {
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Player rankings with emojis
-        JPanel rankingsPanel = new JPanel();
+        rankingsPanel = new JPanel();
         rankingsPanel.setLayout(new BoxLayout(rankingsPanel, BoxLayout.Y_AXIS));
         rankingsPanel.setBackground(new Color(195, 217, 255)); // Same light blue background
-
-        JLabel firstPlace = new JLabel("1st: 🥇 Player 1 - 100 points");
-        firstPlace.setFont(new Font("Arial", Font.PLAIN, 18));
-        firstPlace.setForeground(new Color(212, 175, 55)); // Darker gold color
-        firstPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel secondPlace = new JLabel("2nd: 🥈 Player 2 - 80 points");
-        secondPlace.setFont(new Font("Arial", Font.PLAIN, 18));
-        secondPlace.setForeground(new Color(169, 169, 169));
-        secondPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel thirdPlace = new JLabel("3rd: 🥉 Player 3 - 60 points");
-        thirdPlace.setFont(new Font("Arial", Font.PLAIN, 18));
-        thirdPlace.setForeground(new Color(205, 136, 64)); // Bronze color
-        thirdPlace.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        rankingsPanel.add(firstPlace);
-        rankingsPanel.add(secondPlace);
-        rankingsPanel.add(thirdPlace);
 
         // Thank you message
         JLabel thankYouLabel = new JLabel("Thank you for playing Spydle!");
@@ -66,11 +52,8 @@ public class GameEndView extends JPanel {
         // Back button
         JButton backButton = new JButton("Back to Welcome");
         styleButton(backButton);
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
-            }
+        backButton.addActionListener(e -> {
+            controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
         });
 
         // Add components to container
@@ -82,7 +65,7 @@ public class GameEndView extends JPanel {
         container.add(Box.createVerticalStrut(20));
         container.add(backButton);
 
-        // Add container to the center of the GameOverView using GridBagConstraints
+        // Add container to the center of the GameEndView using GridBagConstraints
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -116,6 +99,18 @@ public class GameEndView extends JPanel {
                 button.setForeground(Color.WHITE);
             }
         });
+    }
+
+    public void setPlacements() {
+        rankingsPanel.removeAll();
+        int i = 1;
+        for (Player player : model.getPlayers()) {
+            JLabel placement = new JLabel("#" + (i++) + ": " + player.getPlayerName() + " - " + player.getScore() + " points");
+            placement.setFont(new Font("Arial", Font.PLAIN, 18));
+            placement.setForeground(new Color(212, 175, 55)); // Darker gold color
+            placement.setAlignmentX(Component.CENTER_ALIGNMENT);
+            rankingsPanel.add(placement);
+        }
     }
 
 //    public static void main(String[] args) {

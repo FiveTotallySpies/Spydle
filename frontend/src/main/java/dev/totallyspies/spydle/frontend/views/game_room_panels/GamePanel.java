@@ -24,7 +24,7 @@ public class GamePanel extends JPanel {
     public GamePanel(GameRoomViewModel model) {
         this.model = model;
         setLayout(null);
-        setBackground(Color.WHITE);
+        setBackground(new Color(195, 217, 255));
 
         // Center substring label
         substringLabel = new JLabel("SUBSTRING", SwingConstants.CENTER);

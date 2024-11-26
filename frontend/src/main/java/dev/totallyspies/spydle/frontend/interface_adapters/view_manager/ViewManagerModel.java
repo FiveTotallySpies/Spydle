@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.view_manager;
 
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
+import dev.totallyspies.spydle.frontend.views.CardView;
 import dev.totallyspies.spydle.frontend.views.GameEndView;
 import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.frontend.views.ListRoomsView;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import org.springframework.web.socket.CloseStatus;
 
 /*
 Game View, which also acts as the window Frame
@@ -25,8 +27,7 @@ public class ViewManagerModel extends JFrame {
 
     // Define the CardLayout and panel container
     private final CardLayout cardLayout;
-    @Getter
-    private String currentCard;
+    private Class<? extends CardView> currentCard;
     private final JPanel panelContainer;
 
     private final WelcomeView welcomeView;
@@ -57,25 +58,25 @@ public class ViewManagerModel extends JFrame {
         panelContainer = new JPanel(cardLayout);
 
         // Add the different view panels to the card layout
-        panelContainer.add(this.welcomeView, "WelcomeView");
-        panelContainer.add(this.listRoomsView, "ListRoomsView");
-        panelContainer.add(this.gameRoomView, "GameRoomView");
-        panelContainer.add(this.gameEndView, "GameOverView");
+        panelContainer.add(this.welcomeView, WelcomeView.class.getName());
+        panelContainer.add(this.listRoomsView, ListRoomsView.class.getName());
+        panelContainer.add(this.gameRoomView, GameRoomView.class.getName());
+        panelContainer.add(this.gameEndView, GameEndView.class.getName());
 
         // Add the panel container to the frame
         add(panelContainer);
 
         // Show the initial panel (WelcomeView)
         // this is the first page that will run!
-        currentCard = "WelcomeView";
-        cardLayout.show(panelContainer, currentCard);
+        currentCard = WelcomeView.class;
+        cardLayout.show(panelContainer, currentCard.getName());
     }
 
     // Method to switch between panels
     @EventListener
     public void handleViewSwitch(SwitchViewEvent event) {
-        currentCard = event.getViewName();
-        cardLayout.show(panelContainer, currentCard);
+        currentCard = event.getViewClass();
+        cardLayout.show(panelContainer, currentCard.getName());
     }
 
     @EventListener
@@ -85,8 +86,8 @@ public class ViewManagerModel extends JFrame {
 
     @EventListener
     public void onSocketFail(ClientSocketHandler.CloseEvent event) {
-        if (currentCard.equals("GameRoomView")) {
-            publisher.publishEvent(new SwitchViewEvent(this, "WelcomeView"));
+        if (currentCard.equals(GameRoomView.class) && event.getStatus().getCode() != CloseStatus.NORMAL.getCode()) {
+            publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
             JOptionPane.showMessageDialog(this, "Client socket failed: status " + event.getStatus());
         }
     }

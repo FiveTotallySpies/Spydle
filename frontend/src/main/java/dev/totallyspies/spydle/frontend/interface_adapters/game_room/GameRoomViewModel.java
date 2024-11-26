@@ -20,12 +20,22 @@ public class GameRoomViewModel {
     @Nullable
     private Player localPlayer; // This player
 
-    private String stringEntered = "..."; // String in the middle
+    private String stringEntered = ""; // String in the middle
 
     private int timerSeconds = 0; // Time left
 
-    private String currentSubstring; // Current substring
+    private String currentSubstring = ""; // Current substring
 
-    private String roomCode = "???";
+    private String roomCode = "";
+
+    public void reset() {
+        this.playerList = new LinkedList<>();
+        this.currentTurnPlayer = null;
+        this.localPlayer = null;
+        this.stringEntered = "";
+        this.timerSeconds = 0;
+        this.currentSubstring = "";
+        this.roomCode = "";
+    }
 
 }

@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.gameserver.game;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +34,17 @@ public class GameLogic {
     private final AtomicLong gameStartMillis = new AtomicLong(0);
     private final AtomicLong tickTimeMillis = new AtomicLong(System.currentTimeMillis());
 
-    private final Random random = new Random(0);
+    private final Random random;
 
     private static final int MINIMUM_OCCURRENCES = 1000;
 
-    public GameLogic() {
+    public GameLogic(@Value("${spydle.random-seed}") int randomSeed) {
+        if (randomSeed == -1) {
+            random = new Random();
+        } else {
+            random = new Random(randomSeed);
+        }
+
         this.players = new AtomicReference<>(new ArrayList<>());
         this.currentSubString = new AtomicReference<>("");
         this.turn = new AtomicInteger(0);
