@@ -34,10 +34,11 @@ public class GameRoomViewModel {
     private String roomCode = "";
 
     // The set of strings that appear above players as they type their guesses
-    private Map<Player, GuessInProgress> currentGuesses = new ConcurrentHashMap<>();
+    // Key is player name
+    private Map<String, GuessInProgress> currentGuesses = new ConcurrentHashMap<>();
 
     public void reset() {
-        this.playerList.clear();
+        this.playerList = new LinkedList<>();
         this.currentTurnPlayer = null;
         this.localPlayer = null;
         this.stringEntered = "";

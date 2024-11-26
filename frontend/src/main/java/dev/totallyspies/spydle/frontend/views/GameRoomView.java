@@ -3,7 +3,6 @@ package dev.totallyspies.spydle.frontend.views;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewController;
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.frontend.views.game_room_panels.GamePanel;
-import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -102,8 +101,23 @@ public class GameRoomView extends JPanel implements CardView {
         // Create a panel for the substring input field and submit button
         inputPanel = new JPanel();
         inputPanel.setOpaque(false); // Transparent background
+
         substringInputField = new JTextField(20); // Text field for substring input
-        JButton submitButton = new JButton("Submit");
+        substringInputField.setFont(new Font("Arial", Font.BOLD, 18));
+        // Occurs when you hit the enter button with the input field in focus
+        substringInputField.addActionListener(event -> {
+            model.setStringEntered(substringInputField.getText());
+            controller.guessWord();
+        });
+
+        JButton submitButton = createStyledButton("Submit",
+                new Color(165, 195, 255), // Background color
+                Color.WHITE,             // Text color
+                () -> {
+                    model.setStringEntered(substringInputField.getText());
+                    controller.guessWord();
+                });
+
 
         // Action listener for the string as it is entered
         substringInputField.getDocument().addDocumentListener(new DocumentListener() {
@@ -128,17 +142,6 @@ public class GameRoomView extends JPanel implements CardView {
             }
         });
 
-        // Action listener for submit button
-        submitButton.addActionListener(event -> {
-            model.setStringEntered(substringInputField.getText());
-            controller.guessWord();
-        });
-        // Occurs when you hit the enter button with the input field in focus
-        substringInputField.addActionListener(event -> {
-            model.setStringEntered(substringInputField.getText());
-            controller.guessWord();
-        });
-
         // Note that we only add the inputPanel to the container if it is our turn during updateGame()
         inputPanel.add(substringInputField); // Add text field to input panel
         inputPanel.add(submitButton); // Add submit button to input panel
@@ -150,10 +153,10 @@ public class GameRoomView extends JPanel implements CardView {
         substringInputField.setText("");
     }
 
-    public void updateStringDisplayed() {
-        for (Player player : model.getCurrentGuesses().keySet()) {
-            GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(player);
-            gamePanel.updateStringDisplayed(player, guess.getCurrentWord(), guess.isCorrect());
+    public void updateGuessProgress() {
+        for (String playerName : model.getCurrentGuesses().keySet()) {
+            GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(playerName);
+            gamePanel.updateStringDisplayed(playerName, guess);
         }
     }
 

@@ -37,13 +37,24 @@ public class GameRoomPresenter {
         model.setPlayerList(updatePlayerList.getPlayersList());
         model.getCurrentGuesses().clear();
         for (Player player : updatePlayerList.getPlayersList()) {
-            model.getCurrentGuesses().put(player, new GameRoomViewModel.GuessInProgress("", false));
+            model.getCurrentGuesses().put(player.getPlayerName(), new GameRoomViewModel.GuessInProgress("", false));
         }
         view.updateGame();
     }
 
     @CbMessageListener
     public void onNewTurnMessage(CbNewTurn newTurn) {
+        boolean updated = false;
+        for (GameRoomViewModel.GuessInProgress guess : model.getCurrentGuesses().values()) {
+            if (!guess.isCorrect()) {
+                guess.setCorrect(false);
+                guess.setCurrentWord("");
+                updated = true;
+            }
+        }
+        if (updated) {
+            view.updateGuessProgress();
+        }
         model.setCurrentTurnPlayer(newTurn.getCurrentPlayer());
         model.setCurrentSubstring(newTurn.getAssignedString());
         view.updateGame();
@@ -65,18 +76,22 @@ public class GameRoomPresenter {
 
     @CbMessageListener
     public void onGuessUpdateMessage(CbGuessUpdate guessUpdate) {
-        GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(guessUpdate.getPlayer());
+        // This is handled on new turn
+        if (guessUpdate.getGuess().isEmpty()) {
+            return;
+        }
+        GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(guessUpdate.getPlayer().getPlayerName());
         guess.setCurrentWord(guessUpdate.getGuess());
         guess.setCorrect(false);
-        view.updateStringDisplayed();
+        view.updateGuessProgress();
     }
 
     @CbMessageListener
     public void onGuessResultMessage(CbGuessResult guessResult) {
-        GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(guessResult.getPlayer());
+        GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(guessResult.getPlayer().getPlayerName());
         guess.setCurrentWord(guessResult.getGuess());
         guess.setCorrect(guessResult.getCorrect());
-        view.updateStringDisplayed();
+        view.updateGuessProgress();
     }
 
 }

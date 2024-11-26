@@ -57,7 +57,7 @@ public class GamePanel extends JPanel {
         }
         playerPanels.clear();
         for (Player player : model.getPlayerList()) {
-            PlayerPanel playerPanel = new PlayerPanel(player.getPlayerName(), player.getScore());
+            PlayerPanel playerPanel = new PlayerPanel(player.getPlayerName(), player.getScore(), this);
             playerPanels.put(player.getPlayerName(), playerPanel);
             add(playerPanel);
         }
@@ -66,12 +66,14 @@ public class GamePanel extends JPanel {
         int centerY = 250;
         int radius = 150;
 
+        int width = 100;
+        int height = 100;
         int j = 0;
         for (PlayerPanel panel : playerPanels.values()) {
             double angle = 2 * Math.PI * (j++) / playerPanels.size();
-            int x = (int) (centerX + radius * Math.cos(angle) - 50);
-            int y = (int) (centerY + radius * Math.sin(angle) - 50);
-            panel.setBounds(x, y, 100, 100);
+            int x = (int) (centerX + radius * Math.cos(angle) - ((double) width / 2));
+            int y = (int) (centerY + radius * Math.sin(angle) - ((double) height / 2));
+            panel.setLocation(x, y, width, height);
         }
     }
 
@@ -103,25 +105,14 @@ public class GamePanel extends JPanel {
         timerPlayer.setText("Guess in " + model.getTurnTimerSeconds());
         timerLabel.setText("Timer: " + model.getGameTimerSeconds() / 60 + ":" + String.format("%02d", model.getGameTimerSeconds() % 60));
 
-        // TODO Update player guess words from view model
-
         revalidate();
         repaint();
     }
 
     // displays the string that the current player is typing
-    public void updateStringDisplayed(Player currentTurnPlayer, String stringCurrentPlayer, boolean stringVerdict){
+    public void updateStringDisplayed(String playerName, GameRoomViewModel.GuessInProgress guess) {
         // Loop through all player panels and set the string displayed accordingly
-        for (Map.Entry<String, PlayerPanel> entry : playerPanels.entrySet()) {
-            Player player = model.getPlayerList().stream()
-                    .filter(p -> p.getPlayerName().equals(entry.getKey()))
-                    .findFirst().orElse(null);
-            if (player != null && player.equals(currentTurnPlayer)) {
-                entry.getValue().setPlayerGuess(stringCurrentPlayer, stringVerdict);
-            } else {
-                entry.getValue().setPlayerGuess("", true);  // Set default gray border for others
-            }
-        }
+        playerPanels.get(playerName).setPlayerGuess(guess.getCurrentWord(), guess.isCorrect());
     }
 
     private void highlightPlayerPanel(Player currentTurnPlayer) {

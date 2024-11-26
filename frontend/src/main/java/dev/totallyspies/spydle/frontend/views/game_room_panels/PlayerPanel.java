@@ -6,9 +6,11 @@ import java.awt.*;
 // Panel for each player
 class PlayerPanel extends JPanel {
 
+    // Coloured box where the player is
     private final JLabel pointsLabel;
+    private final JLabel guessLabel;
 
-    public PlayerPanel(String name, int score) {
+    public PlayerPanel(String name, int score, JPanel parent) {
         setLayout(new BorderLayout());
         setBackground(new Color(255, 255, 255));
         setBorder(BorderFactory.createLineBorder(new Color(25, 25, 112)));
@@ -23,26 +25,36 @@ class PlayerPanel extends JPanel {
         pointsLabel.setForeground(new Color(139, 0, 0));
         pointsLabel.setText("Score: " + score);
         add(pointsLabel, BorderLayout.SOUTH);
+
+        guessLabel = new JLabel("", SwingConstants.CENTER);
+        guessLabel.setHorizontalAlignment(JLabel.CENTER);
+        guessLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        // Hide by default
+        guessLabel.setForeground(new Color(139, 0, 0));
+        guessLabel.setPreferredSize(new Dimension(150, 30));
+        parent.add(guessLabel);
     }
 
+    public void setLocation(int x, int y, int width, int height) {
+        setBounds(x, y, width, height);
+        guessLabel.setBounds((int) getBounds().getX() - 25, (int) getBounds().getY() - 30, 150, 30);
+    }
 
     public void updateScore(int points) {
         pointsLabel.setText("Score: " + points);
     }
+
     public void setPlayerBorder(Color color, int thickness) {
         setBorder(BorderFactory.createLineBorder(color, thickness));
     }
 
-    public void setPlayerGuess(String guess, boolean verdict){
-        JLabel guessLabel = new JLabel(guess, SwingConstants.CENTER);
-        guessLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        if (verdict){
+    public void setPlayerGuess(String guess, boolean verdict) {
+        if (verdict) {
             guessLabel.setForeground(new Color(34, 139, 34));
-        }
-        else {
+        } else {
             guessLabel.setForeground(new Color(139, 0, 0));
         }
         guessLabel.setText(guess);
-        add(guessLabel, BorderLayout.SOUTH);
     }
+
 }
