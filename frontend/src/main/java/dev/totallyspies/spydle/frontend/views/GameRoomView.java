@@ -27,10 +27,8 @@ public class GameRoomView extends JPanel implements CardView {
     private final JLabel roomCodeLabel;
     private final JButton startGameButton;
     private final JPanel topPanel;
-    private final GameRoomViewModel gameRoomViewModel;
-    private final GameRoomViewController gameRoomViewController;
 
-    public GameRoomView(GameRoomViewModel model, GameRoomViewController controller, GameRoomViewModel gameRoomViewModel, GameRoomViewController gameRoomViewController) {
+    public GameRoomView(GameRoomViewModel model, GameRoomViewController controller) {
         this.model = model;
         this.controller = controller;
 
@@ -124,8 +122,8 @@ public class GameRoomView extends JPanel implements CardView {
             }
 
             private void updateStringEntered() {
-                gameRoomViewModel.setStringEntered(substringInputField.getText());
-                gameRoomViewController.setUpdatedString();
+                model.setStringEntered(substringInputField.getText());
+                controller.updateGuess();
             }
         });
 
@@ -147,8 +145,6 @@ public class GameRoomView extends JPanel implements CardView {
         inputPanel.add(submitButton); // Add submit button to input panel
 
         add(container, BorderLayout.CENTER);
-        this.gameRoomViewModel = gameRoomViewModel;
-        this.gameRoomViewController = gameRoomViewController;
     }
 
     public void clearSubstringInputField() {

@@ -24,6 +24,8 @@ public class GameRoomPresenter {
 
     @CbMessageListener
     public void onTimerTick(CbTimerTick timerTick) {
+        model.setGameTimerSeconds(timerTick.getGameTimeLeftSeconds());
+        model.setTurnTimerSeconds(timerTick.getTurnTimeLeftSeconds());
         view.updateGame();
     }
 
