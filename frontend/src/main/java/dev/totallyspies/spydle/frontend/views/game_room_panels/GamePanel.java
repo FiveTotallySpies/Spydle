@@ -33,7 +33,7 @@ public class GamePanel extends JPanel {
         substringLabel.setBounds(300, 200, 200, 50);
         add(substringLabel);
 
-        timerPlayer = new JLabel("Timer: 0:00", SwingConstants.CENTER);
+        timerPlayer = new JLabel("", SwingConstants.CENTER);
         timerPlayer.setFont(new Font("Arial", Font.PLAIN, 16));
         timerPlayer.setBounds(300, 250, 200, 50);
         add(timerPlayer);
@@ -99,8 +99,8 @@ public class GamePanel extends JPanel {
         }
 
         substringLabel.setText(model.getCurrentSubstring());
-        // timerPlayer.setText("!" + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
-        timerLabel.setText("Timer: " + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
+        timerPlayer.setText("Guess in " + model.getTurnTimerSeconds());
+        timerLabel.setText("Timer: " + model.getGameTimerSeconds() / 60 + ":" + String.format("%02d", model.getGameTimerSeconds() % 60));
 
         revalidate();
         repaint();
