@@ -127,16 +127,14 @@ public class GameRoomView extends JPanel implements CardView {
             }
         });
 
+        // Action listener for submit button
         submitButton.addActionListener(event -> {
             model.setStringEntered(substringInputField.getText());
-            // Handle the entered substring as needed
             controller.guessWord();
         });
         // Occurs when you hit the enter button with the input field in focus
         substringInputField.addActionListener(event -> {
-            // Handle the entered substring as
             model.setStringEntered(substringInputField.getText());
-
             controller.guessWord();
         });
 
