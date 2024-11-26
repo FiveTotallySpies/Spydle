@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
-@Profile("!local")
+@Profile("!test")
 public class WelcomeViewModel {
 
     private String playerName = "";

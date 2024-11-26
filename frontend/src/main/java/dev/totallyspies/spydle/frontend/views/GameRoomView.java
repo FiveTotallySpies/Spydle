@@ -11,8 +11,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 @Component
-@Profile("!local")
-public class GameRoomView extends JPanel {
+@Profile("!test")
+public class GameRoomView extends JPanel implements CardView {
 
     private final GameRoomViewModel model;
     private final GameRoomViewController controller;
@@ -23,6 +23,8 @@ public class GameRoomView extends JPanel {
     private final JTextField substringInputField;
     private final JPanel inputPanel;
     private final JLabel roomCodeLabel;
+    private final JButton startGameButton;
+    private final JPanel topPanel;
 
     public GameRoomView(GameRoomViewModel model, GameRoomViewController controller) {
         this.model = model;
@@ -61,13 +63,12 @@ public class GameRoomView extends JPanel {
 //            controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
 //        });
 
-        JButton startGameButton = createStyledButton(
+        startGameButton = createStyledButton(
                 "Start Game",
                 new Color(165, 195, 255), // Background color
                 Color.WHITE,             // Text color
                 () -> controller.startGame() // Action on click
         );
-
 //        JButton startGameButton = new JButton("Start Game");
 //        startGameButton.setFont(new Font("Arial", Font.BOLD, 14));
 //        startGameButton.setBackground(new Color(165, 195, 255)); // Blueviolet
@@ -86,11 +87,11 @@ public class GameRoomView extends JPanel {
         roomCodeLabel.setPreferredSize(new Dimension(170, 40));
 
         // Top panel to hold the back button on the left
-        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false); // Transparent background to show main background color
         topPanel.add(backButton, BorderLayout.WEST); // Add back button to the left side
-        topPanel.add(startGameButton, BorderLayout.EAST);
         topPanel.add(roomCodeLabel, BorderLayout.CENTER);
+        topPanel.add(startGameButton, BorderLayout.EAST);
 
         // Add the top panel to the top (NORTH) of the main container
         container.add(topPanel, BorderLayout.NORTH);
@@ -121,7 +122,11 @@ public class GameRoomView extends JPanel {
         add(container, BorderLayout.CENTER);
     }
 
-    public void updateGame() {
+    public void clearSubstringInputField() {
+        substringInputField.setText("");
+    }
+
+    public synchronized void updateGame() {
         gamePanel.updateGame(); // Update game panel
 
         roomCodeLabel.setText("Room Code: " + model.getRoomCode());
@@ -136,6 +141,12 @@ public class GameRoomView extends JPanel {
             substringInputField.requestFocus();
         } else {
             container.remove(inputPanel);
+        }
+
+        if (model.getCurrentTurnPlayer() == null) { // Game is running
+            topPanel.add(startGameButton, BorderLayout.EAST);
+        } else {
+            topPanel.remove(startGameButton);
         }
     }
 
