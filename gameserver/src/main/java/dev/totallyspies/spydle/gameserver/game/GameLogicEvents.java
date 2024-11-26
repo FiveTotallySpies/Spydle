@@ -1,5 +1,6 @@
 package dev.totallyspies.spydle.gameserver.game;
 
+import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
 import dev.totallyspies.spydle.gameserver.message.GameSocketHandler;
 import dev.totallyspies.spydle.gameserver.message.SbMessageListener;
 import dev.totallyspies.spydle.gameserver.message.session.SessionCloseEvent;
@@ -9,14 +10,17 @@ import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.*;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
+import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.web.socket.CloseStatus;
 
 @Component
 public class GameLogicEvents {
@@ -33,10 +37,17 @@ public class GameLogicEvents {
     private GameSocketHandler gameSocketHandler;
 
     @Autowired
-    public CurrentGameServerConfiguration gameServerConfiguration;
+    private CurrentGameServerConfiguration gameServerConfiguration;
 
     @Autowired
-    public GameServer gameServer;
+    private GameServer gameServer;
+
+    @Autowired
+    private ConfigurableApplicationContext context;
+
+    @Nullable
+    @Autowired(required = false)
+    private AgonesHook agonesHook;
 
     @EventListener(SessionOpenEvent.class)
     public void onSessionOpen() {
@@ -135,6 +146,14 @@ public class GameLogicEvents {
                 .toList();
 
         gameSocketHandler.broadcastCbMessage(gameEndMessage(players));
+
+        // Shutdown
+        gameSocketHandler.closeAllSessions(new CloseStatus(CloseStatus.NORMAL.getCode(), "Game over"));
+        if (agonesHook != null) {
+            agonesHook.getAgones().shutdown(); // Shutdown server
+        } else {
+            context.close(); // Shutdown
+        }
     }
 
     private void broadcastPlayers() {

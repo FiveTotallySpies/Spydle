@@ -14,6 +14,8 @@ import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameInputData;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputData;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataFail;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataSuccess;
+import dev.totallyspies.spydle.frontend.views.GameRoomView;
+import dev.totallyspies.spydle.frontend.views.ListRoomsView;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,7 @@ public class WelcomeViewController {
     Method called when View All Rooms Button is Pressed
      */
     public void openListRoomsView() {
-        publisher.publishEvent(new SwitchViewEvent(this, "ListRoomsView"));
+        publisher.publishEvent(new SwitchViewEvent(this, ListRoomsView.class));
     }
 
     public void createGame() {
@@ -74,7 +76,7 @@ public class WelcomeViewController {
                 );
                 gameRoomModel.setRoomCode(successOutput.getRoomCode());
                 gameRoomModel.setLocalPlayer(Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
-                publisher.publishEvent(new SwitchViewEvent(this, "GameRoomView"));
+                publisher.publishEvent(new SwitchViewEvent(this, GameRoomView.class));
             } catch (Exception exception) {
                 fireError("Failed to connect to game server: " + exception.getMessage());
                 logger.error("Failed to connect to game server: ", exception);
@@ -106,7 +108,7 @@ public class WelcomeViewController {
                 );
                 gameRoomModel.setRoomCode(successOutput.getRoomCode());
                 gameRoomModel.setLocalPlayer(Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
-                publisher.publishEvent(new SwitchViewEvent(this, "GameRoomView"));
+                publisher.publishEvent(new SwitchViewEvent(this, GameRoomView.class));
             } catch (Exception exception) {
                 fireError("Failed to connect to game server: " + exception.getMessage());
                 logger.error("Failed to connect to game server: ", exception);
