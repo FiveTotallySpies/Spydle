@@ -4,6 +4,7 @@ import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.use_cases.guess_word.GuessWordInputData;
 import dev.totallyspies.spydle.frontend.use_cases.guess_word.GuessWordInteractor;
+import dev.totallyspies.spydle.frontend.use_cases.update_string.UpdateStringInputData;
 import dev.totallyspies.spydle.frontend.use_cases.update_string.UpdateStringInteractor;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
@@ -60,7 +61,7 @@ public class GameRoomViewController {
     }
 
     public void setUpdatedString(){
-        updateStringInteractor.execute(String );
+        updateStringInteractor.execute(new UpdateStringInputData(model.getStringEntered()));
     }
 
     public void guessWord() {
