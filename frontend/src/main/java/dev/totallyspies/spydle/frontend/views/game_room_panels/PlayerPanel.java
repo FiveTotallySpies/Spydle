@@ -33,10 +33,15 @@ class PlayerPanel extends JPanel {
         setBorder(BorderFactory.createLineBorder(color, thickness));
     }
 
-    public void setPlayerGuess(String guess){
+    public void setPlayerGuess(String guess, boolean verdict){
         JLabel guessLabel = new JLabel(guess, SwingConstants.CENTER);
-        guessLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        guessLabel.setForeground(new Color(139, 0, 0));
+        guessLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        if (verdict){
+            guessLabel.setForeground(new Color(34, 139, 34));
+        }
+        else {
+            guessLabel.setForeground(new Color(139, 0, 0));
+        }
         guessLabel.setText(guess);
         add(guessLabel, BorderLayout.SOUTH);
     }

@@ -115,9 +115,9 @@ public class GamePanel extends JPanel {
                     .filter(p -> p.getPlayerName().equals(entry.getKey()))
                     .findFirst().orElse(null);
             if (player != null && player.equals(currentTurnPlayer)) {
-//                entry.getValue().setPlayerBorder(Color.RED, 5);  // Set red border for current player
+                entry.getValue().setPlayerGuess(stringCurrentPlayer, stringVerdict);
             } else {
-//                entry.getValue().setPlayerBorder(Color.GRAY, 2);  // Set default gray border for others
+                entry.getValue().setPlayerGuess("", true);  // Set default gray border for others
             }
         }
     }
