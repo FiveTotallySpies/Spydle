@@ -155,7 +155,7 @@ public class GameRoomView extends JPanel implements CardView {
 
     public void updateGuessProgress() {
         for (String playerName : model.getCurrentGuesses().keySet()) {
-            GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(playerName);
+            GameRoomViewModel.Guess guess = model.getCurrentGuesses().get(playerName);
             gamePanel.updateStringDisplayed(playerName, guess);
         }
     }

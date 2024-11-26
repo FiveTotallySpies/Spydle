@@ -35,7 +35,7 @@ public class GameRoomViewModel {
 
     // The set of strings that appear above players as they type their guesses
     // Key is player name
-    private Map<String, GuessInProgress> currentGuesses = new ConcurrentHashMap<>();
+    private Map<String, Guess> currentGuesses = new ConcurrentHashMap<>();
 
     public void reset() {
         this.playerList = new LinkedList<>();
@@ -51,10 +51,16 @@ public class GameRoomViewModel {
 
     @Data
     @AllArgsConstructor
-    public static class GuessInProgress {
+    public static class Guess {
 
         private String currentWord;
-        private boolean correct;
+        private Verdict verdict;
+
+        public enum Verdict {
+            CORRECT,
+            INCORRECT,
+            IN_PROGRESS
+        }
 
     }
 }

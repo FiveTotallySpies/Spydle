@@ -1,5 +1,6 @@
 package dev.totallyspies.spydle.frontend.views.game_room_panels;
 
+import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import javax.swing.*;
 import java.awt.*;
 
@@ -47,11 +48,11 @@ class PlayerPanel extends JPanel {
         setBorder(BorderFactory.createLineBorder(color, thickness));
     }
 
-    public void setPlayerGuess(String guess, boolean verdict) {
-        if (verdict) {
-            guessLabel.setForeground(new Color(34, 139, 34));
-        } else {
-            guessLabel.setForeground(new Color(139, 0, 0));
+    public void setPlayerGuess(String guess, GameRoomViewModel.Guess.Verdict verdict) {
+        switch (verdict) {
+            case CORRECT -> guessLabel.setForeground(new Color(34, 139, 34));
+            case INCORRECT -> guessLabel.setForeground(new Color(139, 0, 0));
+            case IN_PROGRESS -> guessLabel.setForeground(new Color(0, 0, 0));
         }
         guessLabel.setText(guess);
     }

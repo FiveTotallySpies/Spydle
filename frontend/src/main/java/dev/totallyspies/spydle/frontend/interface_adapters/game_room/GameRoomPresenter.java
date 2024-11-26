@@ -37,7 +37,7 @@ public class GameRoomPresenter {
         model.setPlayerList(updatePlayerList.getPlayersList());
         model.getCurrentGuesses().clear();
         for (Player player : updatePlayerList.getPlayersList()) {
-            model.getCurrentGuesses().put(player.getPlayerName(), new GameRoomViewModel.GuessInProgress("", false));
+            model.getCurrentGuesses().put(player.getPlayerName(), new GameRoomViewModel.Guess("", GameRoomViewModel.Guess.Verdict.IN_PROGRESS));
         }
         view.updateGame();
     }
@@ -45,9 +45,8 @@ public class GameRoomPresenter {
     @CbMessageListener
     public void onNewTurnMessage(CbNewTurn newTurn) {
         boolean updated = false;
-        for (GameRoomViewModel.GuessInProgress guess : model.getCurrentGuesses().values()) {
-            if (!guess.isCorrect()) {
-                guess.setCorrect(false);
+        for (GameRoomViewModel.Guess guess : model.getCurrentGuesses().values()) {
+            if (guess.getVerdict() == GameRoomViewModel.Guess.Verdict.IN_PROGRESS) {
                 guess.setCurrentWord("");
                 updated = true;
             }
@@ -80,17 +79,17 @@ public class GameRoomPresenter {
         if (guessUpdate.getGuess().isEmpty()) {
             return;
         }
-        GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(guessUpdate.getPlayer().getPlayerName());
+        GameRoomViewModel.Guess guess = model.getCurrentGuesses().get(guessUpdate.getPlayer().getPlayerName());
         guess.setCurrentWord(guessUpdate.getGuess());
-        guess.setCorrect(false);
+        guess.setVerdict(GameRoomViewModel.Guess.Verdict.IN_PROGRESS);
         view.updateGuessProgress();
     }
 
     @CbMessageListener
     public void onGuessResultMessage(CbGuessResult guessResult) {
-        GameRoomViewModel.GuessInProgress guess = model.getCurrentGuesses().get(guessResult.getPlayer().getPlayerName());
+        GameRoomViewModel.Guess guess = model.getCurrentGuesses().get(guessResult.getPlayer().getPlayerName());
         guess.setCurrentWord(guessResult.getGuess());
-        guess.setCorrect(guessResult.getCorrect());
+        guess.setVerdict(guessResult.getCorrect() ? GameRoomViewModel.Guess.Verdict.CORRECT : GameRoomViewModel.Guess.Verdict.INCORRECT);
         view.updateGuessProgress();
     }
 
