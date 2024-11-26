@@ -14,6 +14,7 @@ message SbMessage {
 // Server-bound messages
 message SbStartGame {
   int32 total_game_time_seconds = 1;
+  int32 turn_time_seconds = 2;
 }
 
 message SbLeaveGame {
@@ -38,6 +39,7 @@ message CbMessage {
 message CbGameStart {
   repeated Player players = 1;
   int32 total_game_time_seconds = 2;
+  int32 turn_time_seconds = 3;
 }
 
 message CbGameEnd {
@@ -49,7 +51,8 @@ message CbUpdatePlayerList {
 }
 
 message CbTimerTick {
-  int32 time_left_seconds = 1;
+  int32 game_time_left_seconds = 1;
+  int32 turn_time_left_seconds = 2;
 }
 
 message CbGuessResult {
