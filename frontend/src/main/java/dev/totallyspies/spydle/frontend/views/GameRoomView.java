@@ -168,17 +168,4 @@ public class GameRoomView extends JPanel {
 
         return button;
     }
-
-
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> {
-//            JFrame frame = new JFrame("Spydle - Game Over");
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.setSize(800, 600); // Full-screen dimensions
-//            frame.setLocationRelativeTo(null);
-//            frame.add(new GameRoomView());
-//            frame.setVisible(true);
-//        });
-//    }
-
 }

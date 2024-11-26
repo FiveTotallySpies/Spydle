@@ -20,6 +20,7 @@ public class GamePanel extends JPanel {
     private final Map<String, PlayerPanel> playerPanels = new LinkedHashMap<>();
     private final JLabel substringLabel;
     private final JLabel timerLabel;
+    private final JLabel timerPlayer;
 
     public GamePanel(GameRoomViewModel model) {
         this.model = model;
@@ -29,8 +30,13 @@ public class GamePanel extends JPanel {
         // Center substring label
         substringLabel = new JLabel("SUBSTRING", SwingConstants.CENTER);
         substringLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        substringLabel.setBounds(300, 250, 200, 50);
+        substringLabel.setBounds(300, 200, 200, 50);
         add(substringLabel);
+
+        timerPlayer = new JLabel("Timer: 0:00", SwingConstants.CENTER);
+        timerPlayer.setFont(new Font("Arial", Font.PLAIN, 16));
+        timerPlayer.setBounds(300, 250, 200, 50);
+        add(timerPlayer);
 
         // Timer label
         timerLabel = new JLabel("Timer: 0:00", SwingConstants.CENTER);
@@ -93,6 +99,7 @@ public class GamePanel extends JPanel {
         }
 
         substringLabel.setText(model.getCurrentSubstring());
+        // timerPlayer.setText("!" + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
         timerLabel.setText("Timer: " + model.getTimerSeconds() / 60 + ":" + String.format("%02d", model.getTimerSeconds() % 60));
 
         revalidate();
