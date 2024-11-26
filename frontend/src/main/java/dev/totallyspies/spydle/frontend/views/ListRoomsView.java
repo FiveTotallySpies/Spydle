@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 
 @org.springframework.stereotype.Component
-@Profile("!local")
-public class ListRoomsView extends JPanel {
+@Profile("!test")
+public class ListRoomsView extends JPanel implements CardView {
 
     private final ListRoomsViewController controller;
     private final ListRoomsViewModel model;
@@ -88,7 +88,7 @@ public class ListRoomsView extends JPanel {
 
     @EventListener
     public void onSwitchView(SwitchViewEvent event) {
-        if (event.getViewName().equals("ListRoomsView")) {
+        if (event.getViewClass().equals(ListRoomsView.class)) {
             controller.updateRoomList();
         }
     }

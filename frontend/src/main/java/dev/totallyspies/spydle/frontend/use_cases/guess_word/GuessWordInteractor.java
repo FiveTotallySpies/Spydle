@@ -5,9 +5,11 @@ import dev.totallyspies.spydle.shared.proto.messages.SbGuess;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test")
 public class GuessWordInteractor implements GuessWordInputBoundary {
 
     private final Logger logger = LoggerFactory.getLogger(GuessWordInteractor.class);
