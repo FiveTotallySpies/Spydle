@@ -16,12 +16,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class GameLogicEvents {
     private final Logger logger = LoggerFactory.getLogger(GameLogicEvents.class);
-    private static final long TIMER_INTERVAL_MILLIS = 1000;
-
     private final Timer timer = new Timer();
 
     @Autowired
@@ -70,7 +69,7 @@ public class GameLogicEvents {
             public void run() {
                 GameLogicEvents.this.onTimerTick();
             }
-        }, TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
+        }, 0, 1000);
 
         /* 4. Make a new turn. */
         gameLogic.newTurn();
@@ -98,13 +97,11 @@ public class GameLogicEvents {
     }
 
     private void onTimerTick() {
-        long curMillis = System.currentTimeMillis();
-        long gamePassedMillis = curMillis - gameLogic.getGameStartMillis();
-        long turnPassedMillis = curMillis - gameLogic.getLastTurnStartMillis();
-
+        gameLogic.updateTickTime();
+        long gamePassedMillis = gameLogic.getTickTime() - gameLogic.getGameStartMillis();
         long gameMillisLeft = gameLogic.getTotalGameTimeMillis() - gamePassedMillis;
 
-        /* Using Math.min to consider the case when there is less time left of the game then the usual game time */
+        long turnPassedMillis = gameLogic.getTickTime() - gameLogic.getLastTurnStartMillis();
         long turnMillisLeft = Math.min(gameLogic.getTurnTimeMillis() - turnPassedMillis, gameMillisLeft);
 
         if (gameMillisLeft <= 0) {
@@ -116,6 +113,9 @@ public class GameLogicEvents {
         if (turnMillisLeft <= 0) {
             gameLogic.newTurn();
             gameSocketHandler.broadcastCbMessage(newTurnMessage());
+            /* We made a move and need to reset how many seconds are left for a turn */
+            turnPassedMillis = gameLogic.getTickTime() - gameLogic.getLastTurnStartMillis();
+            turnMillisLeft = Math.min(gameLogic.getTurnTimeMillis() - turnPassedMillis, gameMillisLeft);
         }
 
         var gameSecondsLeft = (int) Math.round(gameMillisLeft / 1000.0);

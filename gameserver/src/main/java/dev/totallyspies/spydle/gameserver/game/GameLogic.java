@@ -31,6 +31,7 @@ public class GameLogic {
     private final AtomicReference<List<String>> substrings;
     private final AtomicLong lastTurnStartMillis = new AtomicLong(0);
     private final AtomicLong gameStartMillis = new AtomicLong(0);
+    private final AtomicLong tickTimeMillis = new AtomicLong(System.currentTimeMillis());
 
     private final Random random = new Random(0);
 
@@ -97,6 +98,8 @@ public class GameLogic {
 
     /* Assuming sessions are sorted by name of the player, increasing */
     public void gameStart(Collection<ClientSession> sessions, int proposedGameTimeSeconds, int proposedTurnTimeSeconds) {
+        this.updateTickTime();
+
         if (isValidTotalGameTime(proposedGameTimeSeconds)) {
             this.gameTimeSeconds.set(proposedGameTimeSeconds);
         }
@@ -122,14 +125,14 @@ public class GameLogic {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        this.gameStartMillis.set(System.currentTimeMillis());
+        this.gameStartMillis.set(this.getTickTime());
     }
 
     public void newTurn() {
         var randomIndex = this.random.nextInt(this.substrings.get().size());
         this.currentSubString.set(this.substrings.get().get(randomIndex));
         this.turn.incrementAndGet();
-        this.lastTurnStartMillis.set(System.currentTimeMillis());
+        this.lastTurnStartMillis.set(this.getTickTime());
     }
 
     public boolean isPlayerTurn(UUID playerId) {
@@ -173,6 +176,10 @@ public class GameLogic {
         }
     }
 
+    /* Meant to be called every timer tick. */
+    public void updateTickTime() { tickTimeMillis.set(System.currentTimeMillis()); }
+
+    public long getTickTime() { return this.tickTimeMillis.get(); }
 
     public long getGameStartMillis() { return this.gameStartMillis.get(); }
 
