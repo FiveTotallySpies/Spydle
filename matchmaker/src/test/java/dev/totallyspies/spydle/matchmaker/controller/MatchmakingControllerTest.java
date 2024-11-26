@@ -20,6 +20,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +54,7 @@ public class MatchmakingControllerTest {
         request.setPlayerName("Player1");
 
         when(sessionRepository.parseClientId(anyString())).thenReturn(clientId);
-        when(matchmakingService.createGame(clientId, "Player1")).thenReturn(fakeGameServer);
+        when(matchmakingService.createGame(eq(clientId), eq("Player1"), anyInt())).thenReturn(fakeGameServer);
 
         ResponseEntity<?> response = matchmakingController.createGame(request);
 

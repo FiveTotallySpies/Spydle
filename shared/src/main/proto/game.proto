@@ -13,6 +13,7 @@ message SbMessage {
 
 // Server-bound messages
 message SbStartGame {
+  int32 total_game_time_seconds = 1;
 }
 
 message SbLeaveGame {
@@ -40,7 +41,7 @@ message CbGameStart {
 }
 
 message CbGameEnd {
-  Player winner = 1;
+  repeated Player players = 1;
 }
 
 message CbUpdatePlayerList {
@@ -52,13 +53,14 @@ message CbTimerTick {
 }
 
 message CbGuessResult {
-  string guess = 1;
-  bool correct = 2;
+  string player_name = 1; // player that made a guess
+  string guess = 2;
+  bool correct = 3;
 }
 
 message CbNewTurn {
   string assigned_string = 1;
-  string current_player_name = 2;
+  Player current_player = 2;
 }
 
 // Player information for tracking in the game

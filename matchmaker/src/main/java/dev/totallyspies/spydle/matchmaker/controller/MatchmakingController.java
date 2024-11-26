@@ -56,7 +56,7 @@ public class MatchmakingController {
             return ResponseEntity.status(400).body(new ClientErrorResponse().message("Bad clientId: should be UUID"));
         }
         try {
-            GameServer gameServer = matchmakingService.createGame(clientId, request.getPlayerName());
+            GameServer gameServer = matchmakingService.createGame(clientId, request.getPlayerName(), 5000);
             logger.info("Successfully handled /create-game request: {}", gameServer);
             return ResponseEntity.ok(new CreateGameResponseModel()
                     .gameServer(gameServer)

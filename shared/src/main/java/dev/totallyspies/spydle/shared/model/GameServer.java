@@ -29,4 +29,13 @@ public class GameServer implements Serializable {
         PLAYING // Players are playing the game, no one can join
     }
 
+    // Unlike .equals, does not check state/publicRoom!
+    public boolean isSameGameServer(GameServer other) {
+        if (other.address == null || !other.address.equals(address)) return false;
+        if (other.port != port) return false;
+        if (other.name == null || !other.name.equals(name)) return false;
+        if (other.roomCode == null || !other.roomCode.equals(roomCode)) return false;
+        return true;
+    }
+
 }

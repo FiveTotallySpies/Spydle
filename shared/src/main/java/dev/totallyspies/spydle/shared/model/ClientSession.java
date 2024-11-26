@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class ClientSession implements Serializable {
 
@@ -25,6 +25,17 @@ public class ClientSession implements Serializable {
     public enum State {
         ASSIGNED, // Client has been assigned to a gameserver, but hasn't connected to it yet
         CONNECTED // Client has connected to this gameserver
+    }
+
+    // TODO Investigate later why this is needed
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof ClientSession session)) return false;
+        if (session.getClientId() == null || !session.getClientId().equals(clientId)) return false;
+        if (session.getGameServer() == null || !session.getGameServer().equals(gameServer)) return false;
+        if (session.getPlayerName() == null || !session.getPlayerName().equals(playerName)) return false;
+        if (session.getState() == null || !session.getState().equals(state)) return false;
+        return true;
     }
 
 }
