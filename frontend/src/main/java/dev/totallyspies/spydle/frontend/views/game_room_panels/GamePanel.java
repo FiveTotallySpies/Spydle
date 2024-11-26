@@ -2,14 +2,15 @@ package dev.totallyspies.spydle.frontend.views.game_room_panels;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.swing.*;
-import java.awt.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GamePanel extends JPanel {
 
@@ -97,6 +98,10 @@ public class GamePanel extends JPanel {
 
         revalidate();
         repaint();
+    }
+
+    private void displayCurrentPlayerWord(Player player) {
+
     }
 
     private void highlightPlayerPanel(Player currentTurnPlayer) {

@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -25,8 +27,10 @@ public class GameRoomView extends JPanel implements CardView {
     private final JLabel roomCodeLabel;
     private final JButton startGameButton;
     private final JPanel topPanel;
+    private final GameRoomViewModel gameRoomViewModel;
+    private final GameRoomViewController gameRoomViewController;
 
-    public GameRoomView(GameRoomViewModel model, GameRoomViewController controller) {
+    public GameRoomView(GameRoomViewModel model, GameRoomViewController controller, GameRoomViewModel gameRoomViewModel, GameRoomViewController gameRoomViewController) {
         this.model = model;
         this.controller = controller;
 
@@ -102,7 +106,29 @@ public class GameRoomView extends JPanel implements CardView {
         substringInputField = new JTextField(20); // Text field for substring input
         JButton submitButton = new JButton("Submit");
 
-        // Action listener for submit button
+        // Action listener for the string as it is entered
+        substringInputField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                updateStringEntered();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+                updateStringEntered();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+                updateStringEntered();
+            }
+
+            private void updateStringEntered() {
+                gameRoomViewModel.setStringEntered(substringInputField.getText());
+                gameRoomViewController.setUpdatedString();
+            }
+        });
+
         submitButton.addActionListener(event -> {
             model.setStringEntered(substringInputField.getText());
             // Handle the entered substring as needed
@@ -110,8 +136,9 @@ public class GameRoomView extends JPanel implements CardView {
         });
         // Occurs when you hit the enter button with the input field in focus
         substringInputField.addActionListener(event -> {
+            // Handle the entered substring as
             model.setStringEntered(substringInputField.getText());
-            // Handle the entered substring as needed
+
             controller.guessWord();
         });
 
@@ -120,6 +147,8 @@ public class GameRoomView extends JPanel implements CardView {
         inputPanel.add(submitButton); // Add submit button to input panel
 
         add(container, BorderLayout.CENTER);
+        this.gameRoomViewModel = gameRoomViewModel;
+        this.gameRoomViewController = gameRoomViewController;
     }
 
     public void clearSubstringInputField() {
