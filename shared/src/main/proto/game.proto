@@ -6,8 +6,8 @@ option java_multiple_files = true;
 message SbMessage {
   oneof payload {
     SbStartGame start_game = 1;
-    SbLeaveGame leave_game = 2;
-    SbGuess guess = 3;
+    SbGuess guess = 2;
+    SbGuessUpdate guess_update = 3;
   }
 }
 
@@ -17,11 +17,12 @@ message SbStartGame {
   int32 turn_time_seconds = 2;
 }
 
-message SbLeaveGame {
-}
-
 message SbGuess {
   string guessed_word = 1;
+}
+
+message SbGuessUpdate {
+  string guessed_word = 1; // the whole word is supposed to be sent
 }
 
 // Client-bound messages
@@ -33,6 +34,7 @@ message CbMessage {
     CbTimerTick timer_tick = 4;
     CbGuessResult guess_result = 5;
     CbNewTurn new_turn = 6;
+    CbGuessUpdate guess_update = 7;
   }
 }
 
@@ -59,6 +61,10 @@ message CbGuessResult {
   string player_name = 1; // player that made a guess
   string guess = 2;
   bool correct = 3;
+}
+
+message CbGuessUpdate {
+  string guess = 1;
 }
 
 message CbNewTurn {

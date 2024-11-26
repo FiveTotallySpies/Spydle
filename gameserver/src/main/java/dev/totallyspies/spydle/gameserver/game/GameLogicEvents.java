@@ -96,6 +96,21 @@ public class GameLogicEvents {
         }
     }
 
+    @SbMessageListener
+    public void onGuessUpdate(SbGuessUpdate event, UUID client) {
+        if (!gameLogic.isPlayerTurn(client)) {
+            logger.info("A player made a guess update when it's not their turn! client that made a guess update: {}", client);
+            return;
+        }
+
+        String typed = event.getGuessedWord();
+        if (typed.length() > 50) {
+            return;
+        }
+
+        gameSocketHandler.broadcastCbMessage(guessUpdateMessage(typed));
+    }
+
     private void onTimerTick() {
         gameLogic.updateTickTime();
         long gamePassedMillis = gameLogic.getTickTime() - gameLogic.getGameStartMillis();
@@ -196,6 +211,18 @@ public class GameLogicEvents {
                                 .setPlayerName(playerName)
                                 .setGuess(guess)
                                 .setCorrect(correct)
+                )
+                .build();
+    }
+
+    private CbMessage guessUpdateMessage(String guess) {
+        return CbMessage
+                .newBuilder()
+                .setGuessUpdate(
+                        CbGuessUpdate
+                                .newBuilder()
+                                .setGuess(guess)
+                                .build()
                 )
                 .build();
     }
