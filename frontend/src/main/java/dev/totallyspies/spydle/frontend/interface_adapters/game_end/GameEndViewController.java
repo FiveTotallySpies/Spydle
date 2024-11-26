@@ -1,6 +1,7 @@
 package dev.totallyspies.spydle.frontend.interface_adapters.game_end;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
+import dev.totallyspies.spydle.frontend.views.WelcomeView;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ public class GameEndViewController {
     Method called when back Button is Pressed
      */
     public void openWelcomeView() {
-        publisher.publishEvent(new SwitchViewEvent(this, "WelcomeView"));
+        publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
     }
 
 }
