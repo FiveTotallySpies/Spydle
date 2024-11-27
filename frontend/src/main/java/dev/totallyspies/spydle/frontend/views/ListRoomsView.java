@@ -38,7 +38,15 @@ public class ListRoomsView extends JPanel implements CardView {
 
         // Title styling
         JLabel titleLabel = new JLabel("All Rooms");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        try {
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT,
+                    getClass().getResourceAsStream("/Sabrina.ttf"));
+            customFont = customFont.deriveFont(Font.PLAIN, 35); // Adjust size and style
+            titleLabel.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 35)); // Fallback to Arial
+        }
         titleLabel.setForeground(new Color(139, 0, 0)); // Dark red color
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 

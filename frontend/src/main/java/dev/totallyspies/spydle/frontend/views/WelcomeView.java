@@ -33,7 +33,8 @@ public class WelcomeView extends JPanel implements CardView {
         container.setBackground(new Color(195, 217, 255)); // Light blue background for the container
         container.setPreferredSize(new Dimension(800, 570)); // Adjusted container size for optimal height
 
-        JLabel titleLabel = new JLabel("Spydle");try {
+        JLabel titleLabel = new JLabel("Spydle");
+        try {
             Font customFont = Font.createFont(Font.TRUETYPE_FONT,
                     getClass().getResourceAsStream("/Sabrina.ttf"));
             customFont = customFont.deriveFont(Font.PLAIN, 65); // Adjust size and style
