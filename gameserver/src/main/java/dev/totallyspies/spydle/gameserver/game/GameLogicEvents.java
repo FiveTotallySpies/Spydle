@@ -19,7 +19,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.web.socket.CloseStatus;
 
 @Component
@@ -94,17 +93,45 @@ public class GameLogicEvents {
             return;
         }
 
-        var playerName = gameLogic.getCurrentPlayer().getName();
+        var player = Player.newBuilder()
+                .setPlayerName(gameLogic.getCurrentPlayer().getName())
+                .setScore(gameLogic.getCurrentPlayer().getScore())
+                .build();
         var input = event.getGuessedWord();
         /* makes a turn, adds the score if a guess is correct */
         boolean guessCorrect = gameLogic.guess(input);
 
-        gameSocketHandler.broadcastCbMessage(guessMessage(input, guessCorrect, playerName));
+        gameSocketHandler.broadcastCbMessage(guessMessage(input, guessCorrect, player));
         if (guessCorrect) {
             /* .guess() updated a turn and a score */
             gameSocketHandler.broadcastCbMessage(newTurnMessage());
             broadcastPlayers();
         }
+    }
+
+    @SbMessageListener
+    public void onGuessUpdate(SbGuessUpdate event, UUID client) {
+        if (!gameLogic.isPlayerTurn(client)) {
+            logger.info("A player made a guess update when it's not their turn! client that made a guess update: {}", client);
+            return;
+        }
+
+        String typed = event.getGuessedWord();
+        if (typed.length() > 50) {
+            return;
+        }
+
+        var player = gameLogic.getPlayers().stream().filter(target -> target.getId().equals(client)).findFirst().orElse(null);
+        if (player == null) {
+            logger.info("A player has made a guess that we cannot find in the game logic!");
+            return;
+        }
+        var wrappedPlayer = Player.newBuilder()
+                .setPlayerName(player.getName())
+                .setScore(player.getScore())
+                .build();
+
+        gameSocketHandler.broadcastCbMessage(guessUpdateMessage(typed, wrappedPlayer));
     }
 
     private void onTimerTick() {
@@ -206,15 +233,28 @@ public class GameLogicEvents {
                 ).build();
     }
 
-    private CbMessage guessMessage(String guess, boolean correct, String playerName) {
+    private CbMessage guessMessage(String guess, boolean correct, Player player) {
         return CbMessage
                 .newBuilder()
                 .setGuessResult(
                         CbGuessResult
                                 .newBuilder()
-                                .setPlayerName(playerName)
+                                .setPlayer(player)
                                 .setGuess(guess)
                                 .setCorrect(correct)
+                )
+                .build();
+    }
+
+    private CbMessage guessUpdateMessage(String guess, Player player) {
+        return CbMessage
+                .newBuilder()
+                .setGuessUpdate(
+                        CbGuessUpdate
+                                .newBuilder()
+                                .setGuess(guess)
+                                .setPlayer(player)
+                                .build()
                 )
                 .build();
     }

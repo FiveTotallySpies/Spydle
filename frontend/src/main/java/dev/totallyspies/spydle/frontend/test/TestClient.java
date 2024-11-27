@@ -3,6 +3,7 @@ package dev.totallyspies.spydle.frontend.test;
 import dev.totallyspies.spydle.frontend.client.ClientSocketConfig;
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
 import dev.totallyspies.spydle.shared.proto.messages.SbGuess;
+import dev.totallyspies.spydle.shared.proto.messages.SbGuessUpdate;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
 import org.slf4j.Logger;
@@ -74,7 +75,9 @@ public class TestClient {
         this.player1.open(ip, port);
         waitMs(500); this.player2.open(ip, port);
         waitMs(500); testStartNewGame(player1, 12, 3);
-        waitMs(1500); testGuess(player2, "gist"); // right guess // need to wait more here
+        waitMs(1500); testGuessUpdate(player1, "shouldbeignoredbyserver");
+        waitMs(100); testGuessUpdate(player2, "gis"); // need to wait more here
+        waitMs(100); testGuess(player2, "gist"); // right guess
         waitMs(500); testGuess(player1, "QWERTY"); // wrong guess
         /*
         Expected logs (shortened):
@@ -137,6 +140,16 @@ public class TestClient {
         Closed connection to websocket, status: CloseStatus[code=1006, reason=null]
         Closed connection to websocket, status: CloseStatus[code=1006, reason=null]
         */
+    }
+
+    public void testGuessUpdate(TestPlayer player, String update) {
+        var message = SbMessage.newBuilder().setGuessUpdate(
+                SbGuessUpdate
+                        .newBuilder()
+                        .setGuessedWord(update)
+        ).build();
+
+        player.send(message);
     }
 
     public void testStartNewGame(TestPlayer player, int gameTimeSeconds, int turnTimeSeconds) {

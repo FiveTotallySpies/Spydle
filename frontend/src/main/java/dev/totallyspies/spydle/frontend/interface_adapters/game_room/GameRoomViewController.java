@@ -2,8 +2,12 @@ package dev.totallyspies.spydle.frontend.interface_adapters.game_room;
 
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
+import dev.totallyspies.spydle.frontend.use_cases.guess_word.GuessWordInputBoundary;
 import dev.totallyspies.spydle.frontend.use_cases.guess_word.GuessWordInputData;
 import dev.totallyspies.spydle.frontend.use_cases.guess_word.GuessWordInteractor;
+import dev.totallyspies.spydle.frontend.use_cases.update_guess.UpdateGuessInputBoundary;
+import dev.totallyspies.spydle.frontend.use_cases.update_guess.UpdateGuessInputData;
+import dev.totallyspies.spydle.frontend.use_cases.update_guess.UpdateGuessInteractor;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
@@ -22,19 +26,22 @@ public class GameRoomViewController {
 
     private final ApplicationEventPublisher publisher;
     private final ClientSocketHandler handler;
-    private final GuessWordInteractor guessWordInteractor;
+    private final GuessWordInputBoundary guessWordInteractor;
     private final GameRoomViewModel model;
+    private final UpdateGuessInputBoundary updateGuessInteractor;
 
     public GameRoomViewController(
             ApplicationEventPublisher publisher,
             ClientSocketHandler handler,
             GuessWordInteractor guessWordInteractor,
-            GameRoomViewModel model
+            GameRoomViewModel model,
+            UpdateGuessInputBoundary updateGuessInteractor
     ) {
         this.publisher = publisher;
         this.handler = handler;
         this.guessWordInteractor = guessWordInteractor;
         this.model = model;
+        this.updateGuessInteractor = updateGuessInteractor;
     }
 
     /*
@@ -53,6 +60,10 @@ public class GameRoomViewController {
             return;
         }
         handler.sendSbMessage(SbMessage.newBuilder().setStartGame(SbStartGame.newBuilder().build()).build());
+    }
+
+    public void updateGuess(){
+        updateGuessInteractor.execute(new UpdateGuessInputData(model.getStringEntered()));
     }
 
     public void guessWord() {
