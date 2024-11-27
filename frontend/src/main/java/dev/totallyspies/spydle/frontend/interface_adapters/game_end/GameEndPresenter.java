@@ -23,7 +23,7 @@ public class GameEndPresenter {
     }
 
     @CbMessageListener
-    public void onGameEnd(CbGameEnd gameEnd) {
+    public void onGameEndMessage(CbGameEnd gameEnd) {
         model.setPlayers(gameEnd.getPlayersList());
         view.setPlacements();
         publisher.publishEvent(new SwitchViewEvent(this, GameEndView.class));

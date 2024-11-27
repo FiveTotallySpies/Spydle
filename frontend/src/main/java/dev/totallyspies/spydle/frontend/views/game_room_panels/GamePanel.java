@@ -2,14 +2,15 @@ package dev.totallyspies.spydle.frontend.views.game_room_panels;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomViewModel;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.swing.*;
-import java.awt.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GamePanel extends JPanel {
 
@@ -56,7 +57,7 @@ public class GamePanel extends JPanel {
         }
         playerPanels.clear();
         for (Player player : model.getPlayerList()) {
-            PlayerPanel playerPanel = new PlayerPanel(player.getPlayerName(), player.getScore());
+            PlayerPanel playerPanel = new PlayerPanel(player.getPlayerName(), player.getScore(), this);
             playerPanels.put(player.getPlayerName(), playerPanel);
             add(playerPanel);
         }
@@ -65,12 +66,14 @@ public class GamePanel extends JPanel {
         int centerY = 250;
         int radius = 150;
 
+        int width = 100;
+        int height = 100;
         int j = 0;
         for (PlayerPanel panel : playerPanels.values()) {
             double angle = 2 * Math.PI * (j++) / playerPanels.size();
-            int x = (int) (centerX + radius * Math.cos(angle) - 50);
-            int y = (int) (centerY + radius * Math.sin(angle) - 50);
-            panel.setBounds(x, y, 100, 100);
+            int x = (int) (centerX + radius * Math.cos(angle) - ((double) width / 2));
+            int y = (int) (centerY + radius * Math.sin(angle) - ((double) height / 2));
+            panel.setLocation(x, y, width, height);
         }
     }
 
@@ -104,6 +107,11 @@ public class GamePanel extends JPanel {
 
         revalidate();
         repaint();
+    }
+
+    // displays the string that the current player is typing
+    public void updateStringDisplayed(String playerName, GameRoomViewModel.Guess guess) {
+        playerPanels.get(playerName).setPlayerGuess(guess.getCurrentWord(), guess.getVerdict());
     }
 
     private void highlightPlayerPanel(Player currentTurnPlayer) {

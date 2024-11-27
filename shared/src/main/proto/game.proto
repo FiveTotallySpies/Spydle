@@ -58,13 +58,14 @@ message CbTimerTick {
 }
 
 message CbGuessResult {
-  string player_name = 1; // player that made a guess
+  Player player = 1; // player that made a guess
   string guess = 2;
   bool correct = 3;
 }
 
 message CbGuessUpdate {
-  string guess = 1;
+  Player player = 1;
+  string guess = 2;
 }
 
 message CbNewTurn {

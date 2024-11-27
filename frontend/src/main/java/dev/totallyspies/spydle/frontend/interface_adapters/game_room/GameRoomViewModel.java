@@ -2,11 +2,15 @@ package dev.totallyspies.spydle.frontend.interface_adapters.game_room;
 
 import dev.totallyspies.spydle.shared.proto.messages.Player;
 import jakarta.annotation.Nullable;
-import java.util.LinkedList;
-import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Data
@@ -29,6 +33,10 @@ public class GameRoomViewModel {
 
     private String roomCode = "";
 
+    // The set of strings that appear above players as they type their guesses
+    // Key is player name
+    private Map<String, Guess> currentGuesses = new ConcurrentHashMap<>();
+
     public void reset() {
         this.playerList = new LinkedList<>();
         this.currentTurnPlayer = null;
@@ -38,6 +46,21 @@ public class GameRoomViewModel {
         this.turnTimerSeconds = 0;
         this.currentSubstring = "";
         this.roomCode = "";
+        this.currentGuesses.clear();
     }
 
+    @Data
+    @AllArgsConstructor
+    public static class Guess {
+
+        private String currentWord;
+        private Verdict verdict;
+
+        public enum Verdict {
+            CORRECT,
+            INCORRECT,
+            IN_PROGRESS
+        }
+
+    }
 }

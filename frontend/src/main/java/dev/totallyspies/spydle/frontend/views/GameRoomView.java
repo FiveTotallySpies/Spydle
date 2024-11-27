@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -99,20 +101,45 @@ public class GameRoomView extends JPanel implements CardView {
         // Create a panel for the substring input field and submit button
         inputPanel = new JPanel();
         inputPanel.setOpaque(false); // Transparent background
-        substringInputField = new JTextField(20); // Text field for substring input
-        JButton submitButton = new JButton("Submit");
 
-        // Action listener for submit button
-        submitButton.addActionListener(event -> {
-            model.setStringEntered(substringInputField.getText());
-            // Handle the entered substring as needed
-            controller.guessWord();
-        });
+        substringInputField = new JTextField(20); // Text field for substring input
+        substringInputField.setFont(new Font("Arial", Font.BOLD, 18));
         // Occurs when you hit the enter button with the input field in focus
         substringInputField.addActionListener(event -> {
             model.setStringEntered(substringInputField.getText());
-            // Handle the entered substring as needed
             controller.guessWord();
+        });
+
+        JButton submitButton = createStyledButton("Submit",
+                new Color(165, 195, 255), // Background color
+                Color.WHITE,             // Text color
+                () -> {
+                    model.setStringEntered(substringInputField.getText());
+                    controller.guessWord();
+                });
+
+
+        // Action listener for the string as it is entered
+        substringInputField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                updateStringEntered();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+                updateStringEntered();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+                updateStringEntered();
+            }
+
+            private void updateStringEntered() {
+                model.setStringEntered(substringInputField.getText());
+                controller.updateGuess();
+            }
         });
 
         // Note that we only add the inputPanel to the container if it is our turn during updateGame()
@@ -124,6 +151,13 @@ public class GameRoomView extends JPanel implements CardView {
 
     public void clearSubstringInputField() {
         substringInputField.setText("");
+    }
+
+    public void updateGuessProgress() {
+        for (String playerName : model.getCurrentGuesses().keySet()) {
+            GameRoomViewModel.Guess guess = model.getCurrentGuesses().get(playerName);
+            gamePanel.updateStringDisplayed(playerName, guess);
+        }
     }
 
     public synchronized void updateGame() {
