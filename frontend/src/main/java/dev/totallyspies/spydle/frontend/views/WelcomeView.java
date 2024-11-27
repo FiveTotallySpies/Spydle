@@ -146,12 +146,7 @@ public class WelcomeView extends JPanel implements CardView {
         styleButton(viewAllRoomsButton);
         viewAllRoomsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         viewAllRoomsButton.setMaximumSize(new Dimension(500, 40));
-        viewAllRoomsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                controller.openListRoomsView();
-            }
-        });
+        viewAllRoomsButton.addActionListener(event -> controller.openListRoomsView());
 
         container.add(titleLabel);
         container.add(Box.createVerticalStrut(40));
