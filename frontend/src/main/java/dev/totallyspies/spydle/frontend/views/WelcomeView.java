@@ -97,12 +97,13 @@ public class WelcomeView extends JPanel implements CardView {
         styleButton(createRoomButton);
         createRoomButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         createRoomButton.setMaximumSize(new Dimension(500, 30));
-        createRoomButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                welcomeViewModel.setRoomCode(nicknameField.getText());
-                controller.createGame();
-            }
+        createRoomButton.addActionListener(event -> {
+            welcomeViewModel.setPlayerName(nicknameField.getText());
+            controller.createGame();
+        });
+        nicknameField.addActionListener(event -> {
+            welcomeViewModel.setPlayerName(nicknameField.getText());
+            controller.createGame();
         });
 
         JPanel joinPanel = new JPanel();
@@ -126,12 +127,15 @@ public class WelcomeView extends JPanel implements CardView {
         styleButton(joinRoomButton);
         joinRoomButton.setMaximumSize(new Dimension(120, 40));
         joinRoomButton.setPreferredSize(new Dimension(120, 40));
-        joinRoomButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                welcomeViewModel.setRoomCode(roomCodeField.getText());
-                controller.joinGame();
-            }
+        joinRoomButton.addActionListener(event -> {
+            welcomeViewModel.setPlayerName(nicknameField.getText());
+            welcomeViewModel.setRoomCode(roomCodeField.getText());
+            controller.joinGame();
+        });
+        roomCodeField.addActionListener(event -> {
+            welcomeViewModel.setPlayerName(nicknameField.getText());
+            welcomeViewModel.setRoomCode(roomCodeField.getText());
+            controller.joinGame();
         });
 
         joinPanel.add(roomCodeField);

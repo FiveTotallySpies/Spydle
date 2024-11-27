@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 public class GamePanel extends JPanel {
 
-    private final Logger logger = LoggerFactory.getLogger(GamePanel.class);
-
     private final GameRoomViewModel model;
 
     private final Map<String, PlayerPanel> playerPanels = new LinkedHashMap<>();
@@ -47,7 +45,6 @@ public class GamePanel extends JPanel {
 
         // Create player panels in a circle layout
         createPlayerPanels();
-
     }
 
     // Position players in a circular layout
@@ -55,6 +52,7 @@ public class GamePanel extends JPanel {
         for (PlayerPanel panel : playerPanels.values()) {
             remove(panel); // Remove panel from the GamePanel
         }
+        playerPanels.values().forEach(PlayerPanel::cleanupParent);
         playerPanels.clear();
         for (Player player : model.getPlayerList()) {
             PlayerPanel playerPanel = new PlayerPanel(player.getPlayerName(), player.getScore(), this);
@@ -102,7 +100,11 @@ public class GamePanel extends JPanel {
         }
 
         substringLabel.setText(model.getCurrentSubstring());
-        timerPlayer.setText("Guess in " + model.getTurnTimerSeconds());
+        if (model.getTurnTimerSeconds() > 0) {
+            timerPlayer.setText("Guess in " + model.getTurnTimerSeconds());
+        } else {
+            timerPlayer.setText("");
+        }
         timerLabel.setText("Timer: " + model.getGameTimerSeconds() / 60 + ":" + String.format("%02d", model.getGameTimerSeconds() % 60));
 
         revalidate();
