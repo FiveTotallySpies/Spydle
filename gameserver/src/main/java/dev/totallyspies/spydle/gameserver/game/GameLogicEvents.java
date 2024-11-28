@@ -1,16 +1,17 @@
 package dev.totallyspies.spydle.gameserver.game;
 
 import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
-import dev.totallyspies.spydle.gameserver.message.GameSocketHandler;
-import dev.totallyspies.spydle.gameserver.message.SbMessageListener;
-import dev.totallyspies.spydle.gameserver.message.session.SessionCloseEvent;
-import dev.totallyspies.spydle.gameserver.message.session.SessionOpenEvent;
-import dev.totallyspies.spydle.gameserver.storage.CurrentGameServerConfiguration;
+import dev.totallyspies.spydle.gameserver.socket.GameSocketHandler;
+import dev.totallyspies.spydle.gameserver.socket.SbMessageListener;
+import dev.totallyspies.spydle.gameserver.session.SessionCloseEvent;
+import dev.totallyspies.spydle.gameserver.session.SessionOpenEvent;
+import dev.totallyspies.spydle.gameserver.storage.CurrentGameServerConfig;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.*;
 import dev.totallyspies.spydle.shared.proto.messages.Player;
 import jakarta.annotation.Nullable;
+import net.infumia.agones4j.Agones;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class GameLogicEvents {
     private GameSocketHandler gameSocketHandler;
 
     @Autowired
-    private CurrentGameServerConfiguration gameServerConfiguration;
+    private CurrentGameServerConfig gameServerConfiguration;
 
     @Autowired
     private GameServer gameServer;
@@ -43,7 +44,7 @@ public class GameLogicEvents {
 
     @Nullable
     @Autowired(required = false)
-    private AgonesHook agonesHook;
+    private Agones agones;
 
     @EventListener(SessionOpenEvent.class)
     public void onSessionOpen() {
@@ -181,8 +182,8 @@ public class GameLogicEvents {
 
         // Shutdown
         gameSocketHandler.closeAllSessions(new CloseStatus(CloseStatus.NORMAL.getCode(), "Game over"));
-        if (agonesHook != null) {
-            agonesHook.getAgones().shutdown(); // Shutdown server
+        if (agones != null) {
+            agones.shutdown(); // Shutdown server
         } else {
             context.close(); // Shutdown
         }

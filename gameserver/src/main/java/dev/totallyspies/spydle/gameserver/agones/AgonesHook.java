@@ -28,43 +28,7 @@ public class AgonesHook {
     @Getter
     private final GameServer currentGameServer;
 
-    @Getter
-    private final Agones agones;
-
-    public AgonesHook(@Value("${agones.host-port}") int agonesPort) throws ExecutionException, InterruptedException {
-        // Construct agones SDK wrapper on GRPC
-        final ExecutorService gameServerWatcherExecutor =
-                Executors.newSingleThreadExecutor();
-        final ScheduledExecutorService healthCheckExecutor =
-                Executors.newSingleThreadScheduledExecutor();
-        agones = Agones.builder()
-                .withAddress("localhost", agonesPort)
-                .withChannel(ManagedChannelBuilder
-                        .forAddress("localhost", agonesPort)
-                        .usePlaintext()
-                        .build())
-                .withGameServerWatcherExecutor(gameServerWatcherExecutor)
-                .withHealthCheck(
-                        Duration.ofSeconds(1L), // Delay
-                        Duration.ofSeconds(2L) // Period
-                )
-                .withHealthCheckExecutor(healthCheckExecutor)
-                .build();
-        logger.info("Instantiated Agones hook on localhost:{}", agonesPort);
-        if (agones.canHealthCheck()) {
-            agones.startHealthChecking();
-            logger.info("Began Agones health checking");
-        } else {
-            throw new IllegalStateException("Failed to begin Agones health checking");
-        }
-        if (agones.canWatchGameServer()) {
-            agones.addGameServerWatcher(gameServer -> {
-                logger.info("Received state updated from Agones: {}", gameServer.getStatus().getState());
-            });
-        } else {
-            logger.warn("Failed to add game server watcher: Not allowed");
-        }
-
+    public AgonesHook(Agones agones) throws ExecutionException, InterruptedException {
         Sdk.GameServer sdkGameServer = agones.getGameServerFuture().get(); // Blocking
 
         String gameServerName = sdkGameServer.getObjectMeta().getName();
@@ -82,6 +46,7 @@ public class AgonesHook {
 
         // Mark us as ready
         agones.ready();
+        logger.info("Marked us as ready in Agones");
     }
 
 }

@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.message.session;
+package dev.totallyspies.spydle.gameserver.session;
 
 import javax.annotation.Nullable;
 import java.util.UUID;

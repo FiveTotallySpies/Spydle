@@ -55,4 +55,5 @@ public class LocalStorage implements GameServerStorage {
     public void deleteClientSession(UUID clientId) {
         sessionStorage.remove(clientId);
     }
+
 }

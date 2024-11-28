@@ -1,17 +1,14 @@
 package dev.totallyspies.spydle.gameserver.storage;
 
-import dev.totallyspies.spydle.gameserver.message.GameSocketHandler;
+import dev.totallyspies.spydle.gameserver.socket.GameSocketHandler;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 /**
  * This is a special shutdown hook that executes before all the beans are destroyed.
@@ -24,24 +21,29 @@ public class GameShutdownHook implements ApplicationListener<ApplicationReadyEve
 
     private final Logger logger = LoggerFactory.getLogger(GameShutdownHook.class);
 
-    @Autowired
-    private GameServerStorage storage;
+    private final GameServerStorage storage;
+    private final GameServer currentGameServer;
+    private final GameSocketHandler handler;
 
-    @Autowired
-    private GameServer currentGameServer;
-
-    @Autowired
-    private GameSocketHandler handler;
+    public GameShutdownHook(GameServerStorage storage, GameServer currentGameServer, GameSocketHandler handler) {
+        this.storage = storage;
+        this.currentGameServer = currentGameServer;
+        this.handler = handler;
+    }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("Executing custom shutdown hook, clearing redis data");
-            storage.deleteGameServer(currentGameServer);
-            for (ClientSession session : handler.getSessions()) {
-                storage.deleteClientSession(session);
-            }
+            onShutdown();
         }));
+    }
+
+    public void onShutdown() {
+        logger.info("Executing custom shutdown hook, clearing redis data");
+        storage.deleteGameServer(currentGameServer);
+        for (ClientSession session : handler.getSessions()) {
+            storage.deleteClientSession(session);
+        }
     }
 
 }

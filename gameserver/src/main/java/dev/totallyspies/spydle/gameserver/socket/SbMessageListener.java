@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.message;
+package dev.totallyspies.spydle.gameserver.socket;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

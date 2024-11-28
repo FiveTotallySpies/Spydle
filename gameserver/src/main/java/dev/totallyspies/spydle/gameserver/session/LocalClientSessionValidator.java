@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.message.session;
+package dev.totallyspies.spydle.gameserver.session;
 
 import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
 import dev.totallyspies.spydle.shared.model.ClientSession;
@@ -17,13 +17,12 @@ public class LocalClientSessionValidator implements ClientSessionValidator {
 
     private final Logger logger = LoggerFactory.getLogger(LocalClientSessionValidator.class);
 
-    @Autowired
-    private GameServerStorage storage;
+    private final GameServerStorage storage;
+    private final GameServer currentGameServer;
 
-    @Autowired
-    private GameServer currentGameServer;
-
-    public LocalClientSessionValidator() {
+    public LocalClientSessionValidator(GameServerStorage storage, GameServer currentGameServer) {
+        this.storage = storage;
+        this.currentGameServer = currentGameServer;
         logger.info("Agones disabled, loading local (automatic acceptance) client session validator");
     }
 

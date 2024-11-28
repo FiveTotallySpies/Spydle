@@ -17,10 +17,13 @@ public class RedisConfiguration {
 
     private final Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
 
-    @Value("${redis.host}")
-    private String redisHost;
-    @Value("${redis.port}")
-    private int redisPort;
+    private final String redisHost;
+    private final int redisPort;
+
+    public RedisConfiguration(@Value("${redis.host}") String redisHost, @Value("${redis.port}") int redisPort) {
+        this.redisHost = redisHost;
+        this.redisPort = redisPort;
+    }
 
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
