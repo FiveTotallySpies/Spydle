@@ -15,8 +15,11 @@ public class GameSocketConfig implements WebSocketConfigurer {
 
     private final Logger logger = LoggerFactory.getLogger(GameSocketConfig.class);
 
-    @Autowired
-    private GameSocketHandler gameSocketHandler;
+    private final GameSocketHandler gameSocketHandler;
+
+    public GameSocketConfig(GameSocketHandler gameSocketHandler) {
+        this.gameSocketHandler = gameSocketHandler;
+    }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
