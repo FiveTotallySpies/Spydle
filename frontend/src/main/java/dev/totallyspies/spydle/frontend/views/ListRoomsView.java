@@ -21,6 +21,8 @@ public class ListRoomsView extends JPanel implements CardView {
 
     private JList<String> roomList;
 
+    private JLabel imageLabel;
+
     public ListRoomsView(ListRoomsViewModel model, ListRoomsViewController controller) {
         this.controller = controller;
         this.model = model;
@@ -36,7 +38,15 @@ public class ListRoomsView extends JPanel implements CardView {
 
         // Title styling
         JLabel titleLabel = new JLabel("All Rooms");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        try {
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT,
+                    getClass().getResourceAsStream("/Sabrina.ttf"));
+            customFont = customFont.deriveFont(Font.PLAIN, 35); // Adjust size and style
+            titleLabel.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 35)); // Fallback to Arial
+        }
         titleLabel.setForeground(new Color(139, 0, 0)); // Dark red color
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -56,6 +66,12 @@ public class ListRoomsView extends JPanel implements CardView {
         JScrollPane roomScrollPane = new JScrollPane(roomList);
         roomScrollPane.setPreferredSize(new Dimension(400, 300)); // Adjusted dimensions
 
+        // Load the uploaded image
+        imageLabel = new JLabel();
+        ImageIcon icon = new ImageIcon(getClass().getResource("/imagelistrooms2.png"));
+        Image image = icon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH); // Scale image
+        imageLabel.setIcon(new ImageIcon(image));
+
         // Back button
         JButton backButton = new JButton("Back to Welcome");
         styleButton(backButton);
@@ -66,18 +82,36 @@ public class ListRoomsView extends JPanel implements CardView {
             }
         });
 
-        // Adding components to container
-        container.add(titleLabel);
-        container.add(Box.createVerticalStrut(20));
-        container.add(roomScrollPane);
-        container.add(Box.createVerticalStrut(20));
-        container.add(backButton);
-
-        // Add container to the center of AllRoomView using GridBagConstraints
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(20, 20, 20, 20);
+
+        // Container for list and image
+        JPanel listAndImagePanel = new JPanel();
+        listAndImagePanel.setLayout(new GridBagLayout());
+        listAndImagePanel.setBackground(new Color(195, 217, 255));
+
+        // Add image and room list side-by-side
+        gbc.gridx = 0;
+        listAndImagePanel.add(imageLabel, gbc);
+        gbc.gridx = 1;
+        listAndImagePanel.add(roomScrollPane, gbc);
+
+        // Adding components to container
+        container.add(titleLabel);
+        container.add(Box.createVerticalStrut(20));
+        container.add(listAndImagePanel);
+        // container.add(roomScrollPane);
+        container.add(Box.createVerticalStrut(20));
+        container.add(backButton);
+
+        // Add container to the center of AllRoomView using GridBagConstraints
+        // GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        // gbc.anchor = GridBagConstraints.CENTER;
         add(container, gbc);
     }
 
