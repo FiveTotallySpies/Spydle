@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.message;
+package dev.totallyspies.spydle.gameserver.socket;
 
 import dev.totallyspies.spydle.shared.SharedConstants;
 import org.slf4j.Logger;
@@ -11,12 +11,15 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 @Configuration
 @EnableWebSocket
-public class GameSocketConfiguration implements WebSocketConfigurer {
+public class GameSocketConfig implements WebSocketConfigurer {
 
-    private final Logger logger = LoggerFactory.getLogger(GameSocketConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(GameSocketConfig.class);
 
-    @Autowired
-    private GameSocketHandler gameSocketHandler;
+    private final GameSocketHandler gameSocketHandler;
+
+    public GameSocketConfig(GameSocketHandler gameSocketHandler) {
+        this.gameSocketHandler = gameSocketHandler;
+    }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

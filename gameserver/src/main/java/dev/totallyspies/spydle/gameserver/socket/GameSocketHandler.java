@@ -1,16 +1,17 @@
-package dev.totallyspies.spydle.gameserver.message;
+package dev.totallyspies.spydle.gameserver.socket;
 
 import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
-import dev.totallyspies.spydle.gameserver.message.session.ClientSessionValidator;
-import dev.totallyspies.spydle.gameserver.message.session.SessionCloseEvent;
-import dev.totallyspies.spydle.gameserver.message.session.SessionOpenEvent;
+import dev.totallyspies.spydle.gameserver.session.ClientSessionValidator;
+import dev.totallyspies.spydle.gameserver.session.SessionCloseEvent;
+import dev.totallyspies.spydle.gameserver.session.SessionOpenEvent;
 import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.CbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
-import java.util.Iterator;
+import jakarta.annotation.Nullable;
+import net.infumia.agones4j.Agones;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,28 +39,34 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GameSocketHandler.class);
 
-    @Autowired
-    private GameServerStorage storage;
+    private final GameServerStorage storage;
+    private final ClientSessionValidator sessionValidator;
+    private final SbMessageListenerProcessor annotationProcessor;
+    private final ApplicationEventPublisher publisher;
+    private final GameServer currentGameServer;
 
-    @Autowired
-    private ClientSessionValidator sessionValidator;
-
-    @Autowired
-    private SbMessageListenerProcessor annotationProcessor;
-
-    @Autowired
-    private ApplicationEventPublisher publisher;
-
-    @Autowired
-    private GameServer currentGameServer;
-
-    @Value("${agones.enabled}")
-    private boolean agonesEnabled;
-
-    @Autowired(required = false)
-    private AgonesHook agonesHook; // Is set to null if agones is not enabled
+    private final boolean agonesEnabled;
+    @Nullable
+    private final Agones agones; // Is set to null if agones is not enabled
 
     private final Map<ClientSession, WebSocketSession> sessions = Collections.synchronizedMap(new LinkedHashMap<>());
+
+    public GameSocketHandler(
+            GameServerStorage storage,
+            ClientSessionValidator sessionValidator,
+            SbMessageListenerProcessor annotationProcessor,
+            ApplicationEventPublisher publisher,
+            GameServer currentGameServer,
+            @Value("${agones.enabled}") boolean agonesEnabled,
+            @Autowired(required = false) Agones agones) {
+        this.storage = storage;
+        this.sessionValidator = sessionValidator;
+        this.annotationProcessor = annotationProcessor;
+        this.publisher = publisher;
+        this.currentGameServer = currentGameServer;
+        this.agonesEnabled = agonesEnabled;
+        this.agones = agones;
+    }
 
     public List<ClientSession> getSessions() {
         return new LinkedList<>(sessions.keySet());
@@ -145,7 +151,6 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
             return;
         }
         if (hasSessionWithPlayerName(clientName)) {
-            // TODO: have some way to notify the player that their name is taken already
             logger.warn("Client attempted to open session {} but their name already exists, closing...", rawClientId);
             socketSession.close(new CloseStatus(CloseStatus.NOT_ACCEPTABLE.getCode(), "Name already exists!"));
             return;
@@ -241,9 +246,9 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
         if (agonesEnabled
                 && currentGameServer.getState() != GameServer.State.READY
                 && sessions.isEmpty()
-                && agonesHook != null) {
+                && agones != null) {
             logger.info("All players left! Shutting down...");
-            agonesHook.getAgones().shutdown(); // Stop server
+            agones.shutdown(); // Stop server
         }
     }
 
@@ -279,11 +284,15 @@ public class GameSocketHandler extends BinaryWebSocketHandler {
                 .orElse(null);
     }
 
-    private boolean hasSessionWithPlayerName(String name) {
+    public boolean hasSessionWithPlayerName(String name) {
         return sessions
                 .keySet()
                 .stream()
                 .anyMatch(session -> session.getPlayerName().equalsIgnoreCase(name));
+    }
+
+    protected Map<ClientSession, WebSocketSession> getSessionsMap() {
+        return sessions;
     }
 
 }

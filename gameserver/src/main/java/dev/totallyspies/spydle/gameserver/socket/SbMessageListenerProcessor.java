@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.message;
+package dev.totallyspies.spydle.gameserver.socket;
 
 import dev.totallyspies.spydle.shared.message.MessageHandler;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;

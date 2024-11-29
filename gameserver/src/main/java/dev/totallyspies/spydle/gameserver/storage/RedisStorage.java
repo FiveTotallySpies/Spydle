@@ -23,10 +23,10 @@ public class RedisStorage implements GameServerStorage {
     private static final  String GAME_SERVER_PREFIX = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX;
     private static final String SESSION_PREFIX = SharedConstants.STORAGE_REDIS_SESSION_PREFIX;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public RedisStorage() {
+    public RedisStorage(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
         LoggerFactory.getLogger(RedisStorage.class).info("Found storage.type=redis, loading RedisStorage");
     }
 
@@ -52,7 +52,7 @@ public class RedisStorage implements GameServerStorage {
 
     @Override
     public void storeClientSession(ClientSession session) {
-        redisTemplate.opsForValue().get(SESSION_PREFIX + session.getClientId());
+        redisTemplate.opsForValue().set(SESSION_PREFIX + session.getClientId(), session);
     }
 
     @Override

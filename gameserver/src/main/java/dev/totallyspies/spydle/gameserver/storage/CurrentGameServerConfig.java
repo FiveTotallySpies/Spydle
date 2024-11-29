@@ -1,12 +1,10 @@
 package dev.totallyspies.spydle.gameserver.storage;
 
 import dev.totallyspies.spydle.gameserver.agones.AgonesHook;
-import dev.totallyspies.spydle.shared.RoomCodeUtils;
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -20,15 +18,17 @@ import org.springframework.context.annotation.Primary;
  * If agones is disabled, we use fake local details.
  */
 @Configuration
-public class CurrentGameServerConfiguration {
+public class CurrentGameServerConfig {
 
-    private final Logger logger = LoggerFactory.getLogger(CurrentGameServerConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(CurrentGameServerConfig.class);
 
-    @Autowired
-    private ApplicationContext context;
+    private final ApplicationContext context;
+    private final GameServerStorage storage;
 
-    @Autowired
-    private GameServerStorage storage;
+    public CurrentGameServerConfig(ApplicationContext context, GameServerStorage storage) {
+        this.context = context;
+        this.storage = storage;
+    }
 
     @Bean
     @Primary

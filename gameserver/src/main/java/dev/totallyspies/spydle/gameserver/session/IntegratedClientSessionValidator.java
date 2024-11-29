@@ -1,11 +1,10 @@
-package dev.totallyspies.spydle.gameserver.message.session;
+package dev.totallyspies.spydle.gameserver.session;
 
 import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -19,13 +18,12 @@ public class IntegratedClientSessionValidator implements ClientSessionValidator 
 
     private final Logger logger = LoggerFactory.getLogger(IntegratedClientSessionValidator.class);
 
-    @Autowired
-    private GameServerStorage storage;
+    private final GameServerStorage storage;
+    private final GameServer currentGameServer;
 
-    @Autowired
-    private GameServer currentGameServer;
-
-    public IntegratedClientSessionValidator() {
+    public IntegratedClientSessionValidator(GameServerStorage storage, GameServer currentGameServer) {
+        this.storage = storage;
+        this.currentGameServer = currentGameServer;
         logger.info("Agones enabled, loaded k8s-integrated client session validator");
     }
 
