@@ -6,11 +6,10 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class GuessWordEvent extends ApplicationEvent {
 
-    private final String guess;
+  private final String guess;
 
-    public GuessWordEvent(Object source, String guess) {
-        super(source);
-        this.guess = guess;
-    }
-
+  public GuessWordEvent(Object source, String guess) {
+    super(source);
+    this.guess = guess;
+  }
 }

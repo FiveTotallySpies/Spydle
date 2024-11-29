@@ -9,13 +9,12 @@ import org.springframework.web.socket.WebSocketSession;
 @Getter
 public class SessionCloseEvent extends ApplicationEvent {
 
-    private final ClientSession session;
-    private final WebSocketSession socketSession;
+  private final ClientSession session;
+  private final WebSocketSession socketSession;
 
-    public SessionCloseEvent(Object source, ClientSession session, WebSocketSession socketSession) {
-        super(source);
-        this.session = session;
-        this.socketSession = socketSession;
-    }
-
+  public SessionCloseEvent(Object source, ClientSession session, WebSocketSession socketSession) {
+    super(source);
+    this.session = session;
+    this.socketSession = socketSession;
+  }
 }

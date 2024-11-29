@@ -1,8 +1,12 @@
 package dev.totallyspies.spydle.gameserver.storage;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -10,152 +14,151 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 public class RedisStorageTest {
 
-    private RedisStorage redisStorage;
+  private final GameServer fakeGameServer =
+      new GameServer("", 0, "", "", false, GameServer.State.WAITING);
+  private final ClientSession fakeClientSession =
+      new ClientSession(UUID.randomUUID(), fakeGameServer, "player", ClientSession.State.ASSIGNED);
+  private RedisStorage redisStorage;
+  @Mock private RedisTemplate<String, Object> redisTemplate;
+  @Mock private ValueOperations<String, Object> valueOperations;
 
-    @Mock
-    private RedisTemplate<String, Object> redisTemplate;
+  @BeforeEach
+  public void setUp() {
+    MockitoAnnotations.openMocks(this);
+    redisStorage = new RedisStorage(redisTemplate);
+    when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+  }
 
-    @Mock
-    private ValueOperations<String, Object> valueOperations;
+  @Test
+  public void testStoreGameServer() {
+    GameServer gameServer = fakeGameServer.toBuilder().roomCode("ROOM1").build();
 
-    private final GameServer fakeGameServer = new GameServer("", 0, "", "", false, GameServer.State.WAITING);
-    private final ClientSession fakeClientSession = new ClientSession(UUID.randomUUID(), fakeGameServer, "player", ClientSession.State.ASSIGNED);
+    String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + gameServer.getRoomCode();
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        redisStorage = new RedisStorage(redisTemplate);
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-    }
+    redisStorage.storeGameServer(gameServer);
 
-    @Test
-    public void testStoreGameServer() {
-        GameServer gameServer = fakeGameServer.toBuilder().roomCode("ROOM1").build();
+    verify(valueOperations).set(key, gameServer);
+  }
 
-        String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + gameServer.getRoomCode();
+  @Test
+  public void testGetGameServer_Found() {
+    String roomCode = "ROOM1";
+    GameServer gameServer = fakeGameServer.toBuilder().roomCode(roomCode).build();
+    String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + roomCode;
 
-        redisStorage.storeGameServer(gameServer);
+    when(valueOperations.get(key)).thenReturn(gameServer);
 
-        verify(valueOperations).set(key, gameServer);
-    }
+    GameServer result = redisStorage.getGameServer(roomCode);
 
-    @Test
-    public void testGetGameServer_Found() {
-        String roomCode = "ROOM1";
-        GameServer gameServer = fakeGameServer.toBuilder().roomCode(roomCode).build();
-        String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + roomCode;
+    assertEquals(gameServer, result);
+  }
 
-        when(valueOperations.get(key)).thenReturn(gameServer);
+  @Test
+  public void testGetGameServer_NotFound() {
+    String roomCode = "ROOM1";
+    String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + roomCode;
 
-        GameServer result = redisStorage.getGameServer(roomCode);
+    when(valueOperations.get(key)).thenReturn(null);
 
-        assertEquals(gameServer, result);
-    }
+    GameServer result = redisStorage.getGameServer(roomCode);
 
-    @Test
-    public void testGetGameServer_NotFound() {
-        String roomCode = "ROOM1";
-        String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + roomCode;
+    assertNull(result);
+  }
 
-        when(valueOperations.get(key)).thenReturn(null);
+  @Test
+  public void testGetGameServer_InvalidType() {
+    String roomCode = "ROOM1";
+    String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + roomCode;
 
-        GameServer result = redisStorage.getGameServer(roomCode);
+    when(valueOperations.get(key)).thenReturn("InvalidType");
 
-        assertNull(result);
-    }
+    Exception exception =
+        assertThrows(
+            IllegalStateException.class,
+            () -> {
+              redisStorage.getGameServer(roomCode);
+            });
 
-    @Test
-    public void testGetGameServer_InvalidType() {
-        String roomCode = "ROOM1";
-        String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + roomCode;
+    String expectedMessage =
+        "Redis storage for gameserver " + roomCode + " has invalid type java.lang.String";
+    assertTrue(exception.getMessage().contains(expectedMessage));
+  }
 
-        when(valueOperations.get(key)).thenReturn("InvalidType");
+  @Test
+  public void testDeleteGameServer() {
+    String roomCode = "ROOM1";
+    String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + roomCode;
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            redisStorage.getGameServer(roomCode);
-        });
+    redisStorage.deleteGameServer(roomCode);
 
-        String expectedMessage = "Redis storage for gameserver " + roomCode + " has invalid type java.lang.String";
-        assertTrue(exception.getMessage().contains(expectedMessage));
-    }
+    verify(redisTemplate).delete(key);
+  }
 
-    @Test
-    public void testDeleteGameServer() {
-        String roomCode = "ROOM1";
-        String key = SharedConstants.STORAGE_REDIS_GAME_SERVER_PREFIX + roomCode;
+  @Test
+  public void testStoreClientSession() {
+    UUID clientId = UUID.randomUUID();
+    ClientSession session = fakeClientSession.toBuilder().clientId(clientId).build();
 
-        redisStorage.deleteGameServer(roomCode);
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
-        verify(redisTemplate).delete(key);
-    }
+    redisStorage.storeClientSession(session);
 
-    @Test
-    public void testStoreClientSession() {
-        UUID clientId = UUID.randomUUID();
-        ClientSession session = fakeClientSession.toBuilder().clientId(clientId).build();
+    verify(valueOperations).set(key, session);
+  }
 
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
+  @Test
+  public void testGetClientSession_Found() {
+    UUID clientId = UUID.randomUUID();
+    ClientSession session = fakeClientSession.toBuilder().clientId(clientId).build();
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
-        redisStorage.storeClientSession(session);
+    when(valueOperations.get(key)).thenReturn(session);
 
-        verify(valueOperations).set(key, session);
-    }
+    ClientSession result = redisStorage.getClientSession(clientId);
 
-    @Test
-    public void testGetClientSession_Found() {
-        UUID clientId = UUID.randomUUID();
-        ClientSession session = fakeClientSession.toBuilder().clientId(clientId).build();
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
+    assertEquals(session, result);
+  }
 
-        when(valueOperations.get(key)).thenReturn(session);
+  @Test
+  public void testGetClientSession_NotFound() {
+    UUID clientId = UUID.randomUUID();
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
-        ClientSession result = redisStorage.getClientSession(clientId);
+    when(valueOperations.get(key)).thenReturn(null);
 
-        assertEquals(session, result);
-    }
+    ClientSession result = redisStorage.getClientSession(clientId);
 
-    @Test
-    public void testGetClientSession_NotFound() {
-        UUID clientId = UUID.randomUUID();
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
+    assertNull(result);
+  }
 
-        when(valueOperations.get(key)).thenReturn(null);
+  @Test
+  public void testGetClientSession_InvalidType() {
+    UUID clientId = UUID.randomUUID();
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
-        ClientSession result = redisStorage.getClientSession(clientId);
+    when(valueOperations.get(key)).thenReturn("InvalidType");
 
-        assertNull(result);
-    }
+    Exception exception =
+        assertThrows(
+            IllegalStateException.class,
+            () -> {
+              redisStorage.getClientSession(clientId);
+            });
 
-    @Test
-    public void testGetClientSession_InvalidType() {
-        UUID clientId = UUID.randomUUID();
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
+    String expectedMessage =
+        "Redis storage for client session " + clientId + " has invalid type java.lang.String";
+    assertTrue(exception.getMessage().contains(expectedMessage));
+  }
 
-        when(valueOperations.get(key)).thenReturn("InvalidType");
+  @Test
+  public void testDeleteClientSession() {
+    UUID clientId = UUID.randomUUID();
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> {
-            redisStorage.getClientSession(clientId);
-        });
+    redisStorage.deleteClientSession(clientId);
 
-        String expectedMessage = "Redis storage for client session " + clientId + " has invalid type java.lang.String";
-        assertTrue(exception.getMessage().contains(expectedMessage));
-    }
-
-    @Test
-    public void testDeleteClientSession() {
-        UUID clientId = UUID.randomUUID();
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
-
-        redisStorage.deleteClientSession(clientId);
-
-        verify(redisTemplate).delete(key);
-    }
-
+    verify(redisTemplate).delete(key);
+  }
 }

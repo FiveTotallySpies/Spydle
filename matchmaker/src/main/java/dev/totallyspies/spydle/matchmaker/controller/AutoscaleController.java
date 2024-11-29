@@ -14,37 +14,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Responsible for delegating requests to our autoscale endpoint.
- * This endpoint is called by agones periodically to determine how many game servers we need.
+ * Responsible for delegating requests to our autoscale endpoint. This endpoint is called by agones
+ * periodically to determine how many game servers we need.
  */
 @RestController
 @Validated
 public class AutoscaleController {
 
-    private final Logger logger = LoggerFactory.getLogger(AutoscaleController.class);
+  private final Logger logger = LoggerFactory.getLogger(AutoscaleController.class);
 
-    private AutoscaleService autoscalerService;
+  private final AutoscaleService autoscalerService;
 
-    public AutoscaleController(AutoscaleService autoscalerService) {
-        this.autoscalerService = autoscalerService;
+  public AutoscaleController(AutoscaleService autoscalerService) {
+    this.autoscalerService = autoscalerService;
+  }
+
+  @PostMapping("/autoscale")
+  public ResponseEntity<?> autoscale(@Valid @RequestBody AutoscaleRequestModel request) {
+    logger.info("Received request: /autoscale, request: {}", request.toJson());
+    try {
+      int desired = autoscalerService.autoscale(request.getRequest().getStatus());
+      AutoscaleResponseModelResponse response =
+          new AutoscaleResponseModelResponse()
+              .uid(request.getRequest().getUid())
+              .replicas(desired)
+              .scale(true);
+      AutoscaleResponseModel responseWrapped = new AutoscaleResponseModel().response(response);
+      logger.info("Successfully handled /autoscale request, response: {}", response.toJson());
+      return ResponseEntity.ok(responseWrapped);
+    } catch (Exception exception) {
+      logger.error("Failed to handle /autoscale", exception);
+      return ResponseEntity.status(500).body(exception.getMessage());
     }
-
-    @PostMapping("/autoscale")
-    public ResponseEntity<?> autoscale(@Valid @RequestBody AutoscaleRequestModel request) {
-        logger.info("Received request: /autoscale, request: {}", request.toJson());
-        try {
-            int desired = autoscalerService.autoscale(request.getRequest().getStatus());
-            AutoscaleResponseModelResponse response = new AutoscaleResponseModelResponse()
-                    .uid(request.getRequest().getUid())
-                    .replicas(desired)
-                    .scale(true);
-            AutoscaleResponseModel responseWrapped = new AutoscaleResponseModel().response(response);
-            logger.info("Successfully handled /autoscale request, response: {}", response.toJson());
-            return ResponseEntity.ok(responseWrapped);
-        } catch (Exception exception) {
-            logger.error("Failed to handle /autoscale", exception);
-            return ResponseEntity.status(500).body(exception.getMessage());
-        }
-    }
-
+  }
 }

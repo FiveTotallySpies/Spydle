@@ -1,110 +1,109 @@
 package dev.totallyspies.spydle.gameserver.session;
 
-import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
-import dev.totallyspies.spydle.shared.model.ClientSession;
-import dev.totallyspies.spydle.shared.model.GameServer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import dev.totallyspies.spydle.gameserver.storage.GameServerStorage;
+import dev.totallyspies.spydle.shared.model.ClientSession;
+import dev.totallyspies.spydle.shared.model.GameServer;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.*;
+
 public class IntegratedClientSessionValidatorTest {
 
-    private IntegratedClientSessionValidator validator;
+  private final GameServer fakeGameServer =
+      new GameServer("", 0, "", "", false, GameServer.State.WAITING);
+  private final ClientSession fakeClientSession =
+      new ClientSession(UUID.randomUUID(), fakeGameServer, "player", ClientSession.State.ASSIGNED);
+  private IntegratedClientSessionValidator validator;
+  @Mock private GameServerStorage storage;
+  @Mock private GameServer currentGameServer;
 
-    @Mock
-    private GameServerStorage storage;
+  @BeforeEach
+  public void setUp() {
+    MockitoAnnotations.openMocks(this);
+    validator = new IntegratedClientSessionValidator(storage, currentGameServer);
+  }
 
-    @Mock
-    private GameServer currentGameServer;
+  @Test
+  public void testValidateClientSession_Success() {
+    UUID clientId = UUID.randomUUID();
+    String name = "Player1";
 
-    private final GameServer fakeGameServer = new GameServer("", 0, "", "", false, GameServer.State.WAITING);
-    private final ClientSession fakeClientSession = new ClientSession(UUID.randomUUID(), fakeGameServer, "player", ClientSession.State.ASSIGNED);
+    ClientSession session =
+        fakeClientSession.toBuilder().clientId(clientId).playerName(name).build();
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        validator = new IntegratedClientSessionValidator(storage, currentGameServer);
-    }
+    when(storage.getClientSession(clientId)).thenReturn(session);
+    when(currentGameServer.isSameGameServer(fakeGameServer)).thenReturn(true);
 
-    @Test
-    public void testValidateClientSession_Success() {
-        UUID clientId = UUID.randomUUID();
-        String name = "Player1";
+    boolean result = validator.validateClientSession(clientId, name);
 
-        ClientSession session = fakeClientSession.toBuilder().clientId(clientId).playerName(name).build();
+    assertTrue(result);
+  }
 
-        when(storage.getClientSession(clientId)).thenReturn(session);
-        when(currentGameServer.isSameGameServer(fakeGameServer)).thenReturn(true);
+  @Test
+  public void testValidateClientSession_SessionNotFound() {
+    UUID clientId = UUID.randomUUID();
+    String name = "Player1";
 
-        boolean result = validator.validateClientSession(clientId, name);
+    when(storage.getClientSession(clientId)).thenReturn(null);
 
-        assertTrue(result);
-    }
+    boolean result = validator.validateClientSession(clientId, name);
 
-    @Test
-    public void testValidateClientSession_SessionNotFound() {
-        UUID clientId = UUID.randomUUID();
-        String name = "Player1";
+    assertFalse(result);
+  }
 
-        when(storage.getClientSession(clientId)).thenReturn(null);
+  @Test
+  public void testValidateClientSession_SessionWrongType() {
+    UUID clientId = UUID.randomUUID();
+    String name = "Player1";
 
-        boolean result = validator.validateClientSession(clientId, name);
+    when(storage.getClientSession(clientId)).thenReturn(null);
 
-        assertFalse(result);
-    }
+    boolean result = validator.validateClientSession(clientId, name);
 
-    @Test
-    public void testValidateClientSession_SessionWrongType() {
-        UUID clientId = UUID.randomUUID();
-        String name = "Player1";
+    assertFalse(result);
+  }
 
-        when(storage.getClientSession(clientId)).thenReturn(null);
+  @Test
+  public void testValidateClientSession_DifferentGameServer() {
+    UUID clientId = UUID.randomUUID();
+    String name = "Player1";
 
-        boolean result = validator.validateClientSession(clientId, name);
+    GameServer anotherGameServer = mock(GameServer.class);
 
-        assertFalse(result);
-    }
+    ClientSession session = fakeClientSession.toBuilder().clientId(clientId).build();
 
-    @Test
-    public void testValidateClientSession_DifferentGameServer() {
-        UUID clientId = UUID.randomUUID();
-        String name = "Player1";
+    when(storage.getClientSession(clientId)).thenReturn(session);
+    when(currentGameServer.isSameGameServer(anotherGameServer)).thenReturn(false);
 
-        GameServer anotherGameServer = mock(GameServer.class);
+    boolean result = validator.validateClientSession(clientId, name);
 
-        ClientSession session = fakeClientSession.toBuilder().clientId(clientId).build();
+    assertFalse(result);
+  }
 
-        when(storage.getClientSession(clientId)).thenReturn(session);
-        when(currentGameServer.isSameGameServer(anotherGameServer)).thenReturn(false);
+  @Test
+  public void testParseClientId_Valid() {
+    UUID clientId = UUID.randomUUID();
 
-        boolean result = validator.validateClientSession(clientId, name);
+    UUID result = validator.parseClientId(clientId.toString());
 
-        assertFalse(result);
-    }
+    assertEquals(clientId, result);
+  }
 
-    @Test
-    public void testParseClientId_Valid() {
-        UUID clientId = UUID.randomUUID();
+  @Test
+  public void testParseClientId_Invalid() {
+    UUID result = validator.parseClientId("invalid-uuid");
 
-        UUID result = validator.parseClientId(clientId.toString());
+    assertNull(result);
+  }
 
-        assertEquals(clientId, result);
-    }
+  @Test
+  public void testParseClientId_Null() {
+    UUID result = validator.parseClientId(null);
 
-    @Test
-    public void testParseClientId_Invalid() {
-        UUID result = validator.parseClientId("invalid-uuid");
-
-        assertNull(result);
-    }
-
-    @Test
-    public void testParseClientId_Null() {
-        UUID result = validator.parseClientId(null);
-
-        assertNull(result);
-    }
+    assertNull(result);
+  }
 }

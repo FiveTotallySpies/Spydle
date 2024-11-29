@@ -13,6 +13,5 @@ import java.util.List;
 @Data
 public class GameEndViewModel {
 
-    private List<Player> players = new ArrayList<>();
-
+  private List<Player> players = new ArrayList<>();
 }

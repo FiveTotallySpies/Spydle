@@ -27,100 +27,99 @@ import org.springframework.stereotype.Component;
 @Profile("!test")
 public class WelcomeViewController {
 
-    private final Logger logger = LoggerFactory.getLogger(WelcomeViewController.class);
+  private final Logger logger = LoggerFactory.getLogger(WelcomeViewController.class);
 
-    private final ApplicationEventPublisher publisher;
-    private final WelcomeViewModel welcomeModel;
-    private final GameRoomViewModel gameRoomModel;
-    private final CreateGameInputBoundary createGameInteractor;
-    private final JoinGameInputBoundary joinGameInteractor;
-    private final ClientSocketHandler socketHandler;
+  private final ApplicationEventPublisher publisher;
+  private final WelcomeViewModel welcomeModel;
+  private final GameRoomViewModel gameRoomModel;
+  private final CreateGameInputBoundary createGameInteractor;
+  private final JoinGameInputBoundary joinGameInteractor;
+  private final ClientSocketHandler socketHandler;
 
-    public WelcomeViewController(
-            ApplicationEventPublisher publisher,
-            WelcomeViewModel welcomeModel,
-            GameRoomViewModel gameRoomModel,
-            CreateGameInputBoundary createGameInteractor,
-            JoinGameInputBoundary joinGameInteractor,
-            ClientSocketHandler socketHandler
-    ) {
-        this.publisher = publisher;
-        this.welcomeModel = welcomeModel;
-        this.gameRoomModel = gameRoomModel;
-        this.createGameInteractor = createGameInteractor;
-        this.joinGameInteractor = joinGameInteractor;
-        this.socketHandler = socketHandler;
+  public WelcomeViewController(
+      ApplicationEventPublisher publisher,
+      WelcomeViewModel welcomeModel,
+      GameRoomViewModel gameRoomModel,
+      CreateGameInputBoundary createGameInteractor,
+      JoinGameInputBoundary joinGameInteractor,
+      ClientSocketHandler socketHandler) {
+    this.publisher = publisher;
+    this.welcomeModel = welcomeModel;
+    this.gameRoomModel = gameRoomModel;
+    this.createGameInteractor = createGameInteractor;
+    this.joinGameInteractor = joinGameInteractor;
+    this.socketHandler = socketHandler;
+  }
+
+  /*
+  Method called when View All Rooms Button is Pressed
+   */
+  public void openListRoomsView() {
+    publisher.publishEvent(new SwitchViewEvent(this, ListRoomsView.class));
+  }
+
+  public void createGame() {
+    if (welcomeModel.getPlayerName().isBlank() || welcomeModel.getPlayerName().length() > 32) {
+      fireError("Invalid player name: \"" + welcomeModel.getPlayerName() + "\"");
+      return;
     }
-
-    /*
-    Method called when View All Rooms Button is Pressed
-     */
-    public void openListRoomsView() {
-        publisher.publishEvent(new SwitchViewEvent(this, ListRoomsView.class));
+    CreateGameInputData input = new CreateGameInputData(welcomeModel.getPlayerName());
+    CreateGameOutputData output = createGameInteractor.execute(input);
+    if (output instanceof CreateGameOutputDataSuccess successOutput) {
+      try {
+        socketHandler.open(
+            successOutput.getGameHost(),
+            successOutput.getGamePort(),
+            successOutput.getClientId(),
+            successOutput.getPlayerName());
+        gameRoomModel.setRoomCode(successOutput.getRoomCode());
+        gameRoomModel.setLocalPlayer(
+            Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
+        publisher.publishEvent(new SwitchViewEvent(this, GameRoomView.class));
+      } catch (Exception exception) {
+        fireError("Failed to connect to game server: " + exception.getMessage());
+        logger.error("Failed to connect to game server: ", exception);
+      }
+    } else {
+      CreateGameOutputDataFail failOutput = (CreateGameOutputDataFail) output;
+      fireError("Failed to send request to matchmaker:\n" + failOutput.getMessage());
     }
+  }
 
-    public void createGame() {
-        if (welcomeModel.getPlayerName().isBlank() || welcomeModel.getPlayerName().length() > 32) {
-            fireError("Invalid player name: \"" + welcomeModel.getPlayerName() + "\"");
-            return;
-        }
-        CreateGameInputData input = new CreateGameInputData(welcomeModel.getPlayerName());
-        CreateGameOutputData output = createGameInteractor.execute(input);
-        if (output instanceof CreateGameOutputDataSuccess successOutput) {
-            try {
-                socketHandler.open(
-                        successOutput.getGameHost(),
-                        successOutput.getGamePort(),
-                        successOutput.getClientId(),
-                        successOutput.getPlayerName()
-                );
-                gameRoomModel.setRoomCode(successOutput.getRoomCode());
-                gameRoomModel.setLocalPlayer(Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
-                publisher.publishEvent(new SwitchViewEvent(this, GameRoomView.class));
-            } catch (Exception exception) {
-                fireError("Failed to connect to game server: " + exception.getMessage());
-                logger.error("Failed to connect to game server: ", exception);
-            }
-        } else {
-            CreateGameOutputDataFail failOutput = (CreateGameOutputDataFail) output;
-            fireError("Failed to send request to matchmaker:\n" + failOutput.getMessage());
-        }
+  public void joinGame() {
+    if (welcomeModel.getPlayerName().isBlank() || welcomeModel.getPlayerName().length() > 32) {
+      fireError("Invalid player name: \"" + welcomeModel.getPlayerName() + "\"");
+      return;
     }
-
-    public void joinGame() {
-        if (welcomeModel.getPlayerName().isBlank() || welcomeModel.getPlayerName().length() > 32) {
-            fireError("Invalid player name: \"" + welcomeModel.getPlayerName() + "\"");
-            return;
-        }
-        if (welcomeModel.getRoomCode().isBlank() || welcomeModel.getRoomCode().length() != 5) {
-            fireError("Invalid room code: \"" + welcomeModel.getRoomCode() + "\"");
-            return;
-        }
-        JoinGameInputData input = new JoinGameInputData(welcomeModel.getPlayerName(), welcomeModel.getRoomCode());
-        JoinGameOutputData output = joinGameInteractor.execute(input);
-        if (output instanceof JoinGameOutputDataSuccess successOutput) {
-            try {
-                socketHandler.open(
-                        successOutput.getGameHost(),
-                        successOutput.getGamePort(),
-                        successOutput.getClientId(),
-                        successOutput.getPlayerName()
-                );
-                gameRoomModel.setRoomCode(successOutput.getRoomCode());
-                gameRoomModel.setLocalPlayer(Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
-                publisher.publishEvent(new SwitchViewEvent(this, GameRoomView.class));
-            } catch (Exception exception) {
-                fireError("Failed to connect to game server: " + exception.getMessage());
-                logger.error("Failed to connect to game server: ", exception);
-            }
-        } else {
-            JoinGameOutputDataFail failOutput = (JoinGameOutputDataFail) output;
-            fireError("Failed to send request to matchmaker:\n" + failOutput.getMessage());
-        }
+    if (welcomeModel.getRoomCode().isBlank() || welcomeModel.getRoomCode().length() != 5) {
+      fireError("Invalid room code: \"" + welcomeModel.getRoomCode() + "\"");
+      return;
     }
-
-    private void fireError(String message) {
-        publisher.publishEvent(new ErrorViewEvent(this, message));
+    JoinGameInputData input =
+        new JoinGameInputData(welcomeModel.getPlayerName(), welcomeModel.getRoomCode());
+    JoinGameOutputData output = joinGameInteractor.execute(input);
+    if (output instanceof JoinGameOutputDataSuccess successOutput) {
+      try {
+        socketHandler.open(
+            successOutput.getGameHost(),
+            successOutput.getGamePort(),
+            successOutput.getClientId(),
+            successOutput.getPlayerName());
+        gameRoomModel.setRoomCode(successOutput.getRoomCode());
+        gameRoomModel.setLocalPlayer(
+            Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
+        publisher.publishEvent(new SwitchViewEvent(this, GameRoomView.class));
+      } catch (Exception exception) {
+        fireError("Failed to connect to game server: " + exception.getMessage());
+        logger.error("Failed to connect to game server: ", exception);
+      }
+    } else {
+      JoinGameOutputDataFail failOutput = (JoinGameOutputDataFail) output;
+      fireError("Failed to send request to matchmaker:\n" + failOutput.getMessage());
     }
+  }
 
+  private void fireError(String message) {
+    publisher.publishEvent(new ErrorViewEvent(this, message));
+  }
 }

@@ -7,7 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class JoinGameInputData {
 
-    private String playerName;
-    private String roomCode;
-
+  private String playerName;
+  private String roomCode;
 }
