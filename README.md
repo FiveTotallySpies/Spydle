@@ -26,9 +26,9 @@ This program was developed by Alexandra Worms, Ihor Chovpan, Kai Lo, Polyna Germ
 ## Installation Instructions
 1. Clone the repository:
    ```bash
-   git clone https://github.com/username/spydle.git
+   git clone https://github.com/FiveTotallySpies/Spydle.git
 
-2. Run ```dev/totallyspies/spydle/frontend/FrontendApplication.java``` to boot up and enjoy the game!
+2. Run ```dev/totallyspies/spydle/frontend/FrontendApplication.java``` file with your favorite IDE / compiler to boot up and enjoy the game!
 
 ## Usage
 
