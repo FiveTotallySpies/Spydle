@@ -28,7 +28,7 @@ public class GameServer implements Serializable {
     if (other.address == null || !other.address.equals(address)) return false;
     if (other.port != port) return false;
     if (other.name == null || !other.name.equals(name)) return false;
-      return other.roomCode != null && other.roomCode.equals(roomCode);
+    return other.roomCode != null && other.roomCode.equals(roomCode);
   }
 
   public enum State {

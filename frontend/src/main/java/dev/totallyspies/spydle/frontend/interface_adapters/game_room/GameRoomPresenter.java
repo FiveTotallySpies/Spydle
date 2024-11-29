@@ -68,6 +68,8 @@ public class GameRoomPresenter {
     if (!event.getViewClass().equals(GameRoomView.class)) {
       model.reset();
       view.updateGame();
+    } else {
+      view.getSubstringInputField().setText("");
     }
   }
 

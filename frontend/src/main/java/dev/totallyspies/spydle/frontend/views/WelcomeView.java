@@ -34,7 +34,15 @@ public class WelcomeView extends JPanel implements CardView {
         new Dimension(800, 570)); // Adjusted container size for optimal height
 
     JLabel titleLabel = new JLabel("Spydle");
-    titleLabel.setFont(new Font("Arial", Font.BOLD, 40));
+    try {
+      Font customFont =
+          Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/Sabrina.ttf"));
+      customFont = customFont.deriveFont(Font.PLAIN, 65); // Adjust size and style
+      titleLabel.setFont(customFont);
+    } catch (Exception e) {
+      e.printStackTrace();
+      titleLabel.setFont(new Font("Arial", Font.BOLD, 40)); // Fallback to Arial
+    }
     titleLabel.setForeground(new Color(139, 0, 0));
     titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -110,12 +118,14 @@ public class WelcomeView extends JPanel implements CardView {
     createRoomButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     createRoomButton.setMaximumSize(new Dimension(500, 30));
     createRoomButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            welcomeViewModel.setRoomCode(nicknameField.getText());
-            controller.createGame();
-          }
+        event -> {
+          welcomeViewModel.setPlayerName(nicknameField.getText());
+          controller.createGame();
+        });
+    nicknameField.addActionListener(
+        event -> {
+          welcomeViewModel.setPlayerName(nicknameField.getText());
+          controller.createGame();
         });
 
     JPanel joinPanel = new JPanel();
@@ -151,12 +161,16 @@ public class WelcomeView extends JPanel implements CardView {
     joinRoomButton.setMaximumSize(new Dimension(120, 40));
     joinRoomButton.setPreferredSize(new Dimension(120, 40));
     joinRoomButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            welcomeViewModel.setRoomCode(roomCodeField.getText());
-            controller.joinGame();
-          }
+        event -> {
+          welcomeViewModel.setPlayerName(nicknameField.getText());
+          welcomeViewModel.setRoomCode(roomCodeField.getText());
+          controller.joinGame();
+        });
+    roomCodeField.addActionListener(
+        event -> {
+          welcomeViewModel.setPlayerName(nicknameField.getText());
+          welcomeViewModel.setRoomCode(roomCodeField.getText());
+          controller.joinGame();
         });
 
     joinPanel.add(roomCodeField);
@@ -167,13 +181,7 @@ public class WelcomeView extends JPanel implements CardView {
     styleButton(viewAllRoomsButton);
     viewAllRoomsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     viewAllRoomsButton.setMaximumSize(new Dimension(500, 40));
-    viewAllRoomsButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            controller.openListRoomsView();
-          }
-        });
+    viewAllRoomsButton.addActionListener(event -> controller.openListRoomsView());
 
     container.add(titleLabel);
     container.add(Box.createVerticalStrut(40));

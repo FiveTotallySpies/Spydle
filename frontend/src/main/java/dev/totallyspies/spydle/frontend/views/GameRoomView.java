@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import lombok.Getter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +22,7 @@ public class GameRoomView extends JPanel implements CardView {
   private final GamePanel gamePanel;
 
   private final JPanel container;
-  private final JTextField substringInputField;
+  @Getter private final JTextField substringInputField;
   private final JPanel inputPanel;
   private final JLabel roomCodeLabel;
   private final JButton startGameButton;

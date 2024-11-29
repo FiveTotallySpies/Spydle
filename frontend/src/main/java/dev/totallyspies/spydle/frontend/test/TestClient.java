@@ -28,6 +28,7 @@ public class TestClient {
   private TestPlayer player2;
   private String ip;
   private int port;
+
   public TestClient(ClientSocketConfig config) {
     this.config = config;
   }

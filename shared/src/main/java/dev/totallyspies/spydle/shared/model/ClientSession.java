@@ -31,7 +31,7 @@ public class ClientSession implements Serializable {
       return false;
     if (session.getPlayerName() == null || !session.getPlayerName().equals(playerName))
       return false;
-      return session.getState() != null && session.getState().equals(state);
+    return session.getState() != null && session.getState().equals(state);
   }
 
   public enum State {

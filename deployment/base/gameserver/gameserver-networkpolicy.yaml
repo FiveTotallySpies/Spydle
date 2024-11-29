@@ -9,9 +9,9 @@ spec:
       app: gameserver
   ingress:
     - from:
-      - namespaceSelector:
-          matchLabels:
-            project: spydle
+        - namespaceSelector:
+            matchLabels:
+              project: spydle
       ports:
         - protocol: TCP
           port: 7654

@@ -8,12 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.swing.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GamePanel extends JPanel {
-
-  private final Logger logger = LoggerFactory.getLogger(GamePanel.class);
 
   private final GameRoomViewModel model;
 
@@ -53,6 +49,7 @@ public class GamePanel extends JPanel {
     for (PlayerPanel panel : playerPanels.values()) {
       remove(panel); // Remove panel from the GamePanel
     }
+    playerPanels.values().forEach(PlayerPanel::cleanupParent);
     playerPanels.clear();
     for (Player player : model.getPlayerList()) {
       PlayerPanel playerPanel = new PlayerPanel(player.getPlayerName(), player.getScore(), this);
@@ -99,7 +96,11 @@ public class GamePanel extends JPanel {
     }
 
     substringLabel.setText(model.getCurrentSubstring());
-    timerPlayer.setText("Guess in " + model.getTurnTimerSeconds());
+    if (model.getTurnTimerSeconds() > 0) {
+      timerPlayer.setText("Guess in " + model.getTurnTimerSeconds());
+    } else {
+      timerPlayer.setText("");
+    }
     timerLabel.setText(
         "Timer: "
             + model.getGameTimerSeconds() / 60

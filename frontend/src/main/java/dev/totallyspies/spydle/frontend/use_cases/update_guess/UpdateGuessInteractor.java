@@ -1,7 +1,6 @@
 package dev.totallyspies.spydle.frontend.use_cases.update_guess;
 
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
-import dev.totallyspies.spydle.shared.proto.messages.SbGuess;
 import dev.totallyspies.spydle.shared.proto.messages.SbGuessUpdate;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import org.slf4j.Logger;

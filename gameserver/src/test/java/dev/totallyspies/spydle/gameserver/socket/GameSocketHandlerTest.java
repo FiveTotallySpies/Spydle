@@ -41,6 +41,7 @@ public class GameSocketHandlerTest {
   @Mock private ApplicationEventPublisher publisher;
   @Mock private GameServer currentGameServer;
   @Mock private Agones agones;
+
   @Mock
   private MessageHandler<SbMessage, SbMessage.PayloadCase, SbMessageListener> sbMessageHandler;
 

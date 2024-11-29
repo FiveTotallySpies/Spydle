@@ -9,8 +9,11 @@ class PlayerPanel extends JPanel {
 
   private final JLabel pointsLabel;
   private final JLabel guessLabel;
+  private final JPanel parent;
 
   public PlayerPanel(String name, int score, JPanel parent) {
+    this.parent = parent;
+
     setLayout(new BorderLayout());
     setBackground(new Color(255, 255, 255));
     setBorder(BorderFactory.createLineBorder(new Color(25, 25, 112)));
@@ -55,5 +58,9 @@ class PlayerPanel extends JPanel {
       case IN_PROGRESS -> guessLabel.setForeground(new Color(0, 0, 0));
     }
     guessLabel.setText(guess);
+  }
+
+  public void cleanupParent() {
+    parent.remove(guessLabel);
   }
 }
