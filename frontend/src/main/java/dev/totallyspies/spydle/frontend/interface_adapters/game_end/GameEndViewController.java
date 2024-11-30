@@ -10,17 +10,16 @@ import org.springframework.stereotype.Component;
 @Profile("!test")
 public class GameEndViewController {
 
-    private final ApplicationEventPublisher publisher;
+  private final ApplicationEventPublisher publisher;
 
-    public GameEndViewController(ApplicationEventPublisher publisher) {
-        this.publisher = publisher;
-    }
+  public GameEndViewController(ApplicationEventPublisher publisher) {
+    this.publisher = publisher;
+  }
 
-    /*
-    Method called when back Button is Pressed
-     */
-    public void openWelcomeView() {
-        publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
-    }
-
+  /*
+  Method called when back Button is Pressed
+   */
+  public void openWelcomeView() {
+    publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
+  }
 }

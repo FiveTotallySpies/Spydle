@@ -1,8 +1,12 @@
 package dev.totallyspies.spydle.matchmaker.config;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import dev.totallyspies.spydle.shared.SharedConstants;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -10,112 +14,104 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 public class SessionRepositoryTest {
 
-    private SessionRepository sessionRepository;
+  private final GameServer fakeGameServer =
+      new GameServer("", 0, "", "", false, GameServer.State.WAITING);
+  private SessionRepository sessionRepository;
+  @Mock private RedisTemplate<String, Object> redisTemplate;
+  @Mock private ValueOperations<String, Object> valueOperations;
 
-    @Mock
-    private RedisTemplate<String, Object> redisTemplate;
+  @BeforeEach
+  public void setUp() {
+    MockitoAnnotations.openMocks(this);
+    sessionRepository = new SessionRepository(redisTemplate);
+    when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+  }
 
-    @Mock
-    private ValueOperations<String, Object> valueOperations;
+  @Test
+  public void testSaveSession() {
+    ClientSession session =
+        new ClientSession(UUID.randomUUID(), fakeGameServer, "", ClientSession.State.ASSIGNED);
+    session.setClientId(UUID.randomUUID());
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + session.getClientId();
 
-    private final GameServer fakeGameServer = new GameServer("", 0, "", "", false, GameServer.State.WAITING);
+    sessionRepository.saveSession(session);
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        sessionRepository = new SessionRepository(redisTemplate);
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-    }
+    verify(valueOperations).set(key, session);
+  }
 
-    @Test
-    public void testSaveSession() {
-        ClientSession session = new ClientSession(UUID.randomUUID(), fakeGameServer, "", ClientSession.State.ASSIGNED);
-        session.setClientId(UUID.randomUUID());
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + session.getClientId();
+  @Test
+  public void testGetSession() {
+    UUID clientId = UUID.randomUUID();
+    ClientSession session =
+        new ClientSession(clientId, fakeGameServer, "", ClientSession.State.ASSIGNED);
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
-        sessionRepository.saveSession(session);
+    when(valueOperations.get(key)).thenReturn(session);
 
-        verify(valueOperations).set(key, session);
-    }
+    ClientSession result = sessionRepository.getSession(clientId);
 
-    @Test
-    public void testGetSession() {
-        UUID clientId = UUID.randomUUID();
-        ClientSession session = new ClientSession(clientId, fakeGameServer, "", ClientSession.State.ASSIGNED);
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
+    verify(valueOperations).get(key);
+    assertEquals(session, result);
+  }
 
-        when(valueOperations.get(key)).thenReturn(session);
+  @Test
+  public void testDeleteSession() {
+    UUID clientId = UUID.randomUUID();
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
-        ClientSession result = sessionRepository.getSession(clientId);
+    sessionRepository.deleteSession(clientId);
 
-        verify(valueOperations).get(key);
-        assertEquals(session, result);
-    }
+    verify(redisTemplate).delete(key);
+  }
 
-    @Test
-    public void testDeleteSession() {
-        UUID clientId = UUID.randomUUID();
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
+  @Test
+  public void testSessionExists_True() {
+    UUID clientId = UUID.randomUUID();
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
-        sessionRepository.deleteSession(clientId);
+    when(redisTemplate.hasKey(key)).thenReturn(true);
 
-        verify(redisTemplate).delete(key);
-    }
+    boolean exists = sessionRepository.sessionExists(clientId);
 
-    @Test
-    public void testSessionExists_True() {
-        UUID clientId = UUID.randomUUID();
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
+    verify(redisTemplate).hasKey(key);
+    assertTrue(exists);
+  }
 
-        when(redisTemplate.hasKey(key)).thenReturn(true);
+  @Test
+  public void testSessionExists_False() {
+    UUID clientId = UUID.randomUUID();
+    String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
 
-        boolean exists = sessionRepository.sessionExists(clientId);
+    when(redisTemplate.hasKey(key)).thenReturn(false);
 
-        verify(redisTemplate).hasKey(key);
-        assertTrue(exists);
-    }
+    boolean exists = sessionRepository.sessionExists(clientId);
 
-    @Test
-    public void testSessionExists_False() {
-        UUID clientId = UUID.randomUUID();
-        String key = SharedConstants.STORAGE_REDIS_SESSION_PREFIX + clientId;
+    verify(redisTemplate).hasKey(key);
+    assertFalse(exists);
+  }
 
-        when(redisTemplate.hasKey(key)).thenReturn(false);
+  @Test
+  public void testParseClientId_Valid() {
+    UUID clientId = UUID.randomUUID();
 
-        boolean exists = sessionRepository.sessionExists(clientId);
+    UUID result = sessionRepository.parseClientId(clientId.toString());
 
-        verify(redisTemplate).hasKey(key);
-        assertFalse(exists);
-    }
+    assertEquals(clientId, result);
+  }
 
-    @Test
-    public void testParseClientId_Valid() {
-        UUID clientId = UUID.randomUUID();
+  @Test
+  public void testParseClientId_Invalid() {
+    UUID result = sessionRepository.parseClientId("invalid-uuid");
 
-        UUID result = sessionRepository.parseClientId(clientId.toString());
+    assertNull(result);
+  }
 
-        assertEquals(clientId, result);
-    }
+  @Test
+  public void testParseClientId_Null() {
+    UUID result = sessionRepository.parseClientId(null);
 
-    @Test
-    public void testParseClientId_Invalid() {
-        UUID result = sessionRepository.parseClientId("invalid-uuid");
-
-        assertNull(result);
-    }
-
-    @Test
-    public void testParseClientId_Null() {
-        UUID result = sessionRepository.parseClientId(null);
-
-        assertNull(result);
-    }
-
+    assertNull(result);
+  }
 }

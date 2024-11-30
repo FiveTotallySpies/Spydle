@@ -17,43 +17,42 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(name = "agones.enabled", havingValue = "true")
 public class AgonesConfig {
 
-    private final Logger logger = LoggerFactory.getLogger(AgonesConfig.class);
+  private final Logger logger = LoggerFactory.getLogger(AgonesConfig.class);
 
-    @Bean
-    public Agones agones(@Value("${agones.host-port}") int agonesPort) {
-        // Construct agones SDK wrapper on GRPC
-        final ExecutorService gameServerWatcherExecutor =
-                Executors.newSingleThreadExecutor();
-        final ScheduledExecutorService healthCheckExecutor =
-                Executors.newSingleThreadScheduledExecutor();
-        Agones agones = Agones.builder()
-                .withAddress("localhost", agonesPort)
-                .withChannel(ManagedChannelBuilder
-                        .forAddress("localhost", agonesPort)
-                        .usePlaintext()
-                        .build())
-                .withGameServerWatcherExecutor(gameServerWatcherExecutor)
-                .withHealthCheck(
-                        Duration.ofSeconds(1L), // Delay
-                        Duration.ofSeconds(2L) // Period
+  @Bean
+  public Agones agones(@Value("${agones.host-port}") int agonesPort) {
+    // Construct agones SDK wrapper on GRPC
+    final ExecutorService gameServerWatcherExecutor = Executors.newSingleThreadExecutor();
+    final ScheduledExecutorService healthCheckExecutor =
+        Executors.newSingleThreadScheduledExecutor();
+    Agones agones =
+        Agones.builder()
+            .withAddress("localhost", agonesPort)
+            .withChannel(
+                ManagedChannelBuilder.forAddress("localhost", agonesPort).usePlaintext().build())
+            .withGameServerWatcherExecutor(gameServerWatcherExecutor)
+            .withHealthCheck(
+                Duration.ofSeconds(1L), // Delay
+                Duration.ofSeconds(2L) // Period
                 )
-                .withHealthCheckExecutor(healthCheckExecutor)
-                .build();
-        logger.info("Instantiated Agones hook on localhost:{}", agonesPort);
-        if (agones.canHealthCheck()) {
-            agones.startHealthChecking();
-            logger.info("Began Agones health checking");
-        } else {
-            throw new IllegalStateException("Failed to begin Agones health checking");
-        }
-        if (agones.canWatchGameServer()) {
-            agones.addGameServerWatcher(gameServer -> {
-                logger.info("Received state updated from Agones: {}", gameServer.getStatus().getState());
-            });
-        } else {
-            logger.warn("Failed to add game server watcher: Not allowed");
-        }
-        return agones;
+            .withHealthCheckExecutor(healthCheckExecutor)
+            .build();
+    logger.info("Instantiated Agones hook on localhost:{}", agonesPort);
+    if (agones.canHealthCheck()) {
+      agones.startHealthChecking();
+      logger.info("Began Agones health checking");
+    } else {
+      throw new IllegalStateException("Failed to begin Agones health checking");
     }
-
+    if (agones.canWatchGameServer()) {
+      agones.addGameServerWatcher(
+          gameServer -> {
+            logger.info(
+                "Received state updated from Agones: {}", gameServer.getStatus().getState());
+          });
+    } else {
+      logger.warn("Failed to add game server watcher: Not allowed");
+    }
+    return agones;
+  }
 }

@@ -7,7 +7,6 @@ import dev.totallyspies.spydle.frontend.use_cases.guess_word.GuessWordInputData;
 import dev.totallyspies.spydle.frontend.use_cases.guess_word.GuessWordInteractor;
 import dev.totallyspies.spydle.frontend.use_cases.update_guess.UpdateGuessInputBoundary;
 import dev.totallyspies.spydle.frontend.use_cases.update_guess.UpdateGuessInputData;
-import dev.totallyspies.spydle.frontend.use_cases.update_guess.UpdateGuessInteractor;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
@@ -22,53 +21,53 @@ import org.springframework.web.socket.CloseStatus;
 @Profile("!test")
 public class GameRoomViewController {
 
-    private final Logger logger = LoggerFactory.getLogger(GameRoomViewController.class);
+  private final Logger logger = LoggerFactory.getLogger(GameRoomViewController.class);
 
-    private final ApplicationEventPublisher publisher;
-    private final ClientSocketHandler handler;
-    private final GuessWordInputBoundary guessWordInteractor;
-    private final GameRoomViewModel model;
-    private final UpdateGuessInputBoundary updateGuessInteractor;
+  private final ApplicationEventPublisher publisher;
+  private final ClientSocketHandler handler;
+  private final GuessWordInputBoundary guessWordInteractor;
+  private final GameRoomViewModel model;
+  private final UpdateGuessInputBoundary updateGuessInteractor;
 
-    public GameRoomViewController(
-            ApplicationEventPublisher publisher,
-            ClientSocketHandler handler,
-            GuessWordInteractor guessWordInteractor,
-            GameRoomViewModel model,
-            UpdateGuessInputBoundary updateGuessInteractor
-    ) {
-        this.publisher = publisher;
-        this.handler = handler;
-        this.guessWordInteractor = guessWordInteractor;
-        this.model = model;
-        this.updateGuessInteractor = updateGuessInteractor;
+  public GameRoomViewController(
+      ApplicationEventPublisher publisher,
+      ClientSocketHandler handler,
+      GuessWordInteractor guessWordInteractor,
+      GameRoomViewModel model,
+      UpdateGuessInputBoundary updateGuessInteractor) {
+    this.publisher = publisher;
+    this.handler = handler;
+    this.guessWordInteractor = guessWordInteractor;
+    this.model = model;
+    this.updateGuessInteractor = updateGuessInteractor;
+  }
+
+  /*
+  Method called when View All Rooms Button is Pressed
+   */
+  public void openWelcomeView() {
+    if (handler.isOpen()) {
+      handler.close(
+          new CloseStatus(CloseStatus.NORMAL.getCode(), "Client prompted session termination"));
     }
+    publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
+  }
 
-    /*
-    Method called when View All Rooms Button is Pressed
-     */
-    public void openWelcomeView() {
-        if (handler.isOpen()) {
-            handler.close(new CloseStatus(CloseStatus.NORMAL.getCode(), "Client prompted session termination"));
-        }
-        publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
+  public void startGame() {
+    if (!handler.isOpen()) {
+      logger.error("Cannot start game: client session is not open!");
+      return;
     }
+    handler.sendSbMessage(
+        SbMessage.newBuilder().setStartGame(SbStartGame.newBuilder().build()).build());
+  }
 
-    public void startGame() {
-        if (!handler.isOpen()) {
-            logger.error("Cannot start game: client session is not open!");
-            return;
-        }
-        handler.sendSbMessage(SbMessage.newBuilder().setStartGame(SbStartGame.newBuilder().build()).build());
-    }
+  public void updateGuess() {
+    updateGuessInteractor.execute(new UpdateGuessInputData(model.getStringEntered()));
+  }
 
-    public void updateGuess(){
-        updateGuessInteractor.execute(new UpdateGuessInputData(model.getStringEntered()));
-    }
-
-    public void guessWord() {
-        guessWordInteractor.execute(new GuessWordInputData(model.getStringEntered()));
-        publisher.publishEvent(new GuessWordEvent(this, model.getStringEntered()));
-    }
-
+  public void guessWord() {
+    guessWordInteractor.execute(new GuessWordInputData(model.getStringEntered()));
+    publisher.publishEvent(new GuessWordEvent(this, model.getStringEntered()));
+  }
 }

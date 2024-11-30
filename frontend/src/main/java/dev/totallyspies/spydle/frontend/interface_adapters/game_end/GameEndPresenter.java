@@ -12,21 +12,21 @@ import org.springframework.stereotype.Component;
 @Profile("!test")
 public class GameEndPresenter {
 
-    private final GameEndViewModel model;
-    private final GameEndView view;
-    private final ApplicationEventPublisher publisher;
+  private final GameEndViewModel model;
+  private final GameEndView view;
+  private final ApplicationEventPublisher publisher;
 
-    public GameEndPresenter(GameEndViewModel model, GameEndView view, ApplicationEventPublisher publisher) {
-        this.model = model;
-        this.view = view;
-        this.publisher = publisher;
-    }
+  public GameEndPresenter(
+      GameEndViewModel model, GameEndView view, ApplicationEventPublisher publisher) {
+    this.model = model;
+    this.view = view;
+    this.publisher = publisher;
+  }
 
-    @CbMessageListener
-    public void onGameEndMessage(CbGameEnd gameEnd) {
-        model.setPlayers(gameEnd.getPlayersList());
-        view.setPlacements();
-        publisher.publishEvent(new SwitchViewEvent(this, GameEndView.class));
-    }
-
+  @CbMessageListener
+  public void onGameEndMessage(CbGameEnd gameEnd) {
+    model.setPlayers(gameEnd.getPlayersList());
+    view.setPlacements();
+    publisher.publishEvent(new SwitchViewEvent(this, GameEndView.class));
+  }
 }

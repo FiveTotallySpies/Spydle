@@ -3,6 +3,6 @@ kind: ClusterRole
 metadata:
   name: cross-namespace-service-reader
 rules:
-  - apiGroups: [""]
-    resources: ["services"]
-    verbs: ["get"]
+  - apiGroups: [ "" ]
+    resources: [ "services" ]
+    verbs: [ "get" ]

@@ -21,8 +21,6 @@ This program was developed by Alexandra Worms, Ihor Chovpan, Kai Lo, Polyna Germ
 - **Guess Word**: The guess of the player is received, when they type **_Enter_** or click on the **_Submit_** button.
 - **Update Guess**: As a player types their guess, their guess is displayed on top of their player, for every letter that is typed or removed.​
 
-### TODO KAI ReadMe and Ihor
-
 ## Installation Instructions
 1. Clone the repository:
    ```bash
@@ -34,7 +32,6 @@ This program was developed by Alexandra Worms, Ihor Chovpan, Kai Lo, Polyna Germ
 
 ### This video contains an example of GamePlay:
 https://github.com/user-attachments/assets/e2d70dd6-6ddd-4364-957b-332f424d9bd3
-
 
 ## Feedback and Contributions
 #### To contribute to our project, you may always fork the repo, and create a pull request! Any suggestions are welcome!

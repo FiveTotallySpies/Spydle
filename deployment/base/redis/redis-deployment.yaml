@@ -18,7 +18,7 @@ spec:
       containers:
         - name: redis
           image: redis:6.2-alpine
-          args: ["redis-server", "--appendonly", "no"]  # In-memory only
+          args: [ "redis-server", "--appendonly", "no" ]  # In-memory only
           ports:
             - containerPort: 6379
           resources:

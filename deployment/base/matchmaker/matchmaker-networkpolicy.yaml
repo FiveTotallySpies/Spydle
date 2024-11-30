@@ -9,9 +9,9 @@ spec:
       app: matchmaker
   ingress:
     - from:
-      - namespaceSelector:
-          matchLabels:
-            project: spydle
+        - namespaceSelector:
+            matchLabels:
+              project: spydle
       ports:
         - protocol: TCP
           port: 8080

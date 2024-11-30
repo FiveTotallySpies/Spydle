@@ -12,20 +12,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class CbMessageListenerProcessor implements BeanPostProcessor {
 
-    private final Logger logger = LoggerFactory.getLogger(CbMessageListenerProcessor.class);
+  private final Logger logger = LoggerFactory.getLogger(CbMessageListenerProcessor.class);
 
-    @Getter
-    private final MessageHandler<CbMessage, CbMessage.PayloadCase, CbMessageListener> handler;
+  @Getter private final MessageHandler<CbMessage, CbMessage.PayloadCase, CbMessageListener> handler;
 
-    private CbMessageListenerProcessor() {
-        handler = new MessageHandler<>(CbMessage.class, CbMessageListener.class, logger);
-        logger.info("Created client-bound message listener processor");
-    }
+  private CbMessageListenerProcessor() {
+    handler = new MessageHandler<>(CbMessage.class, CbMessageListener.class, logger);
+    logger.info("Created client-bound message listener processor");
+  }
 
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        handler.processBean(bean);
-        return bean;
-    }
-
+  @Override
+  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    handler.processBean(bean);
+    return bean;
+  }
 }

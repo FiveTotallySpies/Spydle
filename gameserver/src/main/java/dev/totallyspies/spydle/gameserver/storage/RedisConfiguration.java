@@ -15,29 +15,30 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @ConditionalOnProperty(prefix = "storage", name = "type", havingValue = "redis")
 public class RedisConfiguration {
 
-    private final Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
+  private final Logger logger = LoggerFactory.getLogger(RedisConfiguration.class);
 
-    private final String redisHost;
-    private final int redisPort;
+  private final String redisHost;
+  private final int redisPort;
 
-    public RedisConfiguration(@Value("${redis.host}") String redisHost, @Value("${redis.port}") int redisPort) {
-        this.redisHost = redisHost;
-        this.redisPort = redisPort;
-    }
+  public RedisConfiguration(
+      @Value("${redis.host}") String redisHost, @Value("${redis.port}") int redisPort) {
+    this.redisHost = redisHost;
+    this.redisPort = redisPort;
+  }
 
-    @Bean
-    public JedisConnectionFactory jedisConnectionFactory() {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(redisHost, redisPort);
-        logger.info("Created Jedis connection factory to redis at {}:{}", redisHost, redisPort);
-        return new JedisConnectionFactory(configuration);
-    }
+  @Bean
+  public JedisConnectionFactory jedisConnectionFactory() {
+    RedisStandaloneConfiguration configuration =
+        new RedisStandaloneConfiguration(redisHost, redisPort);
+    logger.info("Created Jedis connection factory to redis at {}:{}", redisHost, redisPort);
+    return new JedisConnectionFactory(configuration);
+  }
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(jedisConnectionFactory());
-        template.setKeySerializer(new StringRedisSerializer());
-        return template;
-    }
-
+  @Bean
+  public RedisTemplate<String, Object> redisTemplate() {
+    RedisTemplate<String, Object> template = new RedisTemplate<>();
+    template.setConnectionFactory(jedisConnectionFactory());
+    template.setKeySerializer(new StringRedisSerializer());
+    return template;
+  }
 }

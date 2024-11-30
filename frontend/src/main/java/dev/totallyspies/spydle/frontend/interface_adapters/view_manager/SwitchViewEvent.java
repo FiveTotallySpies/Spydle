@@ -10,11 +10,10 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class SwitchViewEvent extends ApplicationEvent {
 
-    private final Class<? extends CardView> viewClass;
+  private final Class<? extends CardView> viewClass;
 
-    public SwitchViewEvent(Object source, Class<? extends CardView> viewClass) {
-        super(source);
-        this.viewClass = viewClass;
-    }
-
+  public SwitchViewEvent(Object source, Class<? extends CardView> viewClass) {
+    super(source);
+    this.viewClass = viewClass;
+  }
 }
