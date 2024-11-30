@@ -1,4 +1,4 @@
-package dev.totallyspies.spydle.gameserver.game;
+package dev.totallyspies.spydle.shared;
 
 import java.util.concurrent.atomic.AtomicReference;
 
