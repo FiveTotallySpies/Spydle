@@ -98,6 +98,7 @@ public class GameLogicTests {
     @Test
     public void testGuess() {
         gameLogic.gameStart(this.clientSessions, -1, -1);
+        System.out.println(gameLogic.getCurrentPlayer().getName());
         assertTrue(gameLogic.isPlayerTurn(uuid2));
         System.out.println("testGuess() substring:" + gameLogic.getCurrentSubString()); // current substring: a
 

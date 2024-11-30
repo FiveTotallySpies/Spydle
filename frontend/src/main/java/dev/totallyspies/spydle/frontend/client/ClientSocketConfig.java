@@ -9,22 +9,22 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class ClientSocketConfig {
 
-    private final ApplicationEventPublisher publisher;
-    private final CbMessageListenerProcessor processor;
+  private final ApplicationEventPublisher publisher;
+  private final CbMessageListenerProcessor processor;
 
-    public ClientSocketConfig(ApplicationEventPublisher publisher, CbMessageListenerProcessor processor) {
-        this.publisher = publisher;
-        this.processor = processor;
-    }
+  public ClientSocketConfig(
+      ApplicationEventPublisher publisher, CbMessageListenerProcessor processor) {
+    this.publisher = publisher;
+    this.processor = processor;
+  }
 
-    @Bean
-    @Profile("!test")
-    public ClientSocketHandler globalClientSocketHandler() {
-        return createClient();
-    }
+  @Bean
+  @Profile("!test")
+  public ClientSocketHandler globalClientSocketHandler() {
+    return createClient();
+  }
 
-    public ClientSocketHandler createClient() {
-        return new ClientSocketHandler(processor, publisher);
-    }
-
+  public ClientSocketHandler createClient() {
+    return new ClientSocketHandler(processor, publisher);
+  }
 }

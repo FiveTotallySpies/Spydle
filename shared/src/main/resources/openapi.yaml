@@ -95,17 +95,17 @@ components:
       type: object
     ClientErrorResponse:
       type: object
-      required: [message]
+      required: [ message ]
       properties:
         message:
           type: string
     AutoscaleRequestModel:
       type: object
-      required: [request]
+      required: [ request ]
       properties:
         request:
           type: object
-          required: [uid, name, namespace, status]
+          required: [ uid, name, namespace, status ]
           properties:
             uid:
               type: string
@@ -115,7 +115,7 @@ components:
               type: string
             status:
               type: object
-              required: [replicas, allocatedReplicas, readyReplicas, reservedReplicas]
+              required: [ replicas, allocatedReplicas, readyReplicas, reservedReplicas ]
               properties:
                 replicas:
                   type: integer
@@ -129,11 +129,11 @@ components:
           type: object
     AutoscaleResponseModel:
       type: object
-      required: [response]
+      required: [ response ]
       properties:
         response:
           type: object
-          required: [scale, replicas, uid]
+          required: [ scale, replicas, uid ]
           properties:
             scale:
               type: boolean
@@ -143,7 +143,7 @@ components:
               type: string
     CreateGameRequestModel:
       type: object
-      required: [clientId, playerName]
+      required: [ clientId, playerName ]
       properties:
         clientId:
           type: string
@@ -151,7 +151,7 @@ components:
           type: string
     CreateGameResponseModel:
       type: object
-      required: [gameServer, clientId, playerName]
+      required: [ gameServer, clientId, playerName ]
       properties:
         gameServer:
           $ref: '#/components/schemas/GameServer'
@@ -161,7 +161,7 @@ components:
           type: string
     JoinGameRequestModel:
       type: object
-      required: [clientId, playerName, roomCode]
+      required: [ clientId, playerName, roomCode ]
       properties:
         clientId:
           type: string
@@ -171,7 +171,7 @@ components:
           type: string
     JoinGameResponseModel:
       type: object
-      required: [gameServer, clientId, playerName]
+      required: [ gameServer, clientId, playerName ]
       properties:
         gameServer:
           $ref: '#/components/schemas/GameServer'
@@ -181,7 +181,7 @@ components:
           type: string
     ListGamesResponseModel:
       type: object
-      required: [roomCodes]
+      required: [ roomCodes ]
       properties:
         roomCodes:
           type: array

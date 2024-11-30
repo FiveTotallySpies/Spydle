@@ -9,8 +9,7 @@ import lombok.Getter;
 @Getter
 public class ClientErrorException extends RuntimeException {
 
-    private ClientErrorResponse response;
-    private String message;
-    private int code;
-
+  private ClientErrorResponse response;
+  private String message;
+  private int code;
 }

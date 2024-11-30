@@ -7,6 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public final class CreateGameOutputDataFail implements CreateGameOutputData {
 
-    private String message;
-
+  private String message;
 }

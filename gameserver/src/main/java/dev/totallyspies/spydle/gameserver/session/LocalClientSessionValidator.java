@@ -13,21 +13,21 @@ import org.springframework.stereotype.Service;
 @ConditionalOnProperty(prefix = "agones", name = "enabled", havingValue = "false")
 public class LocalClientSessionValidator implements ClientSessionValidator {
 
-    private final Logger logger = LoggerFactory.getLogger(LocalClientSessionValidator.class);
+  private final Logger logger = LoggerFactory.getLogger(LocalClientSessionValidator.class);
 
-    private final GameServerStorage storage;
-    private final GameServer currentGameServer;
+  private final GameServerStorage storage;
+  private final GameServer currentGameServer;
 
-    public LocalClientSessionValidator(GameServerStorage storage, GameServer currentGameServer) {
-        this.storage = storage;
-        this.currentGameServer = currentGameServer;
-        logger.info("Agones disabled, loading local (automatic acceptance) client session validator");
-    }
+  public LocalClientSessionValidator(GameServerStorage storage, GameServer currentGameServer) {
+    this.storage = storage;
+    this.currentGameServer = currentGameServer;
+    logger.info("Agones disabled, loading local (automatic acceptance) client session validator");
+  }
 
-    @Override
-    public boolean validateClientSession(UUID clientId, String name) {
-        storage.storeClientSession(new ClientSession(clientId, currentGameServer, name, ClientSession.State.ASSIGNED));
-        return true;
-    }
-
+  @Override
+  public boolean validateClientSession(UUID clientId, String name) {
+    storage.storeClientSession(
+        new ClientSession(clientId, currentGameServer, name, ClientSession.State.ASSIGNED));
+    return true;
+  }
 }

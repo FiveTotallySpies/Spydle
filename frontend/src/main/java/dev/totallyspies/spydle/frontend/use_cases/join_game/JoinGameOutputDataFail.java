@@ -7,6 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public final class JoinGameOutputDataFail implements JoinGameOutputData {
 
-    private String message;
-
+  private String message;
 }

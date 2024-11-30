@@ -13,18 +13,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public class MatchmakerSpringTest {
 
-	@MockBean
-	private ApiClient k8sClient;
+  @MockBean private ApiClient k8sClient;
 
-	@MockBean
-	private CoreV1Api coreV1Api;
+  @MockBean private CoreV1Api coreV1Api;
 
-	@MockBean
-	private AllocationServiceGrpc.AllocationServiceStub allocationServiceStub;
+  @MockBean private AllocationServiceGrpc.AllocationServiceStub allocationServiceStub;
 
-	@Test
-	public void contextLoads() {
-		// This test will pass if the application context loads successfully
-	}
-
+  @Test
+  public void contextLoads() {
+    // This test will pass if the application context loads successfully
+  }
 }

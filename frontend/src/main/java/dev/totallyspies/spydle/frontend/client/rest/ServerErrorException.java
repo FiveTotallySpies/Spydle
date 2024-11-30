@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 public class ServerErrorException extends RuntimeException {
 
-    private String message;
-    private int code;
-
+  private String message;
+  private int code;
 }

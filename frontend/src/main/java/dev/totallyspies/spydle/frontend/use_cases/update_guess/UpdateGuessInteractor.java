@@ -1,7 +1,6 @@
 package dev.totallyspies.spydle.frontend.use_cases.update_guess;
 
 import dev.totallyspies.spydle.frontend.client.ClientSocketHandler;
-import dev.totallyspies.spydle.shared.proto.messages.SbGuess;
 import dev.totallyspies.spydle.shared.proto.messages.SbGuessUpdate;
 import dev.totallyspies.spydle.shared.proto.messages.SbMessage;
 import org.slf4j.Logger;
@@ -13,23 +12,25 @@ import org.springframework.stereotype.Component;
 @Profile("!test")
 public class UpdateGuessInteractor implements UpdateGuessInputBoundary {
 
-    private final Logger logger = LoggerFactory.getLogger(UpdateGuessInteractor.class);
+  private final Logger logger = LoggerFactory.getLogger(UpdateGuessInteractor.class);
 
-    private final ClientSocketHandler handler;
+  private final ClientSocketHandler handler;
 
-    public UpdateGuessInteractor(ClientSocketHandler handler) {
-        this.handler = handler;
+  public UpdateGuessInteractor(ClientSocketHandler handler) {
+    this.handler = handler;
+  }
+
+  @Override
+  public void execute(UpdateGuessInputData updateGuessInputData) {
+    if (!handler.isOpen()) {
+      logger.error("Cannot send update guess when client socket is not open!");
+      return;
     }
-
-    @Override
-    public void execute(UpdateGuessInputData updateGuessInputData) {
-        if (!handler.isOpen()) {
-            logger.error("Cannot send update guess when client socket is not open!");
-            return;
-        }
-        handler.sendSbMessage(SbMessage.newBuilder().setGuessUpdate(SbGuessUpdate.newBuilder()
-                .setGuessedWord(updateGuessInputData.getGuess())).build());
-        logger.info("Sent guess update: {}", updateGuessInputData.getGuess());
-    }
-
+    handler.sendSbMessage(
+        SbMessage.newBuilder()
+            .setGuessUpdate(
+                SbGuessUpdate.newBuilder().setGuessedWord(updateGuessInputData.getGuess()))
+            .build());
+    logger.info("Sent guess update: {}", updateGuessInputData.getGuess());
+  }
 }

@@ -7,6 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class GuessWordInputData {
 
-    private String word;
-
+  private String word;
 }

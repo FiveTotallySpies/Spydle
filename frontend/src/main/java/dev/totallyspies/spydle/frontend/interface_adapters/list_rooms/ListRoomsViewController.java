@@ -12,24 +12,24 @@ import org.springframework.stereotype.Component;
 @Profile("!test")
 public class ListRoomsViewController {
 
-    private final ApplicationEventPublisher publisher;
-    private final ListGamesInputBoundary listGamesInteractor;
+  private final ApplicationEventPublisher publisher;
+  private final ListGamesInputBoundary listGamesInteractor;
 
-    public ListRoomsViewController(ApplicationEventPublisher publisher, ListGamesInputBoundary listGamesInteractor) {
-        this.publisher = publisher;
-        this.listGamesInteractor = listGamesInteractor;
-    }
+  public ListRoomsViewController(
+      ApplicationEventPublisher publisher, ListGamesInputBoundary listGamesInteractor) {
+    this.publisher = publisher;
+    this.listGamesInteractor = listGamesInteractor;
+  }
 
-    /*
-    Method called when View All Rooms Button is Pressed
-     */
-    public void openWelcomeView() {
-        publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
-    }
+  /*
+  Method called when View All Rooms Button is Pressed
+   */
+  public void openWelcomeView() {
+    publisher.publishEvent(new SwitchViewEvent(this, WelcomeView.class));
+  }
 
-    public void updateRoomList() {
-        ListGamesOutputData output = listGamesInteractor.execute();
-        publisher.publishEvent(new ListRoomsUpdateEvent(this, output.getRoomCodes()));
-    }
-
+  public void updateRoomList() {
+    ListGamesOutputData output = listGamesInteractor.execute();
+    publisher.publishEvent(new ListRoomsUpdateEvent(this, output.getRoomCodes()));
+  }
 }

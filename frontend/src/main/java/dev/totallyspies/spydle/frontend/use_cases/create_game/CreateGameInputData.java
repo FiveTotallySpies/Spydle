@@ -7,6 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class CreateGameInputData {
 
-    private String playerName;
-
+  private String playerName;
 }
