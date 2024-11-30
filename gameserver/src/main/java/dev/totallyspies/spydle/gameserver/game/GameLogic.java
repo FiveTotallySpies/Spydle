@@ -54,11 +54,7 @@ public class GameLogic {
     }
 
     /* Takes a lot of memory, meant to be called once */
-    public void parseWords() throws IOException {
-        if (!this.validWords.get().isEmpty()) {
-            return;
-        }
-
+    public Set<String> parseWords() throws IOException {
         var words = new TreeSet<String>();
         ClassPathResource resource = new ClassPathResource("words.txt");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
@@ -71,15 +67,11 @@ public class GameLogic {
         } catch (Exception exception) {
             logger.error("Failed to read words.txt", exception);
         }
-        this.validWords.set(words);
+        return words;
     }
 
     /* Takes a lot of memory, meant to be called once */
-    public void parseSubstrings() throws IOException {
-        if (!this.substrings.get().isEmpty()) {
-            return;
-        }
-
+    public List<String> parseSubstrings() throws IOException {
         var substrings = new ArrayList<String>();
         ClassPathResource resource = new ClassPathResource("substrings.csv");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
@@ -100,10 +92,11 @@ public class GameLogic {
         } catch (Exception exception) {
             logger.error("Failed to read substrings.csv", exception);
         }
-        this.substrings.set(substrings);
+        return substrings;
     }
 
-    /* Assuming sessions are sorted by name of the player, increasing */
+    /* Assuming sessions are sorted by name of the player, increasing. */
+    /* This method also makes a new turn. */
     public void gameStart(Collection<ClientSession> sessions, int proposedGameTimeSeconds, int proposedTurnTimeSeconds) {
         this.updateTickTime();
 
@@ -127,12 +120,14 @@ public class GameLogic {
         }
 
         try {
-            parseWords();
-            parseSubstrings();
+            this.validWords.set(parseWords());
+            this.substrings.set(parseSubstrings());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         this.gameStartMillis.set(this.getTickTime());
+        this.newTurn();
     }
 
     public void newTurn() {
@@ -165,7 +160,7 @@ public class GameLogic {
         return false;
     }
 
-    public void addScore(String input) {
+    private void addScore(String input) {
         var newPoints = input.length();
         var playerIndex = getCurrentPlayerIndex();
 
@@ -184,7 +179,7 @@ public class GameLogic {
     }
 
     /* Meant to be called every timer tick. */
-    public void updateTickTime() { tickTimeMillis.set(System.currentTimeMillis()); }
+    public void updateTickTime() { tickTimeMillis.set(Clock.getInstance().currentTimeMillis()); }
 
     public long getTickTime() { return this.tickTimeMillis.get(); }
 

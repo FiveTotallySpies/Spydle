@@ -83,7 +83,7 @@ public class GameLogicEvents {
         }, 0, 1000);
 
         /* 4. Make a new turn. */
-        gameLogic.newTurn();
+        /* Since the gameStart also makes a new turn, we need to send a newTurn message. */
         gameSocketHandler.broadcastCbMessage(newTurnMessage());
     }
 
