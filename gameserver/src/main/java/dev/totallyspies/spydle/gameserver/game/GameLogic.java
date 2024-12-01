@@ -33,7 +33,7 @@ public class GameLogic {
   private final AtomicReference<List<String>> substrings;
   private final AtomicLong lastTurnStartMillis = new AtomicLong(0);
   private final AtomicLong gameStartMillis = new AtomicLong(0);
-  private final AtomicLong tickTimeMillis = new AtomicLong(System.currentTimeMillis());
+  private final AtomicLong tickTimeMillis = new AtomicLong(0);
   private final Random random;
 
   public GameLogic(@Value("${spydle.random-seed}") int randomSeed) {

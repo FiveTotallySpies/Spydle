@@ -25,19 +25,32 @@ public class GameLogicEvents {
   private final Logger logger = LoggerFactory.getLogger(GameLogicEvents.class);
   private final Timer timer = new Timer();
 
-  @Autowired private GameLogic gameLogic;
+  private final GameLogic gameLogic;
 
-  @Autowired private GameSocketHandler gameSocketHandler;
+  private final GameSocketHandler gameSocketHandler;
 
-  @Autowired private CurrentGameServerConfig gameServerConfiguration;
+  private final CurrentGameServerConfig gameServerConfiguration;
 
-  @Autowired private GameServer gameServer;
+  private final GameServer gameServer;
 
-  @Autowired private ConfigurableApplicationContext context;
+  private final ConfigurableApplicationContext context;
 
   @Nullable
-  @Autowired(required = false)
-  private Agones agones;
+  private final Agones agones;
+
+  public GameLogicEvents(GameLogic logic,
+                         GameSocketHandler handler,
+                         GameServer server,
+                         CurrentGameServerConfig config,
+                         ConfigurableApplicationContext context,
+                         @Autowired(required = false) Agones agones) {
+    this.gameLogic = logic;
+    this.gameSocketHandler = handler;
+    this.gameServer = server;
+    this.gameServerConfiguration = config;
+    this.context = context;
+    this.agones = agones;
+  }
 
   @EventListener(SessionOpenEvent.class)
   public void onSessionOpen() {
@@ -77,7 +90,7 @@ public class GameLogicEvents {
             GameLogicEvents.this.onTimerTick();
           }
         },
-        0,
+        1000,
         1000);
 
     /* Since the gameStart also makes a new turn, we need to send a newTurn message. */
@@ -138,7 +151,7 @@ public class GameLogicEvents {
     gameSocketHandler.broadcastCbMessage(guessUpdateMessage(typed, wrappedPlayer));
   }
 
-  private void onTimerTick() {
+  public void onTimerTick() {
     gameLogic.updateTickTime();
     long gamePassedMillis = gameLogic.getTickTime() - gameLogic.getGameStartMillis();
     long gameMillisLeft = gameLogic.getTotalGameTimeMillis() - gamePassedMillis;
@@ -175,7 +188,7 @@ public class GameLogicEvents {
     gameSocketHandler.broadcastCbMessage(cbMessage);
   }
 
-  private void onGameEnd() {
+  public void onGameEnd() {
     /* The game timer has ended, we can use the players list from the game logic*/
     var players = gameLogic.getPlayersScoreSorted().stream().map(this::playerMessage).toList();
 
@@ -190,7 +203,7 @@ public class GameLogicEvents {
     }
   }
 
-  private void broadcastPlayers() {
+  public void broadcastPlayers() {
     if (gameServer.getState().equals(GameServer.State.PLAYING)) {
       /* If the game has started, use the player list from the game logic */
       var players = gameLogic.getPlayers().stream().map(this::playerMessage).toList();
@@ -211,13 +224,13 @@ public class GameLogicEvents {
     }
   }
 
-  private List<ClientSession> getSessionsSorted() {
+  public List<ClientSession> getSessionsSorted() {
     var sessions = gameSocketHandler.getSessions();
     sessions.sort(Comparator.comparing(ClientSession::getPlayerName));
     return sessions;
   }
 
-  private CbMessage gameStartMessage() {
+  public CbMessage gameStartMessage() {
     var players = gameLogic.getPlayers();
 
     var msgPlayers = players.stream().map(this::playerMessage).toList();
@@ -231,20 +244,20 @@ public class GameLogicEvents {
         .build();
   }
 
-  private CbMessage guessMessage(String guess, boolean correct, Player player) {
+  public CbMessage guessMessage(String guess, boolean correct, Player player) {
     return CbMessage.newBuilder()
         .setGuessResult(
             CbGuessResult.newBuilder().setPlayer(player).setGuess(guess).setCorrect(correct))
         .build();
   }
 
-  private CbMessage guessUpdateMessage(String guess, Player player) {
+  public CbMessage guessUpdateMessage(String guess, Player player) {
     return CbMessage.newBuilder()
         .setGuessUpdate(CbGuessUpdate.newBuilder().setGuess(guess).setPlayer(player).build())
         .build();
   }
 
-  private CbMessage newTurnMessage() {
+  public CbMessage newTurnMessage() {
     return CbMessage.newBuilder()
         .setNewTurn(
             CbNewTurn.newBuilder()
@@ -256,18 +269,18 @@ public class GameLogicEvents {
         .build();
   }
 
-  private CbMessage gameEndMessage(List<Player> players) {
+  public CbMessage gameEndMessage(List<Player> players) {
     return CbMessage.newBuilder().setGameEnd(CbGameEnd.newBuilder().addAllPlayers(players)).build();
   }
 
-  private Player playerMessage(dev.totallyspies.spydle.gameserver.game.Player player) {
+  public Player playerMessage(dev.totallyspies.spydle.gameserver.game.Player player) {
     return dev.totallyspies.spydle.shared.proto.messages.Player.newBuilder()
         .setPlayerName(player.getName())
         .setScore(player.getScore())
         .build();
   }
 
-  private CbMessage updatePlayerListMessage(List<Player> players) {
+  public CbMessage updatePlayerListMessage(List<Player> players) {
     return CbMessage.newBuilder()
         .setUpdatePlayerList(CbUpdatePlayerList.newBuilder().addAllPlayers(players))
         .build();
