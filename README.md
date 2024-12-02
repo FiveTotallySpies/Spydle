@@ -56,7 +56,11 @@ Please refer to INSTALLATION_LOCAL.md for more details.
 https://github.com/user-attachments/assets/e2d70dd6-6ddd-4364-957b-332f424d9bd3
 
 ## Feedback and Contributions
-#### To contribute to our project, you may always fork the repo, and create a pull request! Any suggestions are welcome!
+#### To contribute to our project, you may always fork the repo, and create a pull request!
+If any Issues arise, please create a new issue, and it will be addressed by one of our developers shortly.
+
+#### Here is a microsoft form, where you may enter any suggestions you like!
+[Microsoft Feedback Form: Suggestions are Welcomed!](https://forms.office.com/r/LXEcKxfLuT)
 
 ## License
 MIT License

@@ -63,7 +63,7 @@ public class TestClient {
     /* Test scenario:
      * player1 joins the game, gets an UPDATE_PLAYER_LIST message
      * player2 joins the game, both players get an UPDATE_PLAYER_LIST message
-     * player1 starts the game, duration is 5 seconds
+     * player1 starts the game, duration is 12 seconds, turn time is 3 seconds
      * both players get a GAME_START message with all players
      * both players get NEW_TURN message, assigned string: "gis", player2 makes a turn
      * player2 is the first player to make a turn
