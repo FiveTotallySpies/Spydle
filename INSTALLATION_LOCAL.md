@@ -1,61 +1,98 @@
-# Spydle
 
-## Backend Setup
+# Spydle :bomb:
 
-### Prerequisites
+Spydle is a word guessing game. On your turn, you are given a substring of 2/3 characters, like "ent". You need to guess a word that has those characters. Longer words get more points, and the player with the most points wins!
 
-Instructions are tested on Ubuntu Jammy (22), but should work on most Linux distros.
-If you are on Windows, WSL2 is recommended (and practically required).
+This program was developed by [Alexandra Worms](https://github.com/Lftw), [Ihor Chovpan](https://github.com/chopikus), [Kai Lo](https://github.com/klokailo), [Polyna Germa](https://github.com/nanogotalk), & [Xin Lei Lin](https://github.com/xinlei55555) for our CSC207 class.
 
-- [Install docker](https://docs.docker.com/engine/install/ubuntu/)
-- [Install helm](https://helm.sh/docs/intro/install/)
-- [Install kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
-- (Optional, but highly recommended) [Install K9s](https://github.com/derailed/k9s?tab=readme-ov-file#installation)
-    - This is a CLI tool that lets you observe all running pods in your Kubernetes cluster. Just type k9s.
+# Table of Contents
+- [Installation Instructions](#installation-instructions)
+- [Usage](#usage)
+- [Design](#design)
+- [License](#license)
+- [Feedback and Contributions](#feedback-and-contributions)
 
-### K3s Installation
+# Installation
+There are a few options to run the program, for
 
-- Run the installation script `deployment/install-k3s.sh`
-    - WARNING: This immediately starts the K3s cluster in the background! To stop the cluster later, scroll down in
-      these instructions.
-    - Also note that by default K3s does not operate with any resource limits and will consume as needed.
-- Point the kubectl KUBECONFIG variable to our k3s server using `export KUBECONFIG=/etc/rancher/k3s/k3s.yaml`
-    - Without this envvar, `kubectl` won't work, and will fail to connect to k3s to find any resources.
-    - You would need to run this in every new terminal, but it is recommended you add this to your bashrc file using
-      `echo 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml' >> ~/.bashrc`.
+### Option A: Download Release Jar
+This is the simplest option if you just want to run the game.
 
-- Now we should also install Agones within the cluster by running the `deployment/agones-helm.sh` script.
+1. You can find the file in the Releases page of our repository.
+2. Running this jar requires that you have Java 17 installed on your system.
+### Option B: Building from Source
+This is the simplest option if you would like to modify the <b>frontend</b> code and run any changes you make.
+1. Clone the repository in IntelliJ IDEA and wait for it to import gradle dependencies
+2. Set the project JDK to corretto-17
+3. Run the following gradle command: `gradle :frontend:build`
+4. A .jar is located in `frontend/build/libs` directory. You can move it to any location, and double click to to run it.
+5. Alternatively, you can also create a Spring Boot run configuration in IntelliJ IDEA Ultimate for the `FrontendApplication` file.
 
-### Applying Our Kustomization
+### Option C: Build from Source and Run Locally
+This is the simplest option if you want to modify the <b>gameserver</b> and <b>frontend</b> code and run a full emulation of both the frontend and backend.
+1. Follow the instructions in option B
+2. Create Spring Boot run configurations for `FrontendApplication` and `GameServerApplication`. For both of them, set the active profiles in the run configuration to `local`.
+3. Create a compound run configuration in IntelliJ with both the Frontend and the GameServer.
+4. Running this configuration will start the gameserver in "local" mode, then you can connect to it using the frontend by entering the room code "LOCAL"
 
-- To apply our set of K8s resources (defined in a kustomization stack), run
-  `kubectl apply --server-side -k env/dev --force-conflicts`.
-    - You should now be able to observe the pods deployed by running `k9s` and pressing `0` to view all namespaces.
-        - Some will be failing, this will be solved by our next step.
+### Option D: Build from Source and Run Local Kubernetes Cluster
+This is the option if you want a fully-fledge Kubernetes deployment of our system. This is good if you want to modify the <b>matchmaker</b> or <b>deployment</b> Kubernetes manifests in the deployment folder.
 
-### Building Our Images
+This may require at least an elementary understanding of Kubernetes and systems design.
 
-- In order for our matchmaker and gameserver pods to have the correct images, we need to build them first.
-- Run `docker build -f matchmaker.Dockerfile -t matchmaker:latest .`
-    - This will add the docker image to your local registry. To save it to the K3s internal registry, you need to now
-      run `docker save matchmaker:latest | sudo k3s ctr images import -`
-- Now we do the same for gameserver:
-    - `docker build -f gameserver.Dockerfile -t gameserver:latest .`
-    - and `docker save gameserver:latest | sudo k3s ctr images import -`
-- Anytime you want to deploy a change to the pods' codebase, re-run these commands.
+Follow the instructions in the other installation instructions in INSTALLATION_LOCAL.MD
 
-### Starting and Stopping the Cluster
+# Usage
 
-- To stop the cluster, run `./deployment/stop-k3s.sh`
-- To start the cluster, run `./deployment/start-k3s.sh`
-- To restart the cluster, run `./deployment/restart-k3s.sh`
+### Frontend Use Cases and Features:
+- **Create Game**: A user may createa a room from the Welcome View
+- **Join Game**: User may join a game by entering the game's room code, followed by a click of the **_Join Game_** button.
+- **List Games**: A user may see a list of all possible rooms by selecting the **_View Rooms_** Button on the welcome page.
+- **Guess Word**: The guess of the player is received, when they type **_Enter_** or click on the **_Submit_** button.
+- **Update Guess**: As a player types their guess, their guess is displayed on top of their player, for every letter that is typed or removed.
 
-### Deleting Resources
+### TODO (how to play the game)
 
-- Many times it may be useful to delete all resources in the cluster and start fresh. Here are some useful commands:
-    - <b>Delete (most) resources</b>: `kubectl delete all --all --all-namespaces && ./deployment/restart-k3s.sh`:
-      Deletes everything from your cluster, and restarts k3s (which will bring back the bare minimum.
-        - This however does not remove things like CRDs and helm charts. To delete those as well, just reinstall k3s by
-          running `sudo /usr/local/bin/uninstall-k3s.sh && ./deployment/install-k3s.sh`
-    - <b>Delete Spydle</b>: `kubectl delete all --all -n spydle`: Deletes all resources in the spydle namespace (
-      gameservers, matchmakers, and ingress).
+### This video contains an example of game-play:
+https://github.com/user-attachments/assets/e2d70dd6-6ddd-4364-957b-332f424d9bd3
+
+# Design
+
+The design of this project is one that intends to mirror the patterns that exist in real-world software development and game design. Therefore, some choices (specifically in the Backend Design document) may take us a little bit past the scope of our CSC207 course. An in-depth understanding of fully architecture would take a while to understand, but our basic design philosophies should be clear.
+
+
+## Backend Design
+Backend design has been split into its own document. TODO
+
+## Clean Architecture
+
+TODO
+
+## SOLID Principles
+
+TODO
+
+## SpringBoot Dependency Injection
+
+TODO
+
+## Design Patterns
+
+TODO
+
+## Design Discussions
+
+TODO
+
+
+
+# Feedback and Contributions
+#### To contribute to our project, you may always fork the repo, and create a pull request!
+If any Issues arise, please create a new issue, and it will be addressed by one of our developers shortly.
+
+#### Here is a form where you may enter any suggestions you like!
+[Microsoft Feedback Form: Suggestions are Welcomed!](https://forms.office.com/r/LXEcKxfLuT)
+
+## License
+MIT License    
+Copyright (c) [2024] [FiveTotallySpies]
