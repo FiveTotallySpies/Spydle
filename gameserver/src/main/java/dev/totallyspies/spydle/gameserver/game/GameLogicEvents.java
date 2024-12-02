@@ -35,15 +35,15 @@ public class GameLogicEvents {
 
   private final ConfigurableApplicationContext context;
 
-  @Nullable
-  private final Agones agones;
+  @Nullable private final Agones agones;
 
-  public GameLogicEvents(GameLogic logic,
-                         GameSocketHandler handler,
-                         GameServer server,
-                         CurrentGameServerConfig config,
-                         ConfigurableApplicationContext context,
-                         @Autowired(required = false) Agones agones) {
+  public GameLogicEvents(
+      GameLogic logic,
+      GameSocketHandler handler,
+      GameServer server,
+      CurrentGameServerConfig config,
+      ConfigurableApplicationContext context,
+      @Autowired(required = false) Agones agones) {
     this.gameLogic = logic;
     this.gameSocketHandler = handler;
     this.gameServer = server;
