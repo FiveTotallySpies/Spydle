@@ -2,9 +2,9 @@ package dev.totallyspies.spydle.frontend.interface_adapters.list_rooms;
 
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.use_cases.list_games.ListGamesInputBoundary;
+import dev.totallyspies.spydle.frontend.use_cases.list_games.ListGamesOutputBoundary;
 import dev.totallyspies.spydle.frontend.use_cases.list_games.ListGamesOutputData;
 import dev.totallyspies.spydle.frontend.views.WelcomeView;
-import java.util.List;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
@@ -16,12 +16,12 @@ public class ListRoomsViewController {
 
   private final ApplicationEventPublisher publisher;
   private final ListGamesInputBoundary listGamesInteractor;
-  private final ListRoomsPresenter presenter;
+  private final ListGamesOutputBoundary presenter;
 
   public ListRoomsViewController(
-          ApplicationEventPublisher publisher,
-          ListGamesInputBoundary listGamesInteractor,
-          @Lazy ListRoomsPresenter presenter) {
+      ApplicationEventPublisher publisher,
+      ListGamesInputBoundary listGamesInteractor,
+      @Lazy ListGamesOutputBoundary presenter) {
     this.publisher = publisher;
     this.listGamesInteractor = listGamesInteractor;
     this.presenter = presenter;
@@ -36,6 +36,6 @@ public class ListRoomsViewController {
 
   public void updateRoomList() {
     ListGamesOutputData output = listGamesInteractor.execute();
-    presenter.updateViewRomCodes(output.getRoomCodes());
+    presenter.presentGamesList(output);
   }
 }
