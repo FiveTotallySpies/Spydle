@@ -225,16 +225,5 @@ public class WelcomeView extends JPanel implements CardView {
         });
     }
 
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> {
-//            JFrame frame = new JFrame();
-//            frame.setTitle("Welcome - Join or Create Room");
-//            frame.setSize(800, 600); // Set frame size to 800x600
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.setLocationRelativeTo(null);
-//            // Add the WelcomeView panel with light blue background
-//            frame.add(new WelcomeView());
-//            frame.setVisible(true);
-//        });
-//    }
+
 }

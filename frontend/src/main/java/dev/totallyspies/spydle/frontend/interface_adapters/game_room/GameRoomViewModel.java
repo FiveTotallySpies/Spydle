@@ -27,6 +27,7 @@ public class GameRoomViewModel {
     private String stringEntered = ""; // String in the middle
 
     private int gameTimerSeconds = 0; // Time left
+
     private int turnTimerSeconds = 0;
 
     private String currentSubstring = ""; // Current substring
@@ -38,6 +39,7 @@ public class GameRoomViewModel {
     private Map<String, Guess> currentGuesses = new ConcurrentHashMap<>();
 
     public void reset() {
+
         this.playerList = new LinkedList<>();
         this.currentTurnPlayer = null;
         this.localPlayer = null;
@@ -63,4 +65,5 @@ public class GameRoomViewModel {
         }
 
     }
+
 }

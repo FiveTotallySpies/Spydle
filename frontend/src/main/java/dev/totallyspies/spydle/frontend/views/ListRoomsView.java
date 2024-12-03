@@ -128,7 +128,8 @@ public class ListRoomsView extends JPanel implements CardView {
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(25, 25, 112)); // blueviolet
+
+        button.setBackground(new Color(25, 25, 112)); // dark blue
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setFont(new Font("Arial", Font.BOLD, 12));
@@ -155,20 +156,11 @@ public class ListRoomsView extends JPanel implements CardView {
         });
     }
 
+
     public void updateRoomList() {
         roomList.setListData(model.getLinesInRoomList());
     }
 
-//    // Test the JPanel in a JFrame with size 500x500
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> {
-//            JFrame frame = new JFrame("Spydle - All Rooms");
-//            frame.setSize(800, 600);
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.setLocationRelativeTo(null);
-//            frame.add(new ListRoomsView());
-//            frame.setVisible(true);
-//        });
-//    }
+
 
 }
