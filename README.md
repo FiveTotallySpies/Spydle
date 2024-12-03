@@ -35,7 +35,7 @@ Running this jar requires that you have Java 17 installed on your system.
 # Usage
 
 ### Frontend Use Cases and Features:
-- **Create Game**: A user may createa a room from the Welcome View
+- **Create Game**: A user may create a room from the Welcome View
 - **Join Game**: User may join a game by entering the game's room code, followed by a click of the **_Join Game_** button.
 - **List Games**: A user may see a list of all possible rooms by selecting the **_View Rooms_** Button on the welcome page.
 - **Guess Word**: The guess of the player is received, when they type **_Enter_** or click on the **_Submit_** button.
@@ -48,11 +48,13 @@ https://github.com/user-attachments/assets/e2d70dd6-6ddd-4364-957b-332f424d9bd3
 
 # Design
 
-The design of this project is one that intends to mirror the patterns that exist in real-world software development and game design. Therefore, some choices (specifically in the Backend Design document) may take us a little bit past the scope of our CSC207 course. An in-depth understanding of fully architecture would take a while to understand, but our basic design philosophies should be clear.
+The design of this project is one that intends to mirror the patterns that exist in real-world software development and game design. Therefore, some choices (specifically in the Backend Design document) may take us a little bit past the scope of our CSC207 course. An in-depth understanding of the full architecture would take a while to understand, but our basic design philosophies should be clear.
 
 
 ## Backend Design
 Backend design has been split into its own document. TODO
+
+This document may serve as proof of the scope of our project.
 
 ## Clean Architecture
 
@@ -74,9 +76,10 @@ TODO
 
 TODO
 
-
-
 # Feedback and Contributions
+## Google Java Format
+TODO
+
 #### To contribute to our project, you may always fork the repo, and create a pull request!
 If any Issues arise, please create a new issue, and it will be addressed by one of our developers shortly.
 
