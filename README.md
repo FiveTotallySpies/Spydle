@@ -68,9 +68,47 @@ TODO
 
 TODO
 
-## Design Patterns
+### Design Patterns
 
-TODO
+We used quite a lot of design patterns when implementing this project, like [Builder](https://github.com/FiveTotallySpies/Spydle/blob/86e788d76d42f62a60780a0737f4ac25da6dace9/gameserver/src/main/java/dev/totallyspies/spydle/gameserver/game/GameLogicEvents.java#L260-L270), [Decorator](https://github.com/FiveTotallySpies/Spydle/blob/main/shared/src/main/java/dev/totallyspies/spydle/shared/message/MessageHandler.java), [Singleton](https://github.com/FiveTotallySpies/Spydle/blob/main/shared/src/main/java/dev/totallyspies/spydle/shared/Clock.java), [Proxy](https://github.com/FiveTotallySpies/Spydle/blob/86e788d76d42f62a60780a0737f4ac25da6dace9/gameserver/src/main/java/dev/totallyspies/spydle/gameserver/game/GameLogicEvents.java#L71-L83)
+
+### Builder pattern example
+
+Builder pattern is used to create messages that are sent between a client and a server.
+
+Each time a message property is set (for example, in `setAssignedString` method), a builder reference is returned. That way we can configure the message in a variety of ways.
+
+Example:
+```
+public CbMessage newTurnMessage() {
+    return CbMessage.newBuilder()
+        .setNewTurn(
+            CbNewTurn.newBuilder()
+                .setAssignedString(gameLogic.getCurrentSubString())
+                .setCurrentPlayer(
+                    Player.newBuilder()
+                        .setPlayerName(gameLogic.getCurrentPlayer().getName())
+                        .setScore(gameLogic.getCurrentPlayer().getScore())))
+        .build();
+}
+```
+
+[This](https://github.com/FiveTotallySpies/Spydle/blob/86e788d76d42f62a60780a0737f4ac25da6dace9/gameserver/src/main/java/dev/totallyspies/spydle/gameserver/game/GameLogicEvents.java#L260-L270) method creates a message that the backend sends on every new turn.
+
+### Decorator pattern example
+
+`SbMessageListener` is a custom decorator. The implementation for it is almost empty.
+
+Here is the [SbMessageListener](https://github.com/FiveTotallySpies/Spydle/blob/86e788d76d42f62a60780a0737f4ac25da6dace9/gameserver/src/main/java/dev/totallyspies/spydle/gameserver/socket/SbMessageListener.java#L8-L10):
+```
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SbMessageListener {}
+```
+
+Then, the class [`MessageHandler`](https://github.com/FiveTotallySpies/Spydle/blob/main/shared/src/main/java/dev/totallyspies/spydle/shared/message/MessageHandler.java) remembers every method annotated with @SbMessageListener and, when a new message is received, calls all those methods.
+
+We listen for client bound messages in a similar way using `CbMessageListener` annotation.
 
 ## Design Discussions
 
