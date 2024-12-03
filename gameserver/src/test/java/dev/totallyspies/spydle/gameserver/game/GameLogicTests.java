@@ -1,28 +1,26 @@
 package dev.totallyspies.spydle.gameserver.game;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import dev.totallyspies.spydle.shared.Clock;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.MockitoAnnotations;
 
 public class GameLogicTests {
-  private GameLogic gameLogic;
-
-  private Collection<ClientSession> clientSessions;
   private final GameServer fakeGameServer =
       new GameServer("", 0, "", "", false, GameServer.State.WAITING);
+  private GameLogic gameLogic;
+  private Collection<ClientSession> clientSessions;
   private UUID uuid1, uuid2, uuid3;
 
   @BeforeEach

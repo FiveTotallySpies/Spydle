@@ -1,21 +1,20 @@
 package dev.totallyspies.spydle.gameserver.game;
 
+import static org.mockito.Mockito.*;
+
 import dev.totallyspies.spydle.gameserver.socket.GameSocketHandler;
 import dev.totallyspies.spydle.gameserver.storage.CurrentGameServerConfig;
 import dev.totallyspies.spydle.shared.Clock;
 import dev.totallyspies.spydle.shared.model.ClientSession;
 import dev.totallyspies.spydle.shared.model.GameServer;
 import dev.totallyspies.spydle.shared.proto.messages.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.context.ConfigurableApplicationContext;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import static org.mockito.Mockito.*;
 
 class GameLogicEventsTests {
 

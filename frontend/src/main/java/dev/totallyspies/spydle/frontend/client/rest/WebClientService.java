@@ -40,7 +40,7 @@ public class WebClientService {
     return response;
   }
 
-  private <T> Object handleResponse(WebClient.ResponseSpec responseSpec, Class<T> responseModel)
+  protected <T> Object handleResponse(WebClient.ResponseSpec responseSpec, Class<T> responseModel)
       throws ClientErrorException {
     return responseSpec
         .onStatus(
