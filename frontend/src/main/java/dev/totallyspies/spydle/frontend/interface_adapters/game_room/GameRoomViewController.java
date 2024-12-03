@@ -13,6 +13,7 @@ import dev.totallyspies.spydle.shared.proto.messages.SbStartGame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -28,18 +29,21 @@ public class GameRoomViewController {
   private final GuessWordInputBoundary guessWordInteractor;
   private final GameRoomViewModel model;
   private final UpdateGuessInputBoundary updateGuessInteractor;
+  private final GameRoomPresenter presenter;
 
   public GameRoomViewController(
       ApplicationEventPublisher publisher,
       ClientSocketHandler handler,
       GuessWordInteractor guessWordInteractor,
       GameRoomViewModel model,
-      UpdateGuessInputBoundary updateGuessInteractor) {
+      UpdateGuessInputBoundary updateGuessInteractor,
+      @Lazy GameRoomPresenter presenter) {
     this.publisher = publisher;
     this.handler = handler;
     this.guessWordInteractor = guessWordInteractor;
     this.model = model;
     this.updateGuessInteractor = updateGuessInteractor;
+    this.presenter = presenter;
   }
 
   /*
@@ -68,6 +72,6 @@ public class GameRoomViewController {
 
   public void guessWord() {
     guessWordInteractor.execute(new GuessWordInputData(model.getStringEntered()));
-    publisher.publishEvent(new GuessWordEvent(this, model.getStringEntered()));
+    presenter.clearSubstringInputField();
   }
 }

@@ -18,9 +18,7 @@ public class ListRoomsPresenter {
     this.model = model;
   }
 
-  @EventListener
-  public void onListRoomsUpdate(ListRoomsUpdateEvent event) {
-    List<String> roomCodes = event.getRoomCodes();
+  public void updateViewRomCodes(List<String> roomCodes) {
     String[] lines;
     if (roomCodes.isEmpty()) {
       lines = new String[] {"No Public Rooms Available"};
