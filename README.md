@@ -80,11 +80,18 @@ TODO
 ## Google Java Format
 TODO
 
-#### To contribute to our project, you may always fork the repo, and create a pull request!
-If any Issues arise, please create a new issue, and it will be addressed by one of our developers shortly.
+#### To contribute to our project:
+You may 'Fork' this repository, and create a pull request!
+We will strive to review the pull request shortly and come back to you for any further improvements.
+Pull requests should have a description of changes which were implemented, including any potential deletions, or redeployments which should be performed!
+Finally, make sure that all the Unit tests that were developed pass before creating a pull request!
 
-#### Here is a form where you may enter any suggestions you like!
+Happy coding!
+
+#### Here is a form where you may enter any feedback:
 [Microsoft Feedback Form: Suggestions are Welcomed!](https://forms.office.com/r/LXEcKxfLuT)
+If any Issues arise, please create a new issue, and it will be addressed by one of our developers shortly.
+We are happy to handle any issues such as new features, new tests, and fixing bugs.
 
 # License
 MIT License    
