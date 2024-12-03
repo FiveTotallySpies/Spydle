@@ -3,7 +3,7 @@
 
 Spydle is a word guessing game. On your turn, you are given a substring of 2/3 characters, like "ent". You need to guess a word that has those characters. Longer words get more points, and the player with the most points wins!
 
-This program was developed by [Alexandra Worms](https://github.com/Lftw), [Ihor Chovpan](https://github.com/chopikus), [Kai Lo](https://github.com/klokailo), [Polyna Germa](https://github.com/nanogotalk), & [Xin Lei Lin](https://github.com/xinlei55555) for our CSC207 class.
+This program was developed by [Alexandra Worms](https://github.com/Lftw), [Ihor Chovpan](https://github.com/chopikus), [Kai Lo](https://github.com/klokailo), [Polyna German](https://github.com/nanogotalk), & [Xin Lei Lin](https://github.com/xinlei55555) for our CSC207 class.
 
 # Table of Contents
 - [Installation Instructions](#installation-instructions)
@@ -116,7 +116,7 @@ TODO
 
 # Feedback and Contributions
 ## Google Java Format
-TODO
+We adhered to the Google Java Format, and checked our code with the Google Java Format styler.
 
 #### To contribute to our project:
 You may 'Fork' this repository, and create a pull request!
