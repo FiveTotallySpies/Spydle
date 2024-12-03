@@ -130,6 +130,23 @@ public class ClientSocketHandler extends BinaryWebSocketHandler {
     }
   }
 
+  protected void setSession(WebSocketSession session, UUID clientId) {
+    if (session == null || clientId == null) {
+      throw new IllegalArgumentException("Session and ClientId cannot be null");
+    }
+    this.session.set(session);
+    this.clientId = clientId;
+  }
+
+  protected void removeSession() {
+    session.set(null);
+    clientId = null;
+  }
+
+  protected WebSocketSession getSession() {
+    return session.get();
+  }
+
   @Getter
   public static class CloseEvent extends ApplicationEvent {
 
