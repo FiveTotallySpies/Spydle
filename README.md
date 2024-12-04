@@ -68,7 +68,7 @@ TODO
 
 TODO
 
-### Design Patterns
+## Design Patterns
 
 We used quite a lot of design patterns when implementing this project, like [Builder](https://github.com/FiveTotallySpies/Spydle/blob/86e788d76d42f62a60780a0737f4ac25da6dace9/gameserver/src/main/java/dev/totallyspies/spydle/gameserver/game/GameLogicEvents.java#L260-L270), [Decorator](https://github.com/FiveTotallySpies/Spydle/blob/main/shared/src/main/java/dev/totallyspies/spydle/shared/message/MessageHandler.java), [Singleton](https://github.com/FiveTotallySpies/Spydle/blob/main/shared/src/main/java/dev/totallyspies/spydle/shared/Clock.java), [Proxy](https://github.com/FiveTotallySpies/Spydle/blob/86e788d76d42f62a60780a0737f4ac25da6dace9/gameserver/src/main/java/dev/totallyspies/spydle/gameserver/game/GameLogicEvents.java#L71-L83)
 
