@@ -7,6 +7,12 @@ import java.awt.*;
 import javax.swing.*;
 import org.springframework.context.annotation.Profile;
 
+/**
+ * Represents the view displayed at the end of the game, showing player rankings and a thank-you message.
+ * This class is a JPanel implementation styled with a light blue background and centered content.
+ * It includes functionality to display player rankings, navigate back to the welcome screen,
+ * and style UI components for a cohesive look and feel.
+ */
 @org.springframework.stereotype.Component
 @Profile("!test")
 public class GameEndView extends JPanel implements CardView {
@@ -16,6 +22,12 @@ public class GameEndView extends JPanel implements CardView {
   private final JPanel rankingsPanel;
   private final GameEndViewModel model;
 
+  /**
+   * Constructs the GameEndView and initializes the UI components.
+   *
+   * @param controller the controller managing the game-end actions
+   * @param model the view model providing data about players and scores
+   */
   public GameEndView(GameEndViewController controller, GameEndViewModel model) {
     this.controller = controller;
     this.model = model;
@@ -73,6 +85,11 @@ public class GameEndView extends JPanel implements CardView {
     add(container, gbc);
   }
 
+  /**
+   * Styles the buttons for this page with chosen color, font, and hover effects.
+   *
+   * @param button the JButton to style
+   */
   private void styleButton(JButton button) {
     button.setBackground(new Color(25, 25, 112)); // blueviolet
     button.setForeground(Color.WHITE);
@@ -104,7 +121,9 @@ public class GameEndView extends JPanel implements CardView {
         });
   }
 
-//  create the placements of the players based on their scores
+  /**
+   * Updates the rankings panel to display the list of players and their scores' descending order (best score is first).
+   */
   public void setPlacements() {
     rankingsPanel.removeAll();
     int i = 1;
