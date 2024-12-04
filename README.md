@@ -77,7 +77,7 @@ https://github.com/user-attachments/assets/e2d70dd6-6ddd-4364-957b-332f424d9bd3
 The design of this project is one that intends to mirror the patterns that exist in real-world software development and game design. Therefore, some choices (specifically in the Backend Design document) may take us a little bit past the scope of our CSC207 course. An in-depth understanding of the full architecture would take a while to understand, but our basic design philosophies should be clear.
 
 
-## Backend Design
+## System Design
 
 Backend design has been split into its own document [here](https://github.com/FiveTotallySpies/Spydle/blob/main/DESIGN.md).
   
