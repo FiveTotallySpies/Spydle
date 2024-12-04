@@ -110,9 +110,11 @@ Then, the class [`MessageHandler`](https://github.com/FiveTotallySpies/Spydle/bl
 
 We listen for client bound messages in a similar way using `CbMessageListener` annotation.
 
-## Design Discussions
+## PR Discussions
 
-TODO
+Check out these pull requests to follow more of our design and implementation discussions:
+* [https://github.com/FiveTotallySpies/Spydle/pull/20](PR #20) -- discussion on how to store data in the Matchmaker and the Game Logic
+* [https://github.com/FiveTotallySpies/Spydle/pull/80](PR #80) -- Guess Update implementation details
 
 # Feedback and Contributions
 ## Google Java Format
