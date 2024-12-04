@@ -18,9 +18,11 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test")
 public class WelcomePresenter implements CreateGameOutputBoundary, JoinGameOutputBoundary {
 
   private final Logger logger = LoggerFactory.getLogger(WelcomePresenter.class);
