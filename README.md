@@ -41,7 +41,33 @@ Running this jar requires that you have Java 17 installed on your system.
 - **Guess Word**: The guess of the player is received, when they type **_Enter_** or click on the **_Submit_** button.
 - **Update Guess**: As a player types their guess, their guess is displayed on top of their player, for every letter that is typed or removed.
 
-### TODO (how to play the game)
+
+# How to Play the Game
+
+### Step 1: Open Game
+When you open the game, you will see the **Welcome page**.  
+- **Write your name** in the text box provided. This is how other players will see you in the game.
+
+### Step 2: Create or Join a Room
+After entering your name, you need to either create a new room or join an existing one.  
+- If you want to play with friends or other players, **enter an existing room code** (you will get this code from someone else) and click **"Join"**.  
+- If you want to play by yourself or start a new game, click **"Create Room"** to create a new game room.
+
+### Step 3: The Game Starts
+Once you're in a room and everyone is ready, the game will start.  
+- You will have **1 minute** in total to play the game.  
+- **Each round, you will have 10 seconds** to guess a word containing substring provided.
+
+### Step 4: Scoring
+- You earn points for every word you guess correctly.  
+- The number of points you get depends on the **length of the word** you guessed. Longer words give you more points.
+
+### Step 5: Game Ends
+- Once the 1-minute timer runs out, the game will end.  
+- The game will show the **ranking of players**, displaying who scored the most points.
+
+### Step 6: Play Again
+After seeing the rankings, you can return to the **Welcome page** to either **create a new game** or **join another room** to play again.
 
 ### This video contains an example of game-play:
 https://github.com/user-attachments/assets/e2d70dd6-6ddd-4364-957b-332f424d9bd3
