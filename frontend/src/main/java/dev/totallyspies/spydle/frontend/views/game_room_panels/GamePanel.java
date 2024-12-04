@@ -64,9 +64,7 @@ public class GamePanel extends JPanel {
     createPlayerPanels();
   }
 
-  /**
-   * Creates and positions player panels in a circular layout.
-   */
+  /** Creates and positions player panels in a circular layout. */
   private void createPlayerPanels() {
     for (PlayerPanel panel : playerPanels.values()) {
       remove(panel); // Remove panel from the GamePanel
@@ -96,9 +94,9 @@ public class GamePanel extends JPanel {
 
   /**
    * Updates the game panel to reflect the current game state.
-   * <p>
-   * Updates player panels, highlights the current turn player, updates the timers,
-   * and sets the substring to be guessed.
+   *
+   * <p>Updates player panels, highlights the current turn player, updates the timers, and sets the
+   * substring to be guessed.
    */
   public void updateGame() {
     // Update list of players
