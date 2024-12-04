@@ -12,6 +12,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.springframework.context.annotation.Profile;
 
+/**
+ * The WelcomeView class is a JPanel implementation of the {@link CardView} interface,
+ * representing the welcome screen for the Spydle game.
+ * This view allows users to set a nickname, create or join game rooms, and navigate to other sections of the game.
+ */
 @org.springframework.stereotype.Component
 @Profile("!test")
 public class WelcomeView extends JPanel implements CardView {
@@ -23,6 +28,12 @@ public class WelcomeView extends JPanel implements CardView {
   private final JTextField roomCodeField;
   private final JLabel welcomeMessageLabel; // New label for welcome message
 
+    /**
+     * Constructs the WelcomeView with the specified controller and view model.
+     *
+     * @param controller The {@link WelcomeViewController} managing interactions for this view.
+     * @param welcomeViewModel The {@link WelcomeViewModel} holding data and state for this view.
+     */
   public WelcomeView(WelcomeViewController controller, WelcomeViewModel welcomeViewModel) {
     this.controller = controller;
     this.welcomeViewModel = welcomeViewModel;
@@ -200,6 +211,12 @@ public class WelcomeView extends JPanel implements CardView {
     setVisible(true);
   }
 
+    /**
+     * Creates a placeholder text field with a specified placeholder text.
+     *
+     * @param placeholder The placeholder text to display in the text field.
+     * @return A configured {@link JTextField}.
+     */
   private JTextField createPlaceholderTextField(String placeholder) {
     JTextField textField = new JTextField(15);
     textField.setText(placeholder);
@@ -227,6 +244,11 @@ public class WelcomeView extends JPanel implements CardView {
     return textField;
   }
 
+    /**
+     * Configures the styling and hover behavior for the buttons in this page.
+     *
+     * @param button The {@link JButton} to style.
+     */
   private void styleButton(JButton button) {
     button.setBackground(new Color(25, 25, 112)); // Darker purple color
     button.setForeground(Color.WHITE);
