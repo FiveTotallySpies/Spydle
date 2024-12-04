@@ -113,10 +113,10 @@ We listen for client bound messages in a similar way using `CbMessageListener` a
 ## PR Discussions
 
 Check out these pull requests to follow more of our design and implementation discussions:
-* [https://github.com/FiveTotallySpies/Spydle/pull/20](PR #20) -- discussion on how to store data in the Matchmaker and the Game Logic;
-* [https://github.com/FiveTotallySpies/Spydle/pull/80](PR #80) -- Guess Update implementation details;
-* [https://github.com/FiveTotallySpies/Spydle/pull/100](PR #100) -- Discussion on Clean Architecture in Spring Boot;
-* [https://github.com/FiveTotallySpies/Spydle/pull/13](PR #13) -- Welcome page design choices.
+* [PR #20](https://github.com/FiveTotallySpies/Spydle/pull/20) -- discussion on how to store data in the Matchmaker and the Game Logic;
+* [PR #80](https://github.com/FiveTotallySpies/Spydle/pull/80) -- Guess Update implementation details;
+* [PR #100](https://github.com/FiveTotallySpies/Spydle/pull/100) -- Discussion on Clean Architecture in Spring Boot;
+* [PR #13](https://github.com/FiveTotallySpies/Spydle/pull/13) -- Welcome page design choices.
 
 # Feedback and Contributions
 ## Google Java Format
