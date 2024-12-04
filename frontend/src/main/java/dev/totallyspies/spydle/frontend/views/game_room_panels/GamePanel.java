@@ -9,15 +9,35 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.swing.*;
 
+/**
+ * Represents the main panel for the game room during gameplay.
+ *
+ * <p>The {@code GamePanel} manages the display and interactions for player panels, the substring
+ * being guessed, the game timer, and the turn timer. It uses a circular layout to display player
+ * information dynamically, updating as the game progresses.
+ */
 public class GamePanel extends JPanel {
 
+  /** The ViewModel managing the state of the game room. */
   private final GameRoomViewModel model;
 
+  /** Map of player names to their corresponding {@link PlayerPanel} instances. */
   private final Map<String, PlayerPanel> playerPanels = new LinkedHashMap<>();
+
+  /** Label displaying the current substring to be guessed. */
   private final JLabel substringLabel;
+
+  /** Label displaying the remaining time for the overall game. */
   private final JLabel timerLabel;
+
+  /** Label displaying the remaining time for the current player's turn. */
   private final JLabel timerPlayer;
 
+  /**
+   * Constructs a {@code GamePanel} with the given game room ViewModel.
+   *
+   * @param model the {@link GameRoomViewModel} that provides game data and state.
+   */
   public GamePanel(GameRoomViewModel model) {
     this.model = model;
     setLayout(null);
@@ -44,7 +64,9 @@ public class GamePanel extends JPanel {
     createPlayerPanels();
   }
 
-  // Position players in a circular layout
+  /**
+   * Creates and positions player panels in a circular layout.
+   */
   private void createPlayerPanels() {
     for (PlayerPanel panel : playerPanels.values()) {
       remove(panel); // Remove panel from the GamePanel
@@ -72,6 +94,12 @@ public class GamePanel extends JPanel {
     }
   }
 
+  /**
+   * Updates the game panel to reflect the current game state.
+   * <p>
+   * Updates player panels, highlights the current turn player, updates the timers,
+   * and sets the substring to be guessed.
+   */
   public void updateGame() {
     // Update list of players
     Set<String> currentPlayerNames = playerPanels.keySet();
