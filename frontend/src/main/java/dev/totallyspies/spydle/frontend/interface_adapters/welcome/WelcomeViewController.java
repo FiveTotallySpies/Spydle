@@ -6,20 +6,17 @@ import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.ErrorVie
 import dev.totallyspies.spydle.frontend.interface_adapters.view_manager.SwitchViewEvent;
 import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameInputBoundary;
 import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameInputData;
+import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameOutputBoundary;
 import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameOutputData;
-import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameOutputDataFail;
-import dev.totallyspies.spydle.frontend.use_cases.create_game.CreateGameOutputDataSuccess;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameInputBoundary;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameInputData;
+import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputBoundary;
 import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputData;
-import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataFail;
-import dev.totallyspies.spydle.frontend.use_cases.join_game.JoinGameOutputDataSuccess;
-import dev.totallyspies.spydle.frontend.views.GameRoomView;
 import dev.totallyspies.spydle.frontend.views.ListRoomsView;
-import dev.totallyspies.spydle.shared.proto.messages.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +32,8 @@ public class WelcomeViewController {
   private final CreateGameInputBoundary createGameInteractor;
   private final JoinGameInputBoundary joinGameInteractor;
   private final ClientSocketHandler socketHandler;
+  private final CreateGameOutputBoundary createGamePresenter;
+  private final JoinGameOutputBoundary joinGamePresenter;
 
   public WelcomeViewController(
       ApplicationEventPublisher publisher,
@@ -42,13 +41,17 @@ public class WelcomeViewController {
       GameRoomViewModel gameRoomModel,
       CreateGameInputBoundary createGameInteractor,
       JoinGameInputBoundary joinGameInteractor,
-      ClientSocketHandler socketHandler) {
+      ClientSocketHandler socketHandler,
+      @Lazy CreateGameOutputBoundary createGamePresenter,
+      @Lazy JoinGameOutputBoundary joinGamePresenter) {
     this.publisher = publisher;
     this.welcomeModel = welcomeModel;
     this.gameRoomModel = gameRoomModel;
     this.createGameInteractor = createGameInteractor;
     this.joinGameInteractor = joinGameInteractor;
     this.socketHandler = socketHandler;
+    this.createGamePresenter = createGamePresenter;
+    this.joinGamePresenter = joinGamePresenter;
   }
 
   /*
@@ -65,25 +68,7 @@ public class WelcomeViewController {
     }
     CreateGameInputData input = new CreateGameInputData(welcomeModel.getPlayerName());
     CreateGameOutputData output = createGameInteractor.execute(input);
-    if (output instanceof CreateGameOutputDataSuccess successOutput) {
-      try {
-        socketHandler.open(
-            successOutput.getGameHost(),
-            successOutput.getGamePort(),
-            successOutput.getClientId(),
-            successOutput.getPlayerName());
-        gameRoomModel.setRoomCode(successOutput.getRoomCode());
-        gameRoomModel.setLocalPlayer(
-            Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
-        publisher.publishEvent(new SwitchViewEvent(this, GameRoomView.class));
-      } catch (Exception exception) {
-        fireError("Failed to connect to game server: " + exception.getMessage());
-        logger.error("Failed to connect to game server: ", exception);
-      }
-    } else {
-      CreateGameOutputDataFail failOutput = (CreateGameOutputDataFail) output;
-      fireError("Failed to send request to matchmaker:\n" + failOutput.getMessage());
-    }
+    createGamePresenter.presentCreateGame(output);
   }
 
   public void joinGame() {
@@ -98,25 +83,7 @@ public class WelcomeViewController {
     JoinGameInputData input =
         new JoinGameInputData(welcomeModel.getPlayerName(), welcomeModel.getRoomCode());
     JoinGameOutputData output = joinGameInteractor.execute(input);
-    if (output instanceof JoinGameOutputDataSuccess successOutput) {
-      try {
-        socketHandler.open(
-            successOutput.getGameHost(),
-            successOutput.getGamePort(),
-            successOutput.getClientId(),
-            successOutput.getPlayerName());
-        gameRoomModel.setRoomCode(successOutput.getRoomCode());
-        gameRoomModel.setLocalPlayer(
-            Player.newBuilder().setPlayerName(successOutput.getPlayerName()).setScore(0).build());
-        publisher.publishEvent(new SwitchViewEvent(this, GameRoomView.class));
-      } catch (Exception exception) {
-        fireError("Failed to connect to game server: " + exception.getMessage());
-        logger.error("Failed to connect to game server: ", exception);
-      }
-    } else {
-      JoinGameOutputDataFail failOutput = (JoinGameOutputDataFail) output;
-      fireError("Failed to send request to matchmaker:\n" + failOutput.getMessage());
-    }
+    joinGamePresenter.presentJoinGame(output);
   }
 
   private void fireError(String message) {
