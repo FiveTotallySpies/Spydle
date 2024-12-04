@@ -53,18 +53,6 @@ public class GameRoomView extends JPanel implements CardView {
             Color.WHITE, // Text color
             () -> controller.openWelcomeView() // Action on click
             );
-    //        JButton backButton = new JButton("Back to Welcome");
-    //        backButton.setFont(new Font("Arial", Font.BOLD, 14));
-    //        backButton.setBackground(new Color(165, 195, 255)); // Blueviolet
-    //        backButton.setForeground(Color.WHITE); // Black text color
-    //        backButton.setFocusPainted(false);
-    //        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    //        backButton.setPreferredSize(new Dimension(150, 40));
-
-    //        // Back button action listener
-    //        backButton.addActionListener(event -> {
-    //            controller.openWelcomeView(); // Open the rooms page (AllRoomScreen.AllRoomsPage)
-    //        });
 
     startGameButton =
         createStyledButton(
@@ -73,17 +61,6 @@ public class GameRoomView extends JPanel implements CardView {
             Color.WHITE, // Text color
             () -> controller.startGame() // Action on click
             );
-    //        JButton startGameButton = new JButton("Start Game");
-    //        startGameButton.setFont(new Font("Arial", Font.BOLD, 14));
-    //        startGameButton.setBackground(new Color(165, 195, 255)); // Blueviolet
-    //        startGameButton.setForeground(Color.WHITE); // Black text color
-    //        startGameButton.setFocusPainted(false);
-    //        startGameButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    //        startGameButton.setPreferredSize(new Dimension(150, 40));
-    //
-    //        startGameButton.addActionListener(event -> {
-    //            controller.startGame(); // Starts the game
-    //        });
 
     roomCodeLabel = new JLabel("Room Code: ???", SwingConstants.CENTER);
     roomCodeLabel.setFont(new Font("Arial", Font.BOLD, 18));
@@ -223,5 +200,7 @@ public class GameRoomView extends JPanel implements CardView {
         });
 
     return button;
+
   }
+
 }

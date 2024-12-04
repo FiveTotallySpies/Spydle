@@ -129,28 +129,9 @@ public class GamePanel extends JPanel {
       } else {
         entry.getValue().setPlayerBorder(Color.GRAY, 2); // Set default gray border for others
       }
-    }
-  }
 
-  //    public static void main(String[] args) {
-  //        // Create a frame to test the GamePanel
-  //        JFrame frame = new JFrame("Game Test");
-  //        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-  //        frame.setSize(800, 600);
-  //
-  //        // Create GamePanel with 4 players
-  //        GamePanel gamePanel = new GamePanel(4);
-  //
-  //        // Add the panel to the frame
-  //        frame.add(gamePanel);
-  //
-  //        // Show the frame
-  //        frame.setVisible(true);
-  //
-  //        // Simulate a game loop or user interaction to update the game
-  //        new Timer(2000, e -> {
-  //            gamePanel.updateGame("New Substring", 30, (gamePanel.currentPlayerIndex + 1) % 4);
-  //        }).start();
-  //    }
+    }
+
+  }
 
 }
