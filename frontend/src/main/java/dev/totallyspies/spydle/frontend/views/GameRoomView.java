@@ -12,6 +12,12 @@ import lombok.Getter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+/**
+ * The GameRoomView class represents the user interface for the game room,
+ * where players can interact with the game, view the room code, and input guesses.
+ * This class is responsible for displaying the game screen, handling user input,
+ * and updating the game state in real-time.
+ */
 @Component
 @Profile("!test")
 public class GameRoomView extends JPanel implements CardView {
@@ -27,6 +33,7 @@ public class GameRoomView extends JPanel implements CardView {
   private final JLabel roomCodeLabel;
   private final JButton startGameButton;
   private final JPanel topPanel;
+
 
   public GameRoomView(GameRoomViewModel model, GameRoomViewController controller) {
     this.model = model;
