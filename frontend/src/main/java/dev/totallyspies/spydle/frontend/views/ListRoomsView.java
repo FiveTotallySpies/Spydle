@@ -158,18 +158,8 @@ public class ListRoomsView extends JPanel implements CardView {
 
   public void updateRoomList() {
     roomList.setListData(model.getLinesInRoomList());
+
   }
 
-  //    // Test the JPanel in a JFrame with size 500x500
-  //    public static void main(String[] args) {
-  //        SwingUtilities.invokeLater(() -> {
-  //            JFrame frame = new JFrame("Spydle - All Rooms");
-  //            frame.setSize(800, 600);
-  //            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-  //            frame.setLocationRelativeTo(null);
-  //            frame.add(new ListRoomsView());
-  //            frame.setVisible(true);
-  //        });
-  //    }
 
 }
