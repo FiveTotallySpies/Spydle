@@ -78,13 +78,16 @@ The design of this project is one that intends to mirror the patterns that exist
 
 
 ## Backend Design
-Backend design has been split into its own document. TODO
 
-This document may serve as proof of the scope of our project.
+Backend design has been split into its own document [here](https://github.com/FiveTotallySpies/Spydle/blob/main/DESIGN.md).
+  
+This document may serve as proof of the scope of our project.  Every following section of this document will assume that you are familiar with the basics of our system design.
 
 ## Clean Architecture
 
-TODO
+Our project is slightly unconventional when it comes to design for this course. This is because we have a frontend and multiple backends, where our use-cases span across them. If you would like understand, please read the design document
+
+Despite this, we have implemented Clean Architecture for our use-cases to the best of our abilities. The [frontend](https://github.com/FiveTotallySpies/Spydle/tree/main/frontend/src/main/java/dev/totallyspies/spydle/frontend) package has a great display of Clean Architecture use cases, and our backend follows it as well.
 
 ## SOLID Principles
 
@@ -92,7 +95,28 @@ TODO
 
 ## SpringBoot Dependency Injection
 
-TODO
+We used Spring Boot for every component of our project (including the front-end).
+
+The dependency injection of beans in the spring boot projects proved extremely useful for creating clean and easy-to-read code.
+
+In addition, we used the feature of "Spring Profiles" to make the application inject different versions of the same interfaces (dependency inversion!).
+
+For Frontend:
+- Running spring with no profile will run the default application
+- Running spring with profile "dev" will output additional debug logs
+- Running spring with profile "local" will inject LOCAL versions of the usecase interactors that only connect to a gameserver hosted locally, instead of connecting to our cloud-hosted backend
+- Running spring with profile "test" will run end-to-end tests on our application (and run no graphical user interface!)
+
+For GameServer:
+- Running spring with no profile or "prod" will run the default application
+- Running spring with profile "dev" will output additional debug logs
+- Running spring with profile "local" will disable all communication with Agones (in the Kubernetes cluster), and also use a local database instead of a remote redis database for sharing information.
+
+For MatchMaker:
+- Running spring with no profile will run the default application
+- Running spring with profile "dev" will output additional debug logs
+
+In order to configure which profile your application will run with, you should following installation instructions for building from source, and configure this profile in your IntelliJ.
 
 ## Design Patterns
 
