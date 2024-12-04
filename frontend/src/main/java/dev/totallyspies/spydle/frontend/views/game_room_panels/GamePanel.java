@@ -129,9 +129,6 @@ public class GamePanel extends JPanel {
       } else {
         entry.getValue().setPlayerBorder(Color.GRAY, 2); // Set default gray border for others
       }
-
     }
-
   }
-
 }

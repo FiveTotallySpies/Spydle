@@ -273,9 +273,6 @@ public class WelcomeView extends JPanel implements CardView {
             button.setBackground(new Color(25, 25, 112));
             button.setForeground(Color.WHITE);
           }
-
         });
-
   }
-
 }
