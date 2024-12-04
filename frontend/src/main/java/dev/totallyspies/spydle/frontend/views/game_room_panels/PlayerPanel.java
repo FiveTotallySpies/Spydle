@@ -4,10 +4,9 @@ import dev.totallyspies.spydle.frontend.interface_adapters.game_room.GameRoomVie
 import java.awt.*;
 import javax.swing.*;
 
-
 /**
- * Represents the panel for a player in the game room.
- * This panel displays the player's name, score, and current guess, along with styling for clarity and visibility.
+ * Represents the panel for a player in the game room. This panel displays the player's name, score,
+ * and current guess, along with styling for clarity and visibility.
  */
 class PlayerPanel extends JPanel {
 
@@ -18,8 +17,8 @@ class PlayerPanel extends JPanel {
   /**
    * Constructs a PlayerPanel instance to represent a player's information.
    *
-   * @param name   The player's name.
-   * @param score  The player's current score.
+   * @param name The player's name.
+   * @param score The player's current score.
    * @param parent The parent panel containing this panel, used for managing layout.
    */
   public PlayerPanel(String name, int score, JPanel parent) {
@@ -51,9 +50,9 @@ class PlayerPanel extends JPanel {
   /**
    * Sets the location and dimensions of the panel and adjusts the position of the guess label.
    *
-   * @param x      The x-coordinate of the panel.
-   * @param y      The y-coordinate of the panel.
-   * @param width  The width of the panel.
+   * @param x The x-coordinate of the panel.
+   * @param y The y-coordinate of the panel.
+   * @param width The width of the panel.
    * @param height The height of the panel.
    */
   public void setLocation(int x, int y, int width, int height) {
@@ -73,7 +72,7 @@ class PlayerPanel extends JPanel {
   /**
    * Sets a custom border for the player's panel.
    *
-   * @param color     The color of the border.
+   * @param color The color of the border.
    * @param thickness The thickness of the border.
    */
   public void setPlayerBorder(Color color, int thickness) {
@@ -83,8 +82,9 @@ class PlayerPanel extends JPanel {
   /**
    * Updates the player's guess and sets its verdict (e.g., correct, incorrect, in progress).
    *
-   * @param guess   The player's current guess.
-   * @param verdict The verdict of the guess, represented by {@link GameRoomViewModel.Guess.Verdict}.
+   * @param guess The player's current guess.
+   * @param verdict The verdict of the guess, represented by {@link
+   *     GameRoomViewModel.Guess.Verdict}.
    */
   public void setPlayerGuess(String guess, GameRoomViewModel.Guess.Verdict verdict) {
     switch (verdict) {
@@ -95,11 +95,8 @@ class PlayerPanel extends JPanel {
     guessLabel.setText(guess);
   }
 
-  /**
-   * Removes the guess label from the parent panel to clean up resources.
-   */
-    public void cleanupParent() {
-      parent.remove(guessLabel);
-    }
-
+  /** Removes the guess label from the parent panel to clean up resources. */
+  public void cleanupParent() {
+    parent.remove(guessLabel);
   }
+}
