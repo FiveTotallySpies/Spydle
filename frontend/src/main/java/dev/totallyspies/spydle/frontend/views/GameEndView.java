@@ -8,10 +8,10 @@ import javax.swing.*;
 import org.springframework.context.annotation.Profile;
 
 /**
- * Represents the view displayed at the end of the game, showing player rankings and a thank-you message.
- * This class is a JPanel implementation styled with a light blue background and centered content.
- * It includes functionality to display player rankings, navigate back to the welcome screen,
- * and style UI components for a cohesive look and feel.
+ * Represents the view displayed at the end of the game, showing player rankings and a thank-you
+ * message. This class is a JPanel implementation styled with a light blue background and centered
+ * content. It includes functionality to display player rankings, navigate back to the welcome
+ * screen, and style UI components for a cohesive look and feel.
  */
 @org.springframework.stereotype.Component
 @Profile("!test")
@@ -122,7 +122,8 @@ public class GameEndView extends JPanel implements CardView {
   }
 
   /**
-   * Updates the rankings panel to display the list of players and their scores' descending order (best score is first).
+   * Updates the rankings panel to display the list of players and their scores' descending order
+   * (best score is first).
    */
   public void setPlacements() {
     rankingsPanel.removeAll();
@@ -136,7 +137,5 @@ public class GameEndView extends JPanel implements CardView {
       placement.setAlignmentX(Component.CENTER_ALIGNMENT);
       rankingsPanel.add(placement);
     }
-
   }
-
 }

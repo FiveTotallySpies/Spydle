@@ -158,8 +158,5 @@ public class ListRoomsView extends JPanel implements CardView {
 
   public void updateRoomList() {
     roomList.setListData(model.getLinesInRoomList());
-
   }
-
-
 }

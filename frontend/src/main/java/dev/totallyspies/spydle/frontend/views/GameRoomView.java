@@ -200,7 +200,5 @@ public class GameRoomView extends JPanel implements CardView {
         });
 
     return button;
-
   }
-
 }
