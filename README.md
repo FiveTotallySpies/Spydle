@@ -116,6 +116,9 @@ For MatchMaker:
 - Running spring with no profile will run the default application
 - Running spring with profile "dev" will output additional debug logs
 
+
+If you run both the "Frontend" and "Gameserver" with `local` profile on your machine, you can effectively run the backend as well as the frontend without having to go through the cloud deployment. This allows for much easier testing.
+
 In order to configure which profile your application will run with, you should following installation instructions for building from source, and configure this profile in your IntelliJ.
 
 ## Design Patterns
