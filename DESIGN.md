@@ -497,6 +497,10 @@ Now the flow of traffic can look like this:
     - Messages sent to the gameserver are serialized and deserialized using Protobuf messages
 - Persistent data will be stored in redis for sharing between the matchmaker and the gameserver
 
+Here is a diagram:
+
+![backend lucid](https://github.com/user-attachments/assets/832dc8aa-e047-4f3e-afe5-84b4ec7b392b)
+
 # Part 5: What Now?
 Okay! We've addressed a lot of the design factors.
 
