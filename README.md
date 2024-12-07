@@ -70,7 +70,9 @@ Once you're in a room and everyone is ready, the game will start.
 After seeing the rankings, you can return to the **Welcome page** to either **create a new game** or **join another room** to play again.
 
 ### This video contains an example of game-play:
-https://github.com/user-attachments/assets/e2d70dd6-6ddd-4364-957b-332f424d9bd3
+
+https://github.com/user-attachments/assets/391c6536-4b56-4a06-b6e1-1183028684b9
+
 
 # Design
 
